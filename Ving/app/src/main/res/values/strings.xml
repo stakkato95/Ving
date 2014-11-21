@@ -2,8 +2,12 @@
 <resources>
 
     <string name="app_name">Ving</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="auth_button">Авторизироваться</string>
+    <string name="auth_text">Настройте свой аккаунт</string>
+    <string name="auth_description">Вам необходим выполнить вход через ваш аккаунт Вконтакте</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_friend_details">FriendDetailsActivity</string>
 
 </resources>

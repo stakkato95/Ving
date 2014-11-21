@@ -24,6 +24,7 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        getSupportActionBar().hide();
         mWebView = (WebView)findViewById(R.id.web_view);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -50,7 +51,7 @@ public class LoginActivity extends ActionBarActivity {
             super.onReceivedError(view, errorCode, description, failingUrl);
 
             view.setVisibility(View.VISIBLE);
-            findViewById(android.R.id.progress).setVisibility(View.INVISIBLE);
+            findViewById(android.R.id.progress).setVisibility(View.GONE);
         }
 
         @Override
@@ -58,7 +59,7 @@ public class LoginActivity extends ActionBarActivity {
             super.onPageFinished(view, url);
 
             view.setVisibility(View.VISIBLE);
-            findViewById(android.R.id.progress).setVisibility(View.INVISIBLE);
+            findViewById(android.R.id.progress).setVisibility(View.GONE);
 
             parseUrl(url);
         }
