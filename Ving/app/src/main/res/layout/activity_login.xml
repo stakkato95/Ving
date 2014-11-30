@@ -8,7 +8,7 @@
         android:id="@+id/web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="invisible"/>
 
     <ProgressBar
         android:id="@android:id/progress"
@@ -17,10 +17,11 @@
         android:layout_centerInParent="true" />
 
     <Button
-        android:id="@+id/auth_button"
-        android:text="Авторизироваться"
+        android:id="@+id/retry_update_button"
+        android:text="@string/retry_update_button_text"
         android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

@@ -34,6 +34,7 @@ public class StartActivity extends ActionBarActivity {
             });
         } else {
             startActivity(new Intent(this,MainActivity.class));
+            finish();
         }
     }
 
@@ -47,6 +48,7 @@ public class StartActivity extends ActionBarActivity {
                 mAccount.client_id = data.getIntExtra(Account.USER_ID, 0);
                 mAccount.store(this);
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
             }
         }
     }
