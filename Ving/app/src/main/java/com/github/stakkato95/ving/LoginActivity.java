@@ -12,6 +12,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.github.stakkato95.ving.auth.Account;
 import com.github.stakkato95.ving.auth.VkOAuthHelper;
@@ -55,6 +56,7 @@ public class LoginActivity extends ActionBarActivity {
             isErrorRecieved = false;
             findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
             view.setVisibility(View.INVISIBLE);
+            findViewById(R.id.on_error_text).setVisibility(View.INVISIBLE);
             mRetryButton.setVisibility(View.INVISIBLE);
         }
 
@@ -64,18 +66,7 @@ public class LoginActivity extends ActionBarActivity {
             super.onReceivedError(view, errorCode, description, failingUrl);
 
             isErrorRecieved = true;
-            view.setVisibility(View.VISIBLE);
             findViewById(android.R.id.progress).setVisibility(View.GONE);
-
-            AlertDialog.Builder errorAlert = new AlertDialog.Builder(LoginActivity.this);
-            errorAlert.setMessage(R.string.login_error_alert_text)
-                    .setNeutralButton(R.string.login_error_alert_connection_settings_button, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivity(new Intent(Settings.ACTION_SETTINGS));
-                        }
-                    })
-                    .show();
         }
 
         @Override
@@ -87,6 +78,7 @@ public class LoginActivity extends ActionBarActivity {
                 findViewById(android.R.id.progress).setVisibility(View.GONE);
                 parseUrl(url);
             } else {
+                findViewById(R.id.on_error_text).setVisibility(View.VISIBLE);
                 view.setVisibility(View.INVISIBLE);
                 mRetryButton.setVisibility(View.VISIBLE);
             }

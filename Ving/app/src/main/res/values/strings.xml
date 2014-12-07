@@ -14,4 +14,14 @@
     <string name="retry_update_button_text">Повтор</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string-array name="drawer_items_array">
+        <item>Друзья</item>
+        <item>Сообщения</item>
+        <item>Фотографии</item>
+        <item>Видео</item>
+    </string-array>
+
 </resources>

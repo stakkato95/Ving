@@ -1,32 +1,30 @@
 package com.github.stakkato95.ving;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.stakkato95.ving.auth.VkOAuthHelper;
 import com.github.stakkato95.ving.bo.Friend;
-import com.github.stakkato95.ving.bo.NoteGsonModel;
+import com.github.stakkato95.ving.fragments.CapFragment;
+import com.github.stakkato95.ving.fragments.FriendsFragment;
 import com.github.stakkato95.ving.manager.DataManager;
-import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.processing.FriendArrayProcessor;
-import com.github.stakkato95.ving.processing.Processor;
-import com.github.stakkato95.ving.source.DataSource;
 import com.github.stakkato95.ving.source.HttpDataSource;
 import com.github.stakkato95.ving.source.VkDataSource;
 
-import org.w3c.dom.Text;
-
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,13 +32,20 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
 
     private FriendArrayProcessor mFriendArrayProcessor;
     private VkDataSource mVkDataSource;
-
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
+    private TextView mErrorTextView;
+    private Button mRetryButton;
 
-    private AdapterView mAdapterView;
-    private ArrayAdapter mArrayAdapter;
-    private List<Friend> mRefreshData;
+
+    //Drawer content
+    private String[] mScreenTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+
+    private Fragment mLastFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,19 +54,81 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
 
         mFriendArrayProcessor = new FriendArrayProcessor();
         mVkDataSource = new VkDataSource();
-
         mProgressBar = (ProgressBar)findViewById(android.R.id.progress);
-        mAdapterView = (AbsListView)findViewById(android.R.id.list);
-        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mErrorTextView = (TextView)findViewById(R.id.error_text);
+        mRetryButton = (Button)findViewById(R.id.retry_update_button);
+        mRetryButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onRefresh() {
-                refreshListView(mVkDataSource, mFriendArrayProcessor);
+            public void onClick(View v) {
+                selectItem(0);
             }
         });
-        refreshListView(mVkDataSource, mFriendArrayProcessor);
+
+        mLastFragment = new Fragment();
+
+        //Drawer content
+        mTitle = mDrawerTitle = getTitle();
+        mScreenTitles = getResources().getStringArray(R.array.drawer_items_array);
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView)findViewById(R.id.navigation_drawer);
+
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mScreenTitles));
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItem(position);
+            }
+        });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //adds arrow
+        getSupportActionBar().setHomeButtonEnabled(true); //app icon is touchable
+
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.drawable.ic_drawer,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        ) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+
+                getSupportActionBar().setTitle(mDrawerTitle);
+                supportInvalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+
+                getSupportActionBar().setTitle(mTitle);
+                supportInvalidateOptionsMenu();
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        if (savedInstanceState == null) {
+            refreshListView(mVkDataSource, mFriendArrayProcessor);
+        }
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    //DataManager methods & callbacks
     private void refreshListView(HttpDataSource dataSource, FriendArrayProcessor processor) {
         DataManager.loadData(MainActivity.this, getRequestUrl(), dataSource, processor);
     }
@@ -70,88 +137,97 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
         return Api.FRIENDS_GET;
     }
 
-
     @Override
     public void onDataLoadStart() {
-        if (mSwipeRefreshLayout.isRefreshing()) {
-            mProgressBar.setVisibility(View.GONE);
-        } else {
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onDone(List<Friend> data) {
-        if(mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
         mProgressBar.setVisibility(View.GONE);
 
-        if(mArrayAdapter == null) {
-            mRefreshData = data;
-            mArrayAdapter = new ArrayAdapter<Friend>(this, R.layout.adapter_friend, android.R.id.text1, data) {
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    if (convertView == null) {
-                        convertView = View.inflate(MainActivity.this, R.layout.adapter_friend, null);
-                    }
-                    Friend friend = getItem(position);
-                    ((TextView)convertView.findViewById(android.R.id.text1)).setText(friend.getName());
-                    ((TextView)convertView.findViewById(android.R.id.text2)).setText(friend.getNickname());
-                    convertView.setTag(friend.getId());
-                    final ImageView imageView = (ImageView)convertView.findViewById(android.R.id.icon);
-                    final String photoUrl = friend.getPhoto();
-                    imageView.setImageBitmap(null);
-                    imageView.setTag(photoUrl);
+        FriendsFragment fragment = FriendsFragment.newInstance(new ArrayList<Friend>(data));
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
 
-                    if (!TextUtils.isEmpty(photoUrl)) {
-                        DataManager.loadData(new DataManager.Callback<Bitmap>() {
-                            @Override
-                            public void onDataLoadStart() {
-
-                            }
-
-                            @Override
-                            public void onDone(Bitmap data) {
-                                if (photoUrl.equals(imageView.getTag())) {
-                                    imageView.setImageBitmap(data);
-                                }
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-
-                            }
-                        },
-                                photoUrl, HttpDataSource.get(MainActivity.this), new BitmapProcessor());
-                    }
-
-                    return convertView;
-                }
-            };
-            mAdapterView.setAdapter(mArrayAdapter);
-
-            mAdapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(MainActivity.this, FriendDetailsActivity.class);
-                    Friend friend = (Friend)mArrayAdapter.getItem(position);
-                    NoteGsonModel note = new NoteGsonModel(friend.getId(), friend.getFirstName(), friend.getLastName());
-                    intent.putExtra("item", note);
-                    startActivity(intent);
-                }
-            });
-        } else {
-            mRefreshData.clear();
-            mRefreshData.addAll(data);
-            mArrayAdapter.notifyDataSetChanged();
-        }
+        //TODO swipe-refresh logic
+//        if(mArrayAdapter == null) {
+//            mRefreshData = data;
+//
+//        } else {
+//            mRefreshData.clear();
+//            mRefreshData.addAll(data);
+//            mArrayAdapter.notifyDataSetChanged();
+//        }
     }
 
     @Override
     public void onError(Exception e) {
         mProgressBar.setVisibility(View.GONE);
-        TextView errorView = (TextView)findViewById(R.id.error_text);
-        errorView.setText("ERROR\n" + e.getLocalizedMessage());
+
+        if (mLastFragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(mLastFragment)
+                    .commit();
+        }
+
+        if(UnknownHostException.class.isInstance(e)) {
+            mErrorTextView.setTextSize(22);
+            mErrorTextView.setText("Проверьте подключение и\nповторите попытку");
+            mRetryButton.setVisibility(View.VISIBLE);
+        } else {
+            mErrorTextView.setText("ERROR\n" + e.getLocalizedMessage());
+        }
     }
+
+
+    //Drawer methods
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getSupportActionBar().setTitle(mTitle);
+    }
+
+    private void selectItem(Integer position) {
+        Fragment fragment = null;
+
+        switch(position) {
+            case 0:
+                refreshListView(mVkDataSource, mFriendArrayProcessor);
+                mDrawerList.setItemChecked(position, true);
+                setTitle(mScreenTitles[position]);
+                mDrawerLayout.closeDrawer(mDrawerList);
+                break;
+            case 1:
+                fragment = CapFragment.newInstance("Сообщения в разработка");
+                break;
+            case 2:
+                fragment = CapFragment.newInstance("Фотографии в разработка");
+                break;
+            case 3:
+                fragment = CapFragment.newInstance("Видео в разработка");
+                break;
+            default:
+                break;
+        }
+
+        if(fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+
+            mDrawerList.setItemChecked(position, true);
+            setTitle(mScreenTitles[position]);
+            mDrawerLayout.closeDrawer(mDrawerList);
+            mLastFragment = fragment;
+        } else {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(mLastFragment)
+                    .commit();
+        }
+
+        mErrorTextView.setText("");
+        mRetryButton.setVisibility(View.INVISIBLE);
+    }
+
 }
