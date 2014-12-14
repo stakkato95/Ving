@@ -8,7 +8,7 @@ import android.support.v4.util.LruCache;
  */
 public class MemoryCache {
 
-    private static final int MAX_CACHE_SIZE = (int)(Runtime.getRuntime().maxMemory()) / 1024 / 10;
+    private static final int MAX_CACHE_SIZE = 1024 * 1024; //(int)(Runtime.getRuntime().maxMemory()) / 1024 / 10; //simply magic number
     private LruCache<String,Bitmap> mLruCache;
 
     public MemoryCache() {
@@ -16,6 +16,8 @@ public class MemoryCache {
         mLruCache = new LruCache<String, Bitmap>(MAX_CACHE_SIZE) {
             @Override
             protected int sizeOf(String key, Bitmap value) {
+                //TODO alternative variant of bmp size obtaining
+                //return (value.getAllocationByteCount() + key.length());
                 return (value.getRowBytes() * value.getHeight() + key.length());
             }
         };
@@ -41,4 +43,7 @@ public class MemoryCache {
 
     }
 
+    public boolean containsKey(String url) {
+        return mLruCache.get(url) != null;
+    }
 }

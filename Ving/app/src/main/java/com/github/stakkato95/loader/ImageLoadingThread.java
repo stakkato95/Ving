@@ -2,15 +2,14 @@ package com.github.stakkato95.loader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.util.Log;
 
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import android.os.Handler;
-import android.util.Log;
-import android.widget.ImageView;
 
 /**
  * Created by Artyom on 14.12.2014.
@@ -23,15 +22,13 @@ public class ImageLoadingThread extends Thread {
     private final LoaderCallback mLoaderCallback;
     private final BitmapProcessor mBitmapProcessor;
     private static final String TAG = "image_loading";
-    private final ImageView mImageView;
 
-    public ImageLoadingThread(Context context, String url, LoaderCallback loaderCallback, Handler handler, ImageView imageView) {
+    public ImageLoadingThread(Context context, String url, LoaderCallback loaderCallback, Handler handler) {
         mUrl = url;
         mDataSource = HttpDataSource.get(context);
         mLoaderCallback = loaderCallback;
         mHandler = handler;
         mBitmapProcessor = new BitmapProcessor();
-        mImageView = imageView;
     }
 
     @Override
@@ -65,7 +62,7 @@ public class ImageLoadingThread extends Thread {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mLoaderCallback.onLoadingFinished(bmp, mUrl, mImageView);
+                mLoaderCallback.onLoadingFinished(bmp, mUrl);
             }
         });
     }
