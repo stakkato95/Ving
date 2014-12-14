@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.github.stakkato95.loader.ImageLoader;
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.bo.Friend;
 import com.github.stakkato95.ving.manager.DataManager;
@@ -24,6 +25,9 @@ import java.util.ArrayList;
 public class FriendsFragment extends ListFragment {
 
     private static final String DATA_PARAM = "data_param";
+    private ImageLoader mImageLoader;
+
+    //TODO delete it
     private OnFragmentInteractionListener mListener;
 
     public static FriendsFragment newInstance(ArrayList<Friend> data) {
@@ -40,6 +44,8 @@ public class FriendsFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mImageLoader = new ImageLoader(getActivity());
 
         ArrayList<Friend> friendArrayList = getArguments().getParcelableArrayList(DATA_PARAM);
 
@@ -61,25 +67,7 @@ public class FriendsFragment extends ListFragment {
                 imageView.setTag(photoUrl);
 
                 if (!TextUtils.isEmpty(photoUrl)) {
-                    DataManager.loadData(new DataManager.Callback<Bitmap>() {
-                        @Override
-                        public void onDataLoadStart() {
-
-                        }
-
-                        @Override
-                        public void onDone(Bitmap data) {
-                            if (photoUrl.equals(imageView.getTag())) {
-                                imageView.setImageBitmap(data);
-                            }
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-
-                        }
-                    },
-                            photoUrl, HttpDataSource.get(getActivity()), new BitmapProcessor());
+                    mImageLoader.obtainImage(imageView, photoUrl);
                 }
 
                 return convertView;
