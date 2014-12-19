@@ -1,34 +1,35 @@
-package com.github.stakkato95.loader;
+package com.github.stakkato95.thread;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 
+import com.github.stakkato95.loader.ImageLoader;
+import com.github.stakkato95.loader.LoaderCallback;
+import com.github.stakkato95.loader.assist.ImageLoaderAssistant;
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * Created by Artyom on 14.12.2014.
  */
-public class ImageLoadingThread extends Thread {
+public class MemoryLoadingThread extends Thread {
 
     private final Handler mHandler;
     private final String mUrl;
     private final HttpDataSource mDataSource;
     private final LoaderCallback mLoaderCallback;
     private final BitmapProcessor mBitmapProcessor;
-    private static final String TAG = "image_loading";
+    private static final String TAG = ImageLoader.class.getSimpleName();
 
-    public ImageLoadingThread(Context context, String url, LoaderCallback loaderCallback, Handler handler) {
+    public MemoryLoadingThread(String url, LoaderCallback loaderCallback, Handler handler, HttpDataSource httpDataSource, BitmapProcessor bitmapProcessor) {
         mUrl = url;
-        mDataSource = HttpDataSource.get(context);
+        mDataSource = httpDataSource;
         mLoaderCallback = loaderCallback;
         mHandler = handler;
-        mBitmapProcessor = new BitmapProcessor();
+        mBitmapProcessor = bitmapProcessor;
     }
 
     @Override
@@ -37,24 +38,17 @@ public class ImageLoadingThread extends Thread {
         Log.d(TAG, currentThread().getId() + " thread is launched");
 
         InputStream inputStream = null;
-        try {
-            inputStream = mDataSource.getResult(mUrl);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         Bitmap bmp = null;
         try {
+            inputStream = mDataSource.getResult(mUrl);
             bmp = mBitmapProcessor.process(inputStream);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        closeStream(inputStream);
-
-        if (bmp != null) {
-            loadingInThreadFinished(bmp);
+        } finally {
+            ImageLoaderAssistant.closeStream(inputStream);
         }
 
+        loadingInThreadFinished(bmp);
     }
 
     private void loadingInThreadFinished(final Bitmap bmp) {
@@ -67,11 +61,4 @@ public class ImageLoadingThread extends Thread {
         });
     }
 
-    private void closeStream(final InputStream inputStream) {
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

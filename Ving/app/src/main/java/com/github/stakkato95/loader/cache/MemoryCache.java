@@ -1,19 +1,23 @@
-package com.github.stakkato95.loader;
+package com.github.stakkato95.loader.cache;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
+
+import com.github.stakkato95.loader.ImageLoader;
+import com.github.stakkato95.loader.assist.ImageLoaderAssistant;
 
 /**
  * Created by Artyom on 11.12.2014.
  */
-public class MemoryCache {
+public class MemoryCache implements Cache<String, Bitmap> {
 
-    private static final int MAX_CACHE_SIZE = 1024 * 1024; //(int)(Runtime.getRuntime().maxMemory()) / 1024 / 10; //simply magic number
+    private static int CACHE_SIZE; //(int)(Runtime.getRuntime().maxMemory()) / 1024 / 10; //simply magic number
     private LruCache<String,Bitmap> mLruCache;
 
-    public MemoryCache() {
-
-        mLruCache = new LruCache<String, Bitmap>(MAX_CACHE_SIZE) {
+    public MemoryCache(Context context) {
+        CACHE_SIZE = ImageLoaderAssistant.setCacheSize(context);
+        mLruCache = new LruCache<String, Bitmap>(CACHE_SIZE) {
             @Override
             protected int sizeOf(String key, Bitmap value) {
                 //TODO alternative variant of bmp size obtaining
@@ -21,26 +25,15 @@ public class MemoryCache {
                 return (value.getRowBytes() * value.getHeight() + key.length());
             }
         };
-
     }
 
     public Bitmap get(String url) {
-
-        Bitmap bmp = mLruCache.get(url);
-
-        if (bmp != null) {
-            return bmp;
-        } else {
-            return null;
-        }
-
+        //never check bitmaps for null!!!
+        return mLruCache.get(url);
     }
 
     public void put(String url, Bitmap bmp) {
-        if (mLruCache.get(url) == null) {
-            mLruCache.put(url, bmp);
-        }
-
+        mLruCache.put(url, bmp);
     }
 
     public boolean containsKey(String url) {

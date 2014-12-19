@@ -45,7 +45,8 @@ public class FriendsFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mImageLoader = new ImageLoader(getActivity());
+        //20 Mb DiskCache
+        mImageLoader = new ImageLoader(getActivity(), 1024 * 1024 * 20);
 
         ArrayList<Friend> friendArrayList = getArguments().getParcelableArrayList(DATA_PARAM);
 
