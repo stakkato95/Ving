@@ -10,9 +10,9 @@ import android.widget.ImageView;
 
 import com.github.stakkato95.loader.cache.DiskCache;
 import com.github.stakkato95.loader.cache.MemoryCache;
-import com.github.stakkato95.thread.FileLoadingThread;
-import com.github.stakkato95.thread.FileSavingThread;
-import com.github.stakkato95.thread.MemoryLoadingThread;
+import com.github.stakkato95.loader.thread.FileLoadingThread;
+import com.github.stakkato95.loader.thread.FileSavingThread;
+import com.github.stakkato95.loader.thread.MemoryLoadingThread;
 import com.github.stakkato95.ving.os.LIFOLinkedBlockingDeque;
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;

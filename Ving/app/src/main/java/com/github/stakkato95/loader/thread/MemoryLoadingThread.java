@@ -1,4 +1,4 @@
-package com.github.stakkato95.thread;
+package com.github.stakkato95.loader.thread;
 
 import android.graphics.Bitmap;
 import android.os.Handler;

@@ -1,9 +1,7 @@
-package com.github.stakkato95.thread;
+package com.github.stakkato95.loader.thread;
 
 import com.github.stakkato95.loader.cache.DiskCache;
 import com.github.stakkato95.ving.source.HttpDataSource;
-
-import java.io.InputStream;
 
 /**
  * Created by Artyom on 18.12.2014.
