@@ -1,7 +1,12 @@
 package com.github.stakkato95.loader.thread;
 
+import android.graphics.Bitmap;
+import android.util.Log;
+
+import com.github.stakkato95.loader.ImageLoader;
+import com.github.stakkato95.loader.LoaderCallback;
 import com.github.stakkato95.loader.cache.DiskCache;
-import com.github.stakkato95.ving.source.HttpDataSource;
+import android.os.Handler;
 
 /**
  * Created by Artyom on 18.12.2014.
@@ -9,17 +14,36 @@ import com.github.stakkato95.ving.source.HttpDataSource;
 public class FileSavingThread extends Thread {
 
     private final String mUrl;
-    private final HttpDataSource mDataSource;
     private final DiskCache mDiskCache;
+    private final Bitmap mBmp;
+    private final LoaderCallback mLoaderCallback;
+    private final Handler mHandler;
 
-    public FileSavingThread(String url, HttpDataSource httpDataSource, DiskCache diskCache) {
+    public FileSavingThread(String url, Bitmap bmp, LoaderCallback loaderCallback, Handler handler, DiskCache diskCache) {
+        mHandler = handler;
         mUrl = url;
-        mDataSource = httpDataSource;
+        mBmp = bmp;
         mDiskCache = diskCache;
+        mLoaderCallback = loaderCallback;
     }
 
     @Override
     public void run() {
-        mDiskCache.put(mUrl);
+        try {
+            mDiskCache.put(mUrl, mBmp);
+        } catch (Exception e) {
+            performReceivedError(e);
+        }
     }
+
+    private void performReceivedError(final Exception e) {
+        Log.d(ImageLoader.TAG, "file saving in " + currentThread().getId() + " thread finished with error");
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mLoaderCallback.onReceivedError("writing_error" + mUrl, e);
+            }
+        });
+    }
+
 }

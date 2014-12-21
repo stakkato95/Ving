@@ -13,7 +13,7 @@ import com.github.stakkato95.loader.assist.ImageLoaderAssistant;
 public class MemoryCache implements Cache<String, Bitmap> {
 
     private static int CACHE_SIZE; //(int)(Runtime.getRuntime().maxMemory()) / 1024 / 10; //simply magic number
-    private LruCache<String,Bitmap> mLruCache;
+    private LruCache<String, Bitmap> mLruCache;
 
     public MemoryCache(Context context) {
         CACHE_SIZE = ImageLoaderAssistant.setCacheSize(context);
@@ -39,4 +39,5 @@ public class MemoryCache implements Cache<String, Bitmap> {
     public boolean containsKey(String url) {
         return mLruCache.get(url) != null;
     }
+
 }

@@ -24,22 +24,21 @@ import java.util.Set;
 /**
  * Created by Artyom on 15.12.2014.
  */
-public class DiskCache {
+public class DiskCache implements Cache<String, Bitmap> {
 
     private static final String CACHE_FOLDER = "image_cache";
     private static File CACHE_DIRECTORY;
-    private static long DEFAULT_CACHE_SIZE = 1024 * 1024 * 10; //10 Mb
+    private static long DEFAULT_CACHE_SIZE = 1024 * 1024 * 50; //50 Mb
     private static Context mContext;
+
+    //TODO write methods for siz control
     private final long mCacheSize;
-    private final HttpDataSource mDataSource;
     private final Set<String> mExistingFiles;
     private final Set<String> mLoadingFiles;
 
 
-
     public DiskCache(final Context context, final long cacheSize) {
         mContext = context;
-        mDataSource = HttpDataSource.get(context);
         CACHE_DIRECTORY = getCacheDirectory();
         mCacheSize = ImageLoaderAssistant.setCacheSize(cacheSize, mContext, DEFAULT_CACHE_SIZE);
         mLoadingFiles = new LinkedHashSet<String>();
@@ -58,19 +57,25 @@ public class DiskCache {
         return new File(mContext.getCacheDir(), CACHE_FOLDER);
     }
 
-    public Bitmap get(String url) {
+    public Bitmap get(String url) throws Exception {
+
         String targetFileName = ImageLoaderAssistant.generateFileName(url);
         String targetPath = CACHE_DIRECTORY.getAbsolutePath() + File.separator + targetFileName;
 
         //if image is loading need to wait
         while (mLoadingFiles.contains(targetFileName)) {
-
         }
 
-        return BitmapFactory.decodeFile(targetPath);
+        Bitmap bmp = BitmapFactory.decodeFile(targetPath);
+
+        if (bmp == null) {
+            throw new Exception("The image on " + url + " link is null");
+        }
+
+        return bmp;
     }
 
-    public void put(String url) {
+    public void put(String url, Bitmap bmp) throws Exception {
 
         String fileName = ImageLoaderAssistant.generateFileName(url);
         mLoadingFiles.add(fileName);
@@ -78,31 +83,24 @@ public class DiskCache {
         File file = new File(CACHE_DIRECTORY, fileName);
         FileOutputStream outputStream = null;
         BufferedOutputStream bufferedStream = null;
-        InputStream inputStream = null;
 
-        byte[] buffer = new byte[1024*8];
-        int numOfReadBytes;
+        //if set doesn't contain such a file we add it
+        if (!mExistingFiles.contains(fileName)) {
 
-        try {
-            file.createNewFile();
-            outputStream = new FileOutputStream(file);
-            bufferedStream = new BufferedOutputStream(outputStream);
-
-            inputStream = mDataSource.getResult(url);
-
-            while((numOfReadBytes = inputStream.read(buffer)) != -1) {
-                bufferedStream.write(buffer, 0, numOfReadBytes);
+            try {
+                file.createNewFile();
+                outputStream = new FileOutputStream(file);
+                bufferedStream = new BufferedOutputStream(outputStream);
+                boolean performed = bmp.compress(Bitmap.CompressFormat.JPEG, 100, bufferedStream);
+            } catch (FileNotFoundException e) {
+                throw new Exception("File " + fileName + " not found");
+            } catch (IOException e) {
+                throw new Exception("Error while writing file " + fileName);
+            } catch (Exception e) {
+                throw new Exception("Unexpected error with file" + fileName);
+            } finally {
+                ImageLoaderAssistant.closeStream(outputStream, bufferedStream);
             }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }finally {
-            ImageLoaderAssistant.closeStream(outputStream, bufferedStream);
-            ImageLoaderAssistant.closeStream(inputStream);
         }
 
         //after saving file to disk add it to list of existing files
@@ -115,4 +113,5 @@ public class DiskCache {
 
         return mExistingFiles.contains(fileName);
     }
+
 }

@@ -46,23 +46,23 @@ public class FriendsFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         //20 Mb DiskCache
-        mImageLoader = new ImageLoader(getActivity(), 1024 * 1024 * 20);
+        mImageLoader = new ImageLoader(getActivity(), 1024 * 1024 * 20, R.drawable.image_loading, R.drawable.image_loading_error);
 
         ArrayList<Friend> friendArrayList = getArguments().getParcelableArrayList(DATA_PARAM);
 
         setListAdapter(new ArrayAdapter<Friend>(getActivity(), R.layout.adapter_friend, android.R.id.text1, friendArrayList) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                if(convertView == null) {
+                if (convertView == null) {
                     convertView = View.inflate(getActivity(), R.layout.adapter_friend, null);
                 }
 
                 Friend friend = getItem(position);
-                ((TextView)convertView.findViewById(android.R.id.text1)).setText(friend.getName());
-                ((TextView)convertView.findViewById(android.R.id.text2)).setText(friend.getNickname());
+                ((TextView) convertView.findViewById(android.R.id.text1)).setText(friend.getName());
+                ((TextView) convertView.findViewById(android.R.id.text2)).setText(friend.getNickname());
                 convertView.setTag(friend.getId());
 
-                final ImageView imageView = (ImageView)convertView.findViewById(android.R.id.icon);
+                final ImageView imageView = (ImageView) convertView.findViewById(android.R.id.icon);
                 final String photoUrl = friend.getPhoto();
                 imageView.setImageBitmap(null);
                 imageView.setTag(photoUrl);

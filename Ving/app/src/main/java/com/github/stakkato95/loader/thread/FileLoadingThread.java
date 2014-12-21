@@ -30,12 +30,22 @@ public class FileLoadingThread extends Thread {
 
     @Override
     public void run() {
-        Bitmap bmp = mDiskCache.get(mUrl);
-        loadingInThreadFinished(bmp);
+        Bitmap bmp = null;
+
+        try {
+            bmp = mDiskCache.get(mUrl);
+        } catch (Exception e) {
+            performReceivedError(e);
+        }
+
+        //if bitmap is null we mustn't finish loading correct
+        if (bmp != null) {
+            performLoadingFinished(bmp);
+        }
     }
 
-    private void loadingInThreadFinished(final Bitmap bmp) {
-        Log.d(TAG, "loading from file in " + currentThread().getId() + " thread finished");
+    private void performLoadingFinished(final Bitmap bmp) {
+        Log.d(TAG, "file loading in " + currentThread().getId() + " thread finished");
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -43,4 +53,15 @@ public class FileLoadingThread extends Thread {
             }
         });
     }
+
+    private void performReceivedError(final Exception e) {
+        Log.d(TAG, currentThread().getId() + " thread finished with error");
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mLoaderCallback.onReceivedError(mUrl, e);
+            }
+        });
+    }
+
 }

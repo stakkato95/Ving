@@ -13,6 +13,7 @@ import com.github.stakkato95.loader.cache.MemoryCache;
 import com.github.stakkato95.loader.thread.FileLoadingThread;
 import com.github.stakkato95.loader.thread.FileSavingThread;
 import com.github.stakkato95.loader.thread.MemoryLoadingThread;
+import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.os.LIFOLinkedBlockingDeque;
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
@@ -41,7 +42,11 @@ public class ImageLoader {
     private final DiskCache mDiskCache;
     private final Handler mHandler;
 
-    private static final String TAG = ImageLoader.class.getSimpleName();
+    //resources for loading images & images with errors
+    private final int mLoadingImageResourceId;
+    private final int mErrorImageResourceId;
+
+    public static final String TAG = ImageLoader.class.getSimpleName();
 
     static {
         mExecutorService = new ThreadPoolExecutor(CPU_COUNT,
@@ -52,22 +57,29 @@ public class ImageLoader {
 
     }
 
-    public ImageLoader(@NonNull Context context, int cacheSize) {
+    public ImageLoader(@NonNull Context context, int diskCacheSize, int loadingImageResourceId, int errorImageResourceId) {
         mContext = context;
         mMemoryCache = new MemoryCache(context);
         mImageLoaderCallback = new ImageLoaderCallback();
         mRequestsMap = new ConcurrentHashMap<ImageView, String>();
         mDataSource = HttpDataSource.get(context);
         mBitmapProcessor = new BitmapProcessor();
-        mDiskCache = new DiskCache(context, cacheSize);
+        mDiskCache = new DiskCache(context, diskCacheSize);
         mHandler = new Handler(Looper.myLooper());
+        mLoadingImageResourceId = loadingImageResourceId;
+        mErrorImageResourceId = errorImageResourceId;
     }
 
-    public void obtainImage(@NonNull ImageView imageView,@NonNull String url) {
+    public void obtainImage(@NonNull ImageView imageView, @NonNull String url) {
+
+        imageView.setImageResource(mLoadingImageResourceId);
 
         if (mMemoryCache.containsKey(url)) {
             Log.d(TAG, "image " + url + " is obtained from lruCache");
             Bitmap targetBmp = mMemoryCache.get(url);
+
+            //if request isn't added the image won't be displayed
+            mRequestsMap.put(imageView, url);
             setBmpToView(targetBmp, url);
         } else {
 
@@ -97,11 +109,32 @@ public class ImageLoader {
 
         for (Map.Entry<ImageView, String> pair : keyValuePair) {
 
-            if(pair.getValue().equals(url)) {
+            if (pair.getValue().equals(url)) {
                 ImageView targetView = pair.getKey();
 
                 if (targetView != null) {
                     targetView.setImageBitmap(bmp);
+                    Log.d(TAG, "image " + url + " is laid");
+                }
+
+                mRequestsMap.remove(targetView);
+                break;
+            }
+        }
+
+    }
+
+    private void setBmpToView(Integer resourceId, String url) {
+
+        Set<Map.Entry<ImageView, String>> keyValuePair = mRequestsMap.entrySet();
+
+        for (Map.Entry<ImageView, String> pair : keyValuePair) {
+
+            if (pair.getValue().equals(url)) {
+                ImageView targetView = pair.getKey();
+
+                if (targetView != null) {
+                    targetView.setImageResource(resourceId);
                     Log.d(TAG, "image " + url + " is laid");
                 }
 
@@ -122,13 +155,30 @@ public class ImageLoader {
                     //if image isn't in MemoryCache, put it there
                     mMemoryCache.put(url, bmp);
                 }
+            }
 
-                if (!mDiskCache.containsKey(url)) {
-                    //if image isn't in DiskCache, put it there
-                    mExecutorService.execute(new FileSavingThread(url, mDataSource, mDiskCache));
+            if (!mDiskCache.containsKey(url)) {
+                //if image isn't in DiskCache, put it there
+                mExecutorService.execute(new FileSavingThread(url, bmp, mImageLoaderCallback, mHandler, mDiskCache));
+            }
+
+            setBmpToView(bmp, url);
+        }
+
+        @Override
+        public void onReceivedError(String url, Exception e) {
+
+            e.printStackTrace();
+            //we can't say to user that we didn't manage to write image to file system
+            //we need to inform him only when we didn't manage to retrieve an image from file system
+            if (!url.startsWith("writing_error")) {
+                if (mRequestsMap.containsValue(url)) {
+
+                    //setting an error icon from resources
+                    setBmpToView(mErrorImageResourceId, url);
                 }
             }
-            setBmpToView(bmp, url);
+
 
         }
     }

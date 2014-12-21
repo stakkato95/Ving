@@ -9,4 +9,6 @@ public interface LoaderCallback {
 
     void onLoadingFinished(Bitmap bmp, String url);
 
+    void onReceivedError(String url, Exception e);
+
 }

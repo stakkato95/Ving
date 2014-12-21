@@ -43,8 +43,8 @@ public class ImageLoaderAssistant {
         //5% of free space
         long calculatedСacheSize = context.getFilesDir().getFreeSpace() / 1024 / 1024 / 20;
 
-        //if cacheSize is less than 1 Mb
-        if (cacheSize <= 1024 * 1024 * 1) {
+        //if cacheSize is less than 10 Mb
+        if (cacheSize <= 1024 * 1024 * 10) {
 
             //if calculatedСacheSize is less than defaultCacheSize, set defaultCacheSize value
             //else set calculatedСacheSize
@@ -60,7 +60,8 @@ public class ImageLoaderAssistant {
     public static int setCacheSize(final Context context) {
         //method for MemoryCache
 
-        return (int)context.getFilesDir().getFreeSpace() / 100;
+        //20% of free space
+        return (int)context.getFilesDir().getFreeSpace() / 5;
     }
 
     public static String generateFileName(String url) {
