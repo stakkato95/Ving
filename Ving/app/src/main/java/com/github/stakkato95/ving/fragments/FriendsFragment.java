@@ -2,12 +2,15 @@ package com.github.stakkato95.ving.fragments;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -19,13 +22,18 @@ import com.github.stakkato95.ving.bo.Friend;
 import com.github.stakkato95.ving.manager.DataManager;
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
+import com.github.stakkato95.ving.view.SlidingTabLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FriendsFragment extends ListFragment {
 
     private static final String DATA_PARAM = "data_param";
     private ImageLoader mImageLoader;
+    private ListView mListView;
+    private ArrayAdapter<Friend> mArrayAdapter;
+    private List<Friend> mFriendArrayList;
 
     //TODO delete it
     private OnFragmentInteractionListener mListener;
@@ -47,10 +55,15 @@ public class FriendsFragment extends ListFragment {
 
         //20 Mb DiskCache
         mImageLoader = new ImageLoader(getActivity(), 1024 * 1024 * 20, R.drawable.image_loading, R.drawable.image_loading_error);
+        mFriendArrayList = getArguments().getParcelableArrayList(DATA_PARAM);
+    }
 
-        ArrayList<Friend> friendArrayList = getArguments().getParcelableArrayList(DATA_PARAM);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        setListAdapter(new ArrayAdapter<Friend>(getActivity(), R.layout.adapter_friend, android.R.id.text1, friendArrayList) {
+        mListView = (ListView)view.findViewById(android.R.id.list);
+        mArrayAdapter = new ArrayAdapter<Friend>(getActivity(), R.layout.adapter_friend, android.R.id.text1, mFriendArrayList) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
@@ -73,12 +86,10 @@ public class FriendsFragment extends ListFragment {
 
                 return convertView;
             }
-        });
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        };
+        mListView.setAdapter(mArrayAdapter);
+//        //TODO set footer
+        return view;
     }
 
     //TODO check & remove useless methods

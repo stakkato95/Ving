@@ -20,7 +20,9 @@ public class StartActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        getSupportActionBar().hide();
+
+        //TODO remove if after will be use NonActionBar theme
+        //getSupportActionBar().hide();
 
         mAccount.restore(this);
 

@@ -13,7 +13,6 @@ import com.github.stakkato95.loader.cache.MemoryCache;
 import com.github.stakkato95.loader.thread.FileLoadingThread;
 import com.github.stakkato95.loader.thread.FileSavingThread;
 import com.github.stakkato95.loader.thread.MemoryLoadingThread;
-import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.os.LIFOLinkedBlockingDeque;
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;

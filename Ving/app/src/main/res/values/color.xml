@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <item name="cool_blue" type="color">#80cbc4</item>
+    <item name="WindowBackground" type="color">@color/background_material_light</item> //#FFF0F5 try this color
+    <item name="ListDivider" type="color">#DEDEDE</item>
+    <item name="TextTertiaryColor" type="color">#444444</item>
+
 </resources>

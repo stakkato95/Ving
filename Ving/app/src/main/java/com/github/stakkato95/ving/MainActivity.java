@@ -2,11 +2,12 @@ package com.github.stakkato95.ving;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.StatFs;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +16,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.github.stakkato95.ving.auth.VkOAuthHelper;
 import com.github.stakkato95.ving.bo.Friend;
 import com.github.stakkato95.ving.fragments.CapFragment;
 import com.github.stakkato95.ving.fragments.FriendsFragment;
@@ -23,8 +23,9 @@ import com.github.stakkato95.ving.manager.DataManager;
 import com.github.stakkato95.ving.processing.FriendArrayProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
 import com.github.stakkato95.ving.source.VkDataSource;
+import com.github.stakkato95.ving.view.SlidingTabLayout;
+import com.github.stakkato95.ving.view.VingPagerAdapter;
 
-import java.io.File;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,14 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private Toolbar mToolbar;
+
+    //Sliding tabs content
+    private SlidingTabLayout mSlidingTabLayout;
+    private ViewPager mViewPager;
+    private VingPagerAdapter mVingPagerAdapter;
+    private static final int NUM_OF_VIIEW_PAGER_ITEMS = 2;
+
 
     private Fragment mLastFragment;
 
@@ -54,11 +63,15 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //material actionbar with arrow
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        setSupportActionBar(mToolbar);
+
         mFriendArrayProcessor = new FriendArrayProcessor();
         mVkDataSource = new VkDataSource();
-        mProgressBar = (ProgressBar)findViewById(android.R.id.progress);
-        mErrorTextView = (TextView)findViewById(R.id.error_text);
-        mRetryButton = (Button)findViewById(R.id.retry_update_button);
+        mProgressBar = (ProgressBar) findViewById(android.R.id.progress);
+        mErrorTextView = (TextView) findViewById(R.id.error_text);
+        mRetryButton = (Button) findViewById(R.id.retry_update_button);
         mRetryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,10 +84,10 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
         //Drawer content
         mTitle = mDrawerTitle = getTitle();
         mScreenTitles = getResources().getStringArray(R.array.drawer_items_array);
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView)findViewById(R.id.navigation_drawer);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
 
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mScreenTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mScreenTitles));
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -82,13 +95,10 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
             }
         });
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //adds arrow
-        getSupportActionBar().setHomeButtonEnabled(true); //app icon is touchable
-
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
-                R.drawable.ic_drawer,
+                mToolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
         ) {
@@ -110,6 +120,14 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+//        //Sliding tabs content
+//        mSlidingTabLayout = (SlidingTabLayout)findViewById(R.id.sliding_tabs);
+//        mViewPager = (ViewPager)findViewById(R.id.viewpager);
+//        mVingPagerAdapter = new VingPagerAdapter(getSupportFragmentManager(), NUM_OF_VIIEW_PAGER_ITEMS);
+//        mViewPager.setAdapter(mVingPagerAdapter);
+//        mSlidingTabLayout.setViewPager(mViewPager);
+
 
         if (savedInstanceState == null) {
             refreshListView(mVkDataSource, mFriendArrayProcessor);
@@ -148,12 +166,12 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
     public void onDone(List<Friend> data) {
         mProgressBar.setVisibility(View.GONE);
 
-        FriendsFragment fragment = FriendsFragment.newInstance(new ArrayList<Friend>(data));
+        FriendsFragment fragment = FriendsFragment.newInstance(new ArrayList<>(data));
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
 
-        //TODO swipe-refresh logic
+        //TODO swipe-refresh logic for swipe-refresh fragment
 //        if(mArrayAdapter == null) {
 //            mRefreshData = data;
 //
@@ -174,7 +192,7 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
                     .commit();
         }
 
-        if(UnknownHostException.class.isInstance(e)) {
+        if (UnknownHostException.class.isInstance(e)) {
             mErrorTextView.setTextSize(22);
             mErrorTextView.setText("Проверьте подключение и\nповторите попытку");
             mRetryButton.setVisibility(View.VISIBLE);
@@ -193,7 +211,7 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
     private void selectItem(Integer position) {
         Fragment fragment = null;
 
-        switch(position) {
+        switch (position) {
             case 0:
                 refreshListView(mVkDataSource, mFriendArrayProcessor);
                 mDrawerList.setItemChecked(position, true);
@@ -213,7 +231,7 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
                 break;
         }
 
-        if(fragment != null) {
+        if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
@@ -232,4 +250,12 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
         mRetryButton.setVisibility(View.INVISIBLE);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+            mDrawerLayout.closeDrawer(mDrawerList);
+            return;
+        }
+        super.onBackPressed();
+    }
 }

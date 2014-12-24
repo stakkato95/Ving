@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 
-import com.github.stakkato95.loader.ImageLoader;
 import com.github.stakkato95.loader.assist.ImageLoaderAssistant;
 
 /**

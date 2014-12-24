@@ -1,14 +1,16 @@
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.github.stakkato95.ving.fragments.CapFragment">
+    tools:context="com.github.stakkato95.ving.fragments.FriendsFragment">
 
-    <TextView
-        android:id="@android:id/text1"
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@android:id/list"
+        android:divider="@color/ListDivider"
+        android:dividerHeight="1dp"/>
 
-</FrameLayout>
+</LinearLayout>
