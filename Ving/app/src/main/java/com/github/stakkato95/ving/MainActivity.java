@@ -11,34 +11,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.github.stakkato95.ving.bo.Friend;
 import com.github.stakkato95.ving.fragments.CapFragment;
-import com.github.stakkato95.ving.fragments.FriendsFragment;
-import com.github.stakkato95.ving.manager.DataManager;
-import com.github.stakkato95.ving.processing.FriendArrayProcessor;
-import com.github.stakkato95.ving.source.HttpDataSource;
-import com.github.stakkato95.ving.source.VkDataSource;
+import com.github.stakkato95.ving.fragments.FriendsContainerFragment;
 import com.github.stakkato95.ving.view.SlidingTabLayout;
-import com.github.stakkato95.ving.view.VingPagerAdapter;
-
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity implements DataManager.Callback<List<Friend>> {
-
-    private FriendArrayProcessor mFriendArrayProcessor;
-    private VkDataSource mVkDataSource;
-    private ProgressBar mProgressBar;
-    private TextView mErrorTextView;
-    private Button mRetryButton;
-
+public class MainActivity extends ActionBarActivity {
 
     //Drawer content
     private String[] mScreenTitles;
@@ -49,14 +29,7 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
     private CharSequence mTitle;
     private Toolbar mToolbar;
 
-    //Sliding tabs content
-    private SlidingTabLayout mSlidingTabLayout;
-    private ViewPager mViewPager;
-    private VingPagerAdapter mVingPagerAdapter;
-    private static final int NUM_OF_VIIEW_PAGER_ITEMS = 2;
 
-
-    private Fragment mLastFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,20 +39,6 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
         //material actionbar with arrow
         mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
-
-        mFriendArrayProcessor = new FriendArrayProcessor();
-        mVkDataSource = new VkDataSource();
-        mProgressBar = (ProgressBar) findViewById(android.R.id.progress);
-        mErrorTextView = (TextView) findViewById(R.id.error_text);
-        mRetryButton = (Button) findViewById(R.id.retry_update_button);
-        mRetryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectItem(0);
-            }
-        });
-
-        mLastFragment = new Fragment();
 
         //Drawer content
         mTitle = mDrawerTitle = getTitle();
@@ -121,85 +80,28 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-//        //Sliding tabs content
-//        mSlidingTabLayout = (SlidingTabLayout)findViewById(R.id.sliding_tabs);
-//        mViewPager = (ViewPager)findViewById(R.id.viewpager);
-//        mVingPagerAdapter = new VingPagerAdapter(getSupportFragmentManager(), NUM_OF_VIIEW_PAGER_ITEMS);
-//        mViewPager.setAdapter(mVingPagerAdapter);
-//        mSlidingTabLayout.setViewPager(mViewPager);
-
-
         if (savedInstanceState == null) {
-            refreshListView(mVkDataSource, mFriendArrayProcessor);
+            mDrawerList.setItemChecked(0,true);
+
+            FriendsContainerFragment fragment = new FriendsContainerFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, fragment)
+                    .commit();
         }
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
         mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    //DataManager methods & callbacks
-    private void refreshListView(HttpDataSource dataSource, FriendArrayProcessor processor) {
-        DataManager.loadData(MainActivity.this, getRequestUrl(), dataSource, processor);
-    }
-
-    private String getRequestUrl() {
-        return Api.FRIENDS_GET;
-    }
-
-    @Override
-    public void onDataLoadStart() {
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onDone(List<Friend> data) {
-        mProgressBar.setVisibility(View.GONE);
-
-        FriendsFragment fragment = FriendsFragment.newInstance(new ArrayList<>(data));
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
-
-        //TODO swipe-refresh logic for swipe-refresh fragment
-//        if(mArrayAdapter == null) {
-//            mRefreshData = data;
-//
-//        } else {
-//            mRefreshData.clear();
-//            mRefreshData.addAll(data);
-//            mArrayAdapter.notifyDataSetChanged();
-//        }
-    }
-
-    @Override
-    public void onError(Exception e) {
-        mProgressBar.setVisibility(View.GONE);
-
-        if (mLastFragment != null) {
-            getSupportFragmentManager().beginTransaction()
-                    .remove(mLastFragment)
-                    .commit();
-        }
-
-        if (UnknownHostException.class.isInstance(e)) {
-            mErrorTextView.setTextSize(22);
-            mErrorTextView.setText("Проверьте подключение и\nповторите попытку");
-            mRetryButton.setVisibility(View.VISIBLE);
-        } else {
-            mErrorTextView.setText("ERROR\n" + e.getLocalizedMessage());
-        }
-    }
 
 
     //Drawer methods
@@ -213,10 +115,7 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
 
         switch (position) {
             case 0:
-                refreshListView(mVkDataSource, mFriendArrayProcessor);
-                mDrawerList.setItemChecked(position, true);
-                setTitle(mScreenTitles[position]);
-                mDrawerLayout.closeDrawer(mDrawerList);
+                fragment =  new FriendsContainerFragment();
                 break;
             case 1:
                 fragment = CapFragment.newInstance("Сообщения в разработка");
@@ -239,15 +138,7 @@ public class MainActivity extends ActionBarActivity implements DataManager.Callb
             mDrawerList.setItemChecked(position, true);
             setTitle(mScreenTitles[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
-            mLastFragment = fragment;
-        } else {
-            getSupportFragmentManager().beginTransaction()
-                    .remove(mLastFragment)
-                    .commit();
         }
-
-        mErrorTextView.setText("");
-        mRetryButton.setVisibility(View.INVISIBLE);
     }
 
     @Override

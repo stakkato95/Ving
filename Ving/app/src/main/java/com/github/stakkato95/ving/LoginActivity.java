@@ -1,18 +1,14 @@
 package com.github.stakkato95.ving;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.github.stakkato95.ving.auth.Account;
 import com.github.stakkato95.ving.auth.VkOAuthHelper;
@@ -29,7 +25,7 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mRetryButton = (Button)findViewById(R.id.retry_update_button);
+        mRetryButton = (Button)findViewById(R.id.retry_loading_button);
         mRetryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,7 +33,6 @@ public class LoginActivity extends ActionBarActivity {
             }
         });
 
-        getSupportActionBar().hide();
         mWebView = (WebView)findViewById(R.id.web_view);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -56,7 +51,7 @@ public class LoginActivity extends ActionBarActivity {
             isErrorRecieved = false;
             findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
             view.setVisibility(View.INVISIBLE);
-            findViewById(R.id.on_error_text).setVisibility(View.INVISIBLE);
+            findViewById(R.id.loading_error_text_view).setVisibility(View.INVISIBLE);
             mRetryButton.setVisibility(View.INVISIBLE);
         }
 
@@ -78,7 +73,7 @@ public class LoginActivity extends ActionBarActivity {
                 findViewById(android.R.id.progress).setVisibility(View.GONE);
                 parseUrl(url);
             } else {
-                findViewById(R.id.on_error_text).setVisibility(View.VISIBLE);
+                findViewById(R.id.loading_error_text_view).setVisibility(View.VISIBLE);
                 view.setVisibility(View.INVISIBLE);
                 mRetryButton.setVisibility(View.VISIBLE);
             }

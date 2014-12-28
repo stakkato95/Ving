@@ -9,19 +9,21 @@
     <string name="auth_description">Вам необходим выполнить вход через ваш аккаунт Вконтакте</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_friend_details">FriendDetailsActivity</string>
-    <string name="login_error_alert_connection_settings_button">Открыть настройки</string>
-    <string name="login_error_alert_text">Проверьте настройки подключения</string>
-    <string name="retry_update_button_text">Повтор</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
+    <string name="retry_loading">Повтор</string>
+    <string name="loading_error">Проверьте подключение и\nповторите попытку</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="load_more">Ещё</string>
+    <string name="all_friends">Все друзья</string>
+    <string name="online_friends">Друзья онлайн</string>
+
     <string-array name="drawer_items_array">
         <item>Друзья</item>
         <item>Сообщения</item>
         <item>Фотографии</item>
         <item>Видео</item>
     </string-array>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

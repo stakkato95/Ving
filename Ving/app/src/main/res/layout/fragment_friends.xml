@@ -1,16 +1,27 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.github.stakkato95.ving.fragments.FriendsFragment">
 
-    <ListView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@android:id/list"
-        android:divider="@color/ListDivider"
-        android:dividerHeight="1dp"/>
+        android:layout_height="match_parent">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@android:id/list"
+            android:divider="@color/ListDivider"
+            android:dividerHeight="1dp"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-</LinearLayout>
+
+    <include
+        layout="@layout/view_on_error_container"
+        android:id="@+id/on_error_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>
