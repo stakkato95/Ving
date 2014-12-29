@@ -11,11 +11,11 @@ import org.json.JSONObject;
  */
 public class JSONObjectWrapper implements Parcelable {
 
-    private JSONObject mJO;
+    private JSONObject mJSONObject;
 
     public JSONObjectWrapper(String jsonObject) {
         try {
-            mJO = new JSONObject(jsonObject);
+            mJSONObject = new JSONObject(jsonObject);
         } catch (JSONException e) {
             throw new IllegalArgumentException("invalid json string");
         }
@@ -26,24 +26,24 @@ public class JSONObjectWrapper implements Parcelable {
     }
 
     public JSONObjectWrapper(JSONObject jsonObject) {
-        mJO = jsonObject;
+        mJSONObject = jsonObject;
     }
 
     protected String getString(String key) {
-        return mJO.optString(key);
+        return mJSONObject.optString(key);
     }
 
     protected Boolean getBoolean(String key) {
-        return mJO.optBoolean(key);
+        return mJSONObject.optBoolean(key);
     }
 
     protected Long getLong(String id) {
-        return mJO.optLong(id);
+        return mJSONObject.optLong(id);
     }
 
     protected void set(String key, String value) {
         try {
-            mJO.put(key, value);
+            mJSONObject.put(key, value);
         } catch (JSONException e) {
             throw new IllegalArgumentException(e);
         }
@@ -51,7 +51,7 @@ public class JSONObjectWrapper implements Parcelable {
 
     @Override
     public String toString() {
-        return mJO.toString();
+        return mJSONObject.toString();
     }
 
     @Override
@@ -60,14 +60,14 @@ public class JSONObjectWrapper implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mJO.toString());
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(mJSONObject.toString());
     }
 
     protected void readFromParcel(final Parcel in) {
         String string = in.readString();
         try {
-            mJO = new JSONObject(string);
+            mJSONObject = new JSONObject(string);
         } catch (Exception e) {
             throw new IllegalArgumentException("invalid parcel");
         }

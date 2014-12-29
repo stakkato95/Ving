@@ -17,7 +17,7 @@ public class Friend extends JSONObjectWrapper {
     private static final String ONLINE = "online";
     private static final String ID = "id";
 
-    private static final String NAME = "NAME";
+    private static final String FULL_NAME = "FULL_NAME";
 
     public static final Parcelable.Creator<Friend> CREATOR
             = new Parcelable.Creator<Friend>() {
@@ -58,12 +58,12 @@ public class Friend extends JSONObjectWrapper {
         return getString(PHOTO);
     }
 
-    public void initName() {
-        set(NAME, getFirstName() + " " + getLastName());
+    public void getFullName() {
+        set(FULL_NAME, getFirstName() + " " + getLastName());
     }
 
     public String getName() {
-        return getString(NAME);
+        return getString(FULL_NAME);
     }
 
     public boolean isOnline() {

@@ -23,7 +23,7 @@ public class FriendArrayProcessor implements Processor<List<Friend>,InputStream>
         for (int i = 0; i < array.length(); i++) {
             JSONObject jsonObject = array.getJSONObject(i);
             Friend friend = new Friend(jsonObject);
-            friend.initName();
+            friend.getFullName();
             noteArray.add(friend);
         }
         return noteArray;
