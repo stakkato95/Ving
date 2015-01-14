@@ -43,6 +43,7 @@ public class DiskCache implements Cache<String, Bitmap> {
             mExistingFiles = new LinkedHashSet<String>();
         } else {
             //gets set of existing files in cache folder
+            //TODO move to thread
             mExistingFiles = new LinkedHashSet<String>(Arrays.asList(CACHE_DIRECTORY.list()));
         }
     }

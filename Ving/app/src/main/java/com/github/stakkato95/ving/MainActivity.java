@@ -81,6 +81,7 @@ public class MainActivity extends ActionBarActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
+            //TODO get saved selected option
             mDrawerList.setItemChecked(0,true);
 
             FriendsContainerFragment fragment = new FriendsContainerFragment();

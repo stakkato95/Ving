@@ -28,15 +28,19 @@ public class FriendsContainerFragment extends Fragment implements ActionBar.TabL
     private static Map<Integer,FriendsRequest> mTabs;
 
     static {
+        //TODO move to static field
+        //TODO create class Tab with request and name configuration
         mTabs = new HashMap<>();
         mTabs.put(0, FriendsRequest.GET_ALL_FRIENDS);
         mTabs.put(1, FriendsRequest.GET_ONLINE_FRIENDS);
 
         mTitles = new ArrayList<>();
+        //TODO move to strings
         mTitles.add("Все друзья");
         mTitles.add("Друзья онлайн");
     }
 
+    //TODO remove constructor
     public FriendsContainerFragment() {
     }
 

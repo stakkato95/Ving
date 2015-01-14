@@ -13,6 +13,7 @@ public enum FriendsRequest implements FragmentCreator {
     GET_ALL_FRIENDS(R.string.all_friends, new FragmentCreator() {
         @Override
         public Fragment create() {
+            //TODO remove magic numbers
             return FriendsFragment.newInstance(0);
         }
     }),
@@ -20,6 +21,7 @@ public enum FriendsRequest implements FragmentCreator {
     GET_ONLINE_FRIENDS(R.string.online_friends, new FragmentCreator() {
         @Override
         public Fragment create() {
+            //TODO remove magic numbers
             return FriendsFragment.newInstance(1);
         }
     });

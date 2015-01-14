@@ -41,6 +41,7 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
     private View mFooter;
     private boolean isPaginationEnabled = true;
 
+    //TODO move to some default constants
     private static final int FRIENDS_GET_COUNT= 20;
     private static final int FRIENDS_GET_DEFAULT_OFFSET = 0;
 
@@ -247,6 +248,8 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
 
                     final ImageView imageView = (ImageView) convertView.findViewById(android.R.id.icon);
                     final String photoUrl = friend.getPhoto();
+
+                    //TODO move to ImageLoader
                     imageView.setImageBitmap(null);
                     imageView.setTag(photoUrl);
 
