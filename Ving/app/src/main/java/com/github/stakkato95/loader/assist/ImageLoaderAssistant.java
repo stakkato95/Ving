@@ -45,8 +45,8 @@ public class ImageLoaderAssistant {
         //if cacheSize is less than 10 Mb
         if (cacheSize <= 1024 * 1024 * 10) {
 
-            //if calculatedСacheSize is less than defaultCacheSize, set defaultCacheSize value
-            //else set calculatedСacheSize
+            //if calculatedСacheSize is less than defaultCacheSize, setField defaultCacheSize value
+            //else setField calculatedСacheSize
             if (calculatedСacheSize <= defaultCacheSize) {
                 return defaultCacheSize;
             }

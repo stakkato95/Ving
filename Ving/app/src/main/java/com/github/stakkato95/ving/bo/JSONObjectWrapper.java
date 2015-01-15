@@ -41,7 +41,7 @@ public class JSONObjectWrapper implements Parcelable {
         return mJSONObject.optLong(id);
     }
 
-    protected void set(String key, String value) {
+    protected void setField(String key, String value) {
         try {
             mJSONObject.put(key, value);
         } catch (JSONException e) {

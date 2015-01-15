@@ -13,16 +13,10 @@ public enum FriendsRequest implements FragmentCreator {
     GET_ALL_FRIENDS(R.string.all_friends, new FragmentCreator() {
         @Override
         public Fragment create() {
-            return FriendsFragment.newInstance(0);
-        }
-    }),
-
-    GET_ONLINE_FRIENDS(R.string.online_friends, new FragmentCreator() {
-        @Override
-        public Fragment create() {
-            return FriendsFragment.newInstance(1);
+            return new FriendsFragment();
         }
     });
+
 
 
     private FragmentCreator mFragmentCreator;

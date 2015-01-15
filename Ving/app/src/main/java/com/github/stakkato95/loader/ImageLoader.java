@@ -13,6 +13,7 @@ import com.github.stakkato95.loader.cache.MemoryCache;
 import com.github.stakkato95.loader.thread.FileLoadingThread;
 import com.github.stakkato95.loader.thread.FileSavingThread;
 import com.github.stakkato95.loader.thread.MemoryLoadingThread;
+import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.os.LIFOLinkedBlockingDeque;
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
@@ -31,7 +32,7 @@ public class ImageLoader {
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
-    private static ExecutorService mExecutorService;
+    private static ExecutorService sExecutorService;
     private final Context mContext;
     private final MemoryCache mMemoryCache;
     private final ImageLoaderCallback mImageLoaderCallback;
@@ -45,10 +46,13 @@ public class ImageLoader {
     private final int mLoadingImageResourceId;
     private final int mErrorImageResourceId;
 
+    public static final String KEY = ImageLoader.class.getSimpleName();
+    public static ImageLoader get(Context context) { return CoreApplication.get(context, KEY); }
+
     public static final String TAG = ImageLoader.class.getSimpleName();
 
     static {
-        mExecutorService = new ThreadPoolExecutor(CPU_COUNT,
+        sExecutorService = new ThreadPoolExecutor(CPU_COUNT,
                 CPU_COUNT,
                 0,
                 TimeUnit.NANOSECONDS,
@@ -60,11 +64,13 @@ public class ImageLoader {
         mContext = context;
         mMemoryCache = new MemoryCache(context);
         mImageLoaderCallback = new ImageLoaderCallback();
-        mRequestsMap = new ConcurrentHashMap<ImageView, String>();
+        mRequestsMap = new ConcurrentHashMap<>();
         mDataSource = HttpDataSource.get(context);
         mBitmapProcessor = new BitmapProcessor();
         mDiskCache = new DiskCache(context, diskCacheSize);
         mHandler = new Handler(Looper.myLooper());
+
+
         mLoadingImageResourceId = loadingImageResourceId;
         mErrorImageResourceId = errorImageResourceId;
     }
@@ -86,13 +92,13 @@ public class ImageLoader {
                 if (mDiskCache.containsKey(url) && !mRequestsMap.containsValue(url)) {
 
                     //image is in DiskCache -> do loading from DiskCache
-                    mExecutorService.execute(new FileLoadingThread(url, mImageLoaderCallback, mHandler, mDiskCache));
+                    sExecutorService.execute(new FileLoadingThread(url, mImageLoaderCallback, mHandler, mDiskCache));
                 } else {
 
                     //image isn't in DiskCache -> check for necessity of lading from the network
                     if (!mRequestsMap.containsValue(url)) {
                         //loading of the image from the network is required
-                        mExecutorService.execute(new MemoryLoadingThread(url, mImageLoaderCallback, mHandler, mDataSource, mBitmapProcessor));
+                        sExecutorService.execute(new MemoryLoadingThread(url, mImageLoaderCallback, mHandler, mDataSource, mBitmapProcessor));
                     }
                 }
             }
@@ -158,7 +164,7 @@ public class ImageLoader {
 
             if (!mDiskCache.containsKey(url)) {
                 //if image isn't in DiskCache, put it there
-                mExecutorService.execute(new FileSavingThread(url, bmp, mImageLoaderCallback, mHandler, mDiskCache));
+                sExecutorService.execute(new FileSavingThread(url, bmp, mImageLoaderCallback, mHandler, mDiskCache));
             }
 
             setBmpToView(bmp, url);

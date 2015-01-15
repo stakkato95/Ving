@@ -1,6 +1,7 @@
 package com.github.stakkato95.ving.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,9 +20,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.stakkato95.loader.ImageLoader;
-import com.github.stakkato95.ving.Api;
+import com.github.stakkato95.ving.CoreApplication;
+import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.bo.Friend;
+import com.github.stakkato95.ving.database.DbInsertingThread;
+import com.github.stakkato95.ving.database.VkDataBaseOpenHelper;
 import com.github.stakkato95.ving.manager.DataManager;
 import com.github.stakkato95.ving.processing.FriendArrayProcessor;
 import com.github.stakkato95.ving.source.VkDataSource;
@@ -31,7 +35,6 @@ import java.util.List;
 
 public class FriendsFragment extends ListFragment implements DataManager.Callback<List<Friend>> {
 
-    private static String REQUEST_CODE = "request_code";
     private ListView mListView;
     private ArrayAdapter<Friend> mArrayAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -41,44 +44,26 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
     private View mFooter;
     private boolean isPaginationEnabled = true;
 
-    private static final int FRIENDS_GET_COUNT= 20;
-    private static final int FRIENDS_GET_DEFAULT_OFFSET = 0;
-
     private ImageLoader mImageLoader;
     private static FriendArrayProcessor mFriendArrayProcessor;
     private static VkDataSource mVkDataSource;
     private List<Friend> mDataSet;
 
-
-    //TODO for strip
-    private boolean isDataLoaded = false;
-
-    //TODO delete it
-    private OnFragmentInteractionListener mListener;
+    private int DEFAULT_IMAGE_RESOURCE = -1;
 
     static {
-        mVkDataSource = new VkDataSource();
         mFriendArrayProcessor = new FriendArrayProcessor();
     }
 
-
     public FriendsFragment() {
-    }
-
-    public static FriendsFragment newInstance(int request) {
-        Bundle args = new Bundle();
-        args.putInt(REQUEST_CODE, request);
-
-        FriendsFragment fragment = new FriendsFragment();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //20 Mb DiskCache
-        mImageLoader = new ImageLoader(getActivity(), 1024 * 1024 * 20, R.drawable.image_loading, R.drawable.image_loading_error);
+        mImageLoader = ImageLoader.get(getActivity());
+        mVkDataSource = VkDataSource.get(getActivity());
     }
 
     @Override
@@ -117,47 +102,6 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
         super.onViewCreated(view, savedInstanceState);
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser && !isDataLoaded) {
-
-            isDataLoaded = true;
-        }
-    }
-
-    //TODO check & remove useless methods
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        //TODO remove it
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                + " must implement OnFragmentInteractionListener");
-//        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-//            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
-        }
-    }
-
-
 
 
     private void resetFooter() {
@@ -171,7 +115,7 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
     }
 
     private void reloadData(List<Friend> data) {
-        if(data != null && data.size() == FRIENDS_GET_COUNT) {
+        if(data != null && data.size() == Api.FRIENDS_GET_COUNT) {
             isPaginationEnabled = true;
             mListView.addFooterView(mFooter);
         } else {
@@ -198,7 +142,7 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
     }
 
     private String getRequestUrl(int count, int offset) {
-        return Api.FRIENDS_GET  + "&count="+ count+"&offset="+offset;
+        return Api.FRIENDS_GET + "&count="+ count+"&offset="+offset;
     }
 
 
@@ -206,7 +150,7 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
     //DataManager.Callbacks & methods
 
     public void loadData() {
-        DataManager.loadData(FriendsFragment.this, getRequestUrl(FRIENDS_GET_COUNT, FRIENDS_GET_DEFAULT_OFFSET), mVkDataSource, mFriendArrayProcessor);
+        DataManager.loadData(FriendsFragment.this, getRequestUrl(Api.FRIENDS_GET_COUNT, Api.FRIENDS_GET_DEFAULT_OFFSET), mVkDataSource, mFriendArrayProcessor);
     }
 
     @Override
@@ -231,6 +175,9 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
             mRetryButton.setVisibility(View.VISIBLE);
         }
 
+        DbInsertingThread insertingThread = new DbInsertingThread(getActivity(), data);
+        insertingThread.start();
+
         if(mArrayAdapter == null) {
             mDataSet = data;
             mArrayAdapter = new ArrayAdapter<Friend>(getActivity(), R.layout.adapter_friend, android.R.id.text1, data) {
@@ -241,14 +188,20 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
                     }
 
                     Friend friend = getItem(position);
-                    ((TextView) convertView.findViewById(android.R.id.text1)).setText(friend.getName());
-                    ((TextView) convertView.findViewById(android.R.id.text2)).setText(friend.getNickname());
+                    ((TextView) convertView.findViewById(android.R.id.text1)).setText(friend.getFullName());
                     convertView.setTag(friend.getId());
+
+                    //shows is user online
+                    ImageView onlineImageView = (ImageView)convertView.findViewById(android.R.id.icon1);
+                    onlineImageView.setImageResource(DEFAULT_IMAGE_RESOURCE);
+                    if(friend.isOnlineMobile()) {
+                        onlineImageView.setImageResource(R.drawable.ic_friend_online_mobile);
+                    } else if (friend.isOnline()){
+                        onlineImageView.setImageResource(R.drawable.ic_friend_online_computer);
+                    }
 
                     final ImageView imageView = (ImageView) convertView.findViewById(android.R.id.icon);
                     final String photoUrl = friend.getPhoto();
-                    imageView.setImageBitmap(null);
-                    imageView.setTag(photoUrl);
 
                     if (!TextUtils.isEmpty(photoUrl)) {
                         mImageLoader.obtainImage(imageView, photoUrl);
@@ -294,13 +247,13 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
                             public void onError(Exception e) {
                                 resetFooter();
                             }
-                        }, getRequestUrl(FRIENDS_GET_COUNT, currentAdapterCount), mVkDataSource, mFriendArrayProcessor);
+                        }, getRequestUrl(Api.FRIENDS_GET_COUNT, currentAdapterCount), mVkDataSource, mFriendArrayProcessor);
                     }
                 }
             });
 
             //pagination logic
-            if (data != null && data.size() == FRIENDS_GET_DEFAULT_OFFSET) {
+            if (data != null && data.size() == Api.FRIENDS_GET_DEFAULT_OFFSET) {
                 isPaginationEnabled = true;
             } else {
                 isPaginationEnabled = false;
@@ -323,11 +276,6 @@ public class FriendsFragment extends ListFragment implements DataManager.Callbac
         } else {
             mErrorTextView.setText("ERROR\n" + e.getLocalizedMessage());
         }
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
     }
 
 }

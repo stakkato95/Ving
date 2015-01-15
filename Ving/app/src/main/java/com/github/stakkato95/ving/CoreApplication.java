@@ -3,6 +3,8 @@ package com.github.stakkato95.ving;
 import android.app.Application;
 import android.content.Context;
 
+import com.github.stakkato95.loader.ImageLoader;
+import com.github.stakkato95.ving.database.VkDataBaseOpenHelper;
 import com.github.stakkato95.ving.source.HttpDataSource;
 import com.github.stakkato95.ving.source.VkDataSource;
 
@@ -13,6 +15,8 @@ public class CoreApplication extends Application {
 
     private HttpDataSource mHttpDataSource;
     private VkDataSource mVkDataSource;
+    private ImageLoader mImageLoader;
+    private VkDataBaseOpenHelper mVkDataBaseOpenHelper;
 
     @Override
     public void onCreate() {
@@ -24,18 +28,31 @@ public class CoreApplication extends Application {
     @Override
     public Object getSystemService(String name) {
         if (HttpDataSource.KEY.equals(name)) {
-            //for android kitkat +
             if (mHttpDataSource == null) {
                 mHttpDataSource = new HttpDataSource();
             }
             return mHttpDataSource;
         }
         if (VkDataSource.KEY.equals(name)) {
-            //for android kitkat +
             if (mVkDataSource == null) {
                 mVkDataSource = new VkDataSource();
             }
             return mVkDataSource;
+        }
+        if(ImageLoader.KEY.equals(name)) {
+            if(mImageLoader == null) {
+                //TODO                         IS IT CORRECT TO USE APPCONTEXT IN SUCH A WAY???
+                mImageLoader = new ImageLoader(getApplicationContext(), 1024 * 1024 * 20, R.drawable.ic_image_loading, R.drawable.ic_image_loading_error);
+            }
+            return mImageLoader;
+        }
+        if (VkDataBaseOpenHelper.KEY.equals(name)) {
+            if(mVkDataBaseOpenHelper == null) {
+                //TODO                                            IS IT CORRECT???
+                mVkDataBaseOpenHelper = new VkDataBaseOpenHelper(getApplicationContext());
+                mVkDataBaseOpenHelper.open();
+            }
+            return mVkDataBaseOpenHelper;
         }
         return super.getSystemService(name);
     }

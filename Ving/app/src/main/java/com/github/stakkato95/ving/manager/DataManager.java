@@ -1,6 +1,8 @@
 package com.github.stakkato95.ving.manager;
 
 
+import android.support.annotation.NonNull;
+
 import com.github.stakkato95.ving.os.AsyncTask;
 import com.github.stakkato95.ving.processing.Processor;
 import com.github.stakkato95.ving.source.DataSource;
@@ -18,21 +20,18 @@ public class DataManager {
         void onError(Exception e);
     }
 
-    public static <ProcessingResult, DataSourceResult, Params> void
-    loadData(
-            final Callback<ProcessingResult> callback,
-            final Params params,
-            final DataSource<DataSourceResult, Params> dataSource,
-            final Processor<ProcessingResult, DataSourceResult> processor) {
-        if (callback == null) {
-            throw new IllegalArgumentException("callback can't be null");
-        }
-
-        executeInAsyncTask(callback, params, dataSource, processor);
+    public static <Result, DataSourceResult, Param> void loadData(@NonNull final Callback<Result> callback,
+                                                                  @NonNull final Param param,
+                                                                  @NonNull final DataSource<DataSourceResult, Param> dataSource,
+                                                                  @NonNull final Processor<Result, DataSourceResult> processor) {
+        executeInAsyncTask(callback, param, dataSource, processor);
     }
 
-    private static <ProcessingResult, DataSourceResult, Params> void executeInAsyncTask(final Callback<ProcessingResult> callback, Params params, final DataSource<DataSourceResult, Params> dataSource, final Processor<ProcessingResult, DataSourceResult> processor) {
-        new AsyncTask<Params, Void, ProcessingResult>() {
+    private static <Result, DataSourceResult, Param> void executeInAsyncTask(final Callback<Result> callback,
+                                                                             Param param,
+                                                                             final DataSource<DataSourceResult, Param> dataSource,
+                                                                             final Processor<Result, DataSourceResult> processor) {
+        new AsyncTask<Param, Void, Result>() {
 
             @Override
             protected void onPreExecute() {
@@ -41,14 +40,14 @@ public class DataManager {
             }
 
             @Override
-            protected void onPostExecute(ProcessingResult processingResult) {
-                super.onPostExecute(processingResult);
-                callback.onDone(processingResult);
+            protected void onPostExecute(Result result) {
+                super.onPostExecute(result);
+                callback.onDone(result);
             }
 
             @Override
-            protected ProcessingResult doInBackground(Params... params) throws Exception {
-                DataSourceResult dataSourceResult = dataSource.getResult(params[0]);
+            protected Result doInBackground(Param param) throws Exception {
+                DataSourceResult dataSourceResult = dataSource.getResult(param);
                 return processor.process(dataSourceResult);
             }
 
@@ -57,7 +56,7 @@ public class DataManager {
                 callback.onError(e);
             }
 
-        }.execute(params);
+        }.execute(param);
     }
 
 }

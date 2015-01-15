@@ -1,8 +1,8 @@
 package com.github.stakkato95.ving;
 
+import android.support.v4.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -14,8 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.github.stakkato95.ving.fragments.CapFragment;
-import com.github.stakkato95.ving.fragments.FriendsContainerFragment;
-import com.github.stakkato95.ving.view.SlidingTabLayout;
+import com.github.stakkato95.ving.fragments.FriendsFragment;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -27,7 +26,8 @@ public class MainActivity extends ActionBarActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private Toolbar mToolbar;
+
+    private FragmentManager mFragmentManager;
 
 
 
@@ -37,7 +37,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         //material actionbar with arrow
-        mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(mToolbar);
 
         //Drawer content
@@ -79,12 +79,13 @@ public class MainActivity extends ActionBarActivity {
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mFragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
             mDrawerList.setItemChecked(0,true);
 
-            FriendsContainerFragment fragment = new FriendsContainerFragment();
-            getSupportFragmentManager().beginTransaction()
+            FriendsFragment fragment = new FriendsFragment();
+            mFragmentManager.beginTransaction()
                     .add(R.id.container, fragment)
                     .commit();
         }
@@ -115,7 +116,7 @@ public class MainActivity extends ActionBarActivity {
 
         switch (position) {
             case 0:
-                fragment =  new FriendsContainerFragment();
+                fragment =  new FriendsFragment();
                 break;
             case 1:
                 fragment = CapFragment.newInstance("Сообщения в разработка");
@@ -131,7 +132,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (fragment != null) {
-            getSupportFragmentManager().beginTransaction()
+            mFragmentManager.beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
 

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.github.stakkato95.ving.Api;
+import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.auth.VkOAuthHelper;
 
@@ -22,13 +22,13 @@ public class VkDataSource extends HttpDataSource {
     }
 
     @Override
-    public InputStream getResult(String p) throws Exception {
-        String signUrl = VkOAuthHelper.sign(p);
-        String versionValue = Uri.parse(signUrl).getQueryParameter(Api.VERSION_PARAM);
+    public InputStream getResult(String request) throws Exception {
+        String signedUrl = VkOAuthHelper.sign(request);
+        String versionValue = Uri.parse(signedUrl).getQueryParameter(Api.VERSION_PARAM);
         if (TextUtils.isEmpty(versionValue)) {
-            signUrl = signUrl + "&" + Api.VERSION_PARAM + "=" + Api.VERSION_VALUE;
+            signedUrl = signedUrl + "&" + Api.VERSION_PARAM + "=" + Api.VERSION_VALUE;
         }
-        return super.getResult(signUrl);
+        return super.getResult(signedUrl);
     }
 
 }

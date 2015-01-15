@@ -27,7 +27,7 @@ public class DiskCache implements Cache<String, Bitmap> {
 
     //TODO write methods for siz control
     private final long mCacheSize;
-    private final Set<String> mExistingFiles;
+    private Set<String> mExistingFiles;
     private final Set<String> mLoadingFiles;
 
 
@@ -35,15 +35,20 @@ public class DiskCache implements Cache<String, Bitmap> {
         mContext = context;
         CACHE_DIRECTORY = getCacheDirectory();
         mCacheSize = ImageLoaderAssistant.setCacheSize(cacheSize, mContext, DEFAULT_CACHE_SIZE);
-        mLoadingFiles = new LinkedHashSet<String>();
+        mLoadingFiles = new LinkedHashSet<>();
 
         if (!CACHE_DIRECTORY.exists()) {
-            //creates a folder and an empty set of files
+            //creates a folder and an empty setField of files
             CACHE_DIRECTORY.mkdirs();
-            mExistingFiles = new LinkedHashSet<String>();
+            mExistingFiles = new LinkedHashSet<>();
         } else {
-            //gets set of existing files in cache folder
-            mExistingFiles = new LinkedHashSet<String>(Arrays.asList(CACHE_DIRECTORY.list()));
+            //gets setField of existing files in cache folder
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mExistingFiles = new LinkedHashSet<>(Arrays.asList(CACHE_DIRECTORY.list()));
+                }
+            }).start();
         }
     }
 
@@ -78,18 +83,15 @@ public class DiskCache implements Cache<String, Bitmap> {
         FileOutputStream outputStream = null;
         BufferedOutputStream bufferedStream = null;
 
-        //if set doesn't contain such a file we add it
+        //if setField doesn't contain such a file we add it
         if (!mExistingFiles.contains(fileName)) {
 
             try {
-                file.createNewFile();
                 outputStream = new FileOutputStream(file);
                 bufferedStream = new BufferedOutputStream(outputStream);
                 bmp.compress(Bitmap.CompressFormat.JPEG, 100, bufferedStream);
             } catch (FileNotFoundException e) {
                 throw new Exception("File " + fileName + " not found");
-            } catch (IOException e) {
-                throw new Exception("Error while writing file " + fileName);
             } catch (Exception e) {
                 throw new Exception("Unexpected error with file" + fileName);
             } finally {
@@ -98,8 +100,8 @@ public class DiskCache implements Cache<String, Bitmap> {
         }
 
         //after saving file to disk add it to list of existing files
-        mExistingFiles.add(fileName);
         mLoadingFiles.remove(fileName);
+        mExistingFiles.add(fileName);
     }
 
     public boolean containsKey(final String url) {

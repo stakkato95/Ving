@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Artyom on 19.11.2014.
  */
-public abstract class AsyncTask<Params, Progress, Result> {
+public abstract class AsyncTask<Param, Progress, Result> {
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
@@ -30,17 +30,19 @@ public abstract class AsyncTask<Params, Progress, Result> {
     protected void onPostExecute(Result processingResult) {
 
     }
+    
+    protected abstract void onPostException(Exception e);
 
-    protected abstract Result doInBackground(Params... params) throws Exception;
+    protected abstract Result doInBackground(Param param) throws Exception;
 
-    public void execute(final Params... params) {
+    public void execute(final Param param) {
         final Handler handler = new Handler();
         onPreExecute();
         sExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final Result result = doInBackground(params);
+                    final Result result = doInBackground(param);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -59,5 +61,4 @@ public abstract class AsyncTask<Params, Progress, Result> {
         });
     }
 
-    protected abstract void onPostException(Exception e);
 }

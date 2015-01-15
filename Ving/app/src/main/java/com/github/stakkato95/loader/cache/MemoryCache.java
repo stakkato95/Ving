@@ -11,16 +11,13 @@ import com.github.stakkato95.loader.assist.ImageLoaderAssistant;
  */
 public class MemoryCache implements Cache<String, Bitmap> {
 
-    private static int CACHE_SIZE; //(int)(Runtime.getRuntime().maxMemory()) / 1024 / 10; //simply magic number
     private LruCache<String, Bitmap> mLruCache;
 
     public MemoryCache(Context context) {
-        CACHE_SIZE = ImageLoaderAssistant.setCacheSize(context);
+        int CACHE_SIZE = ImageLoaderAssistant.setCacheSize(context);
         mLruCache = new LruCache<String, Bitmap>(CACHE_SIZE) {
             @Override
             protected int sizeOf(String key, Bitmap value) {
-                //TODO alternative variant of bmp size obtaining
-                //return (value.getAllocationByteCount() + key.length());
                 return (value.getRowBytes() * value.getHeight() + key.length());
             }
         };

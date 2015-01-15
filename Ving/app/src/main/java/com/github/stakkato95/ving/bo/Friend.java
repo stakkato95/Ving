@@ -6,18 +6,17 @@ import android.os.Parcelable;
 import org.json.JSONObject;
 
 /**
- * Created by Artyom on 20.11.2014.
+ * Created by Artyom on 29.12.2014.
  */
 public class Friend extends JSONObjectWrapper {
 
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
-    private static final String NICKNAME = "nickname";
-    private static final String PHOTO = "photo_200_orig";
-    private static final String ONLINE = "online";
+    private static final String PHOTO = "photo_100";
     private static final String ID = "id";
-
-    private static final String FULL_NAME = "FULL_NAME";
+    private static final String FULL_NAME = "full_name";
+    private static final String ONLINE = "online";
+    private static final String ONLINE_MOBILE = "online_mobile";
 
     public static final Parcelable.Creator<Friend> CREATOR
             = new Parcelable.Creator<Friend>() {
@@ -50,32 +49,29 @@ public class Friend extends JSONObjectWrapper {
         return getString(LAST_NAME);
     }
 
-    public String getNickname() {
-        return getString(NICKNAME);
-    }
-
     public String getPhoto() {
         return getString(PHOTO);
     }
 
-    public void getFullName() {
-        set(FULL_NAME, getFirstName() + " " + getLastName());
+    public void createFullName() {
+        setField(FULL_NAME, getFirstName() + " " + getLastName());
     }
 
-    public String getName() {
+    public String getFullName() {
         return getString(FULL_NAME);
     }
 
     public boolean isOnline() {
-        Boolean isOnline = getBoolean(ONLINE);
-        if (isOnline == null) {
-            return false;
-        }
-        return isOnline;
+        Long isOnline = getLong(ONLINE);
+        return isOnline == 1;
+    }
+
+    public boolean isOnlineMobile() {
+        Long isOnline = getLong(ONLINE_MOBILE);
+        return isOnline == 1;
     }
 
     public Long getId() {
         return getLong(ID);
     }
-
 }

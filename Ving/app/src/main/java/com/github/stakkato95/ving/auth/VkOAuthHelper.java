@@ -12,11 +12,11 @@ public class VkOAuthHelper {
     public static final String REDIRECT_URL = "https://oauth.vk.com/blank.html";
     public static final String AUTORIZATION_URL = "https://oauth.vk.com/authorize?client_id=" + CLIENT_ID +"&scope=" + PERMISSION + "&redirect_uri=" + REDIRECT_URL + "&display=touch&response_type=token";
 
-    public static String sign(String url) {
-        if (url.contains("?")) {
-            return url + "&access_token=" + Account.access_token;
+    public static String sign(String request) {
+        if (request.contains("?")) {
+            return request + "&access_token=" + Account.access_token;
         } else {
-            return url + "?access_token=" + Account.access_token;
+            return request + "?access_token=" + Account.access_token;
         }
     }
 
