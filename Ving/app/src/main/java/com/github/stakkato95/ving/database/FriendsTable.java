@@ -8,13 +8,13 @@ import android.provider.BaseColumns;
  */
 public final class FriendsTable implements DataBaseConstants, BaseColumns {
 
-    public static String TABLE_NAME = "vk_friends_summary";
+    public static String NAME = "friends";
 
     public static String _FULL_NAME = "_last_name";
     public static String _PHOTO_100 = "_photo_100";
     public static String _ONLINE= "_online";
 
-    private static String CREATE_TABLE = CREATE + TABLE_NAME + " ( " +
+    private static String CREATE_TABLE = CREATE + NAME + " ( " +
             _ID + " " + TYPE_INTEGER + DIVIDER +
             _FULL_NAME + " " + TYPE_TEXT + DIVIDER +
             _PHOTO_100 + " " + TYPE_TEXT + DIVIDER +
@@ -25,7 +25,7 @@ public final class FriendsTable implements DataBaseConstants, BaseColumns {
     }
 
     public static void onUpdate(SQLiteDatabase db) {
-        db.execSQL(DROP + TABLE_NAME);
+        db.execSQL(DROP + NAME);
         db.execSQL(CREATE_TABLE);
     }
 

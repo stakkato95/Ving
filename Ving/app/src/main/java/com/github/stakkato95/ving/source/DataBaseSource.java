@@ -27,7 +27,7 @@ public class DataBaseSource implements DataSource<Cursor,String[]> {
     public Cursor getResult(String[] columns) throws Exception {
         Cursor cursor = null;
 
-        cursor = mVkDataBaseHelper.getSQLiteDatabase().query(FriendsTable.TABLE_NAME, columns, null, null, null, null, null, null);
+        cursor = mVkDataBaseHelper.getSQLiteDatabase().query(FriendsTable.NAME, columns, null, null, null, null, null, null);
         return cursor;
     }
 

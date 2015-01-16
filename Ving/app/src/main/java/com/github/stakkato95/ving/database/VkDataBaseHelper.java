@@ -63,7 +63,7 @@ public class VkDataBaseHelper extends SQLiteOpenHelper {
             //mDataBase = getWritableDatabase();
             mDataBase.beginTransaction();
             //null means we insert whole row, not a certain column
-            successDetection = mDataBase.insert(FriendsTable.TABLE_NAME, null, values);
+            successDetection = mDataBase.insert(FriendsTable.NAME, null, values);
             mDataBase.setTransactionSuccessful();
             mDataBase.endTransaction();
             //mDataBase.close();
@@ -81,7 +81,7 @@ public class VkDataBaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor = null;
         try {
-            cursor = mDataBase.query(FriendsTable.TABLE_NAME,null, selection, selectionArgs,null,null,null);
+            cursor = mDataBase.query(FriendsTable.NAME,null, selection, selectionArgs,null,null,null);
         } catch (SQLiteException e) {
             e.printStackTrace();
         }
@@ -90,7 +90,7 @@ public class VkDataBaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getCursor() {
-        return mDataBase.rawQuery(GET_COUNT_OF + FriendsTable.TABLE_NAME, null);
+        return mDataBase.rawQuery(GET_COUNT_OF + FriendsTable.NAME, null);
 
     }
 
@@ -100,7 +100,7 @@ public class VkDataBaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor;
         long count = 0;
-//        if((cursor = mDataBase.rawQuery(DOES_EXIST_TABLE + "'"+FriendsTable.TABLE_NAME+"'", null)) != null) {
+//        if((cursor = mDataBase.rawQuery(DOES_EXIST_TABLE + "'"+FriendsTable.NAME+"'", null)) != null) {
 //            count = cursor.getCount();
 //        }
 
@@ -111,7 +111,7 @@ public class VkDataBaseHelper extends SQLiteOpenHelper {
     public boolean doesTableExist() {
         mDataBase = getReadableDatabase();
 
-        Cursor cursor = mDataBase.rawQuery(GET_COUNT_OF + FriendsTable.TABLE_NAME, null);
+        Cursor cursor = mDataBase.rawQuery(GET_COUNT_OF + FriendsTable.NAME, null);
         //TODO catch exception
         if(cursor != null) {
             if(cursor.getCount()>0) {

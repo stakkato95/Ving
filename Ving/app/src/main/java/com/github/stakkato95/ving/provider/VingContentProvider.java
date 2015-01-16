@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -24,20 +25,22 @@ public class VingContentProvider extends ContentProvider {
 
     private VkDataBaseHelper mVkDataBaseHelper;
 
-    private static final int FRIENDS = 0;
-    private static final int FRIEND_ID = 1;
+    private static final int URI_FRIENDS = 0;
+    private static final int URI_FRIEND_ID = 1;
 
     private static final String AUTHORITY = "com.github.stakkato95.ving.provider";
-    private static final String BASE_PATH = "friends";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
-    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + BASE_PATH;
-    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/friend";
+
+    public static final Uri FRIENDS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + FriendsTable.NAME);
+
+    public static final String FRIENDS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
+    public static final String FRIEND_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
 
     private static final UriMatcher sUriMatcher;
+
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, BASE_PATH, FRIENDS);
-        sUriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", FRIEND_ID);
+        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME, URI_FRIENDS);
+        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME + "/#", URI_FRIEND_ID);
     }
 
     @Override
@@ -54,13 +57,13 @@ public class VingContentProvider extends ContentProvider {
         }
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(FriendsTable.TABLE_NAME);
+        queryBuilder.setTables(FriendsTable.NAME);
 
         int uriType = sUriMatcher.match(uri);
         switch (uriType) {
-            case FRIENDS:
+            case URI_FRIENDS:
                 break;
-            case FRIEND_ID:
+            case URI_FRIEND_ID:
                 queryBuilder.appendWhere(FriendsTable._ID + " = " + uri.getLastPathSegment());
                 break;
             default:
@@ -76,6 +79,15 @@ public class VingContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
+        int uriType = sUriMatcher.match(uri);
+
+        switch (uriType) {
+            case URI_FRIEND_ID:
+                return FRIEND_CONTENT_ITEM_TYPE;
+            case URI_FRIENDS:
+                return FRIENDS_CONTENT_TYPE;
+        }
+
         return null;
     }
 
@@ -85,19 +97,22 @@ public class VingContentProvider extends ContentProvider {
 
         long id;
         int uriType = sUriMatcher.match(uri);
-        switch(uriType) {
-            case FRIENDS:
-                database.beginTransaction();
-                id = database.insert(FriendsTable.TABLE_NAME, null, values);
-                database.setTransactionSuccessful();
-                database.endTransaction();
+        switch (uriType) {
+            case URI_FRIENDS:
+                try {
+                    database.beginTransaction();
+                    id = database.insert(FriendsTable.NAME, null, values);
+                    database.setTransactionSuccessful();
+                } finally {
+                    database.endTransaction();
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Incorrect uri: " + uri);
         }
 
-        getContext().getContentResolver().notifyChange(uri,null);
-        return Uri.parse(CONTENT_URI + "/" + id);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return Uri.parse(FRIENDS_CONTENT_URI + "/" + id);
     }
 
     @Override
@@ -106,19 +121,19 @@ public class VingContentProvider extends ContentProvider {
         int deletedRows;
         int uriType = sUriMatcher.match(uri);
 
-        switch(uriType) {
-            case FRIENDS:
-                deletedRows = database.delete(FriendsTable.TABLE_NAME, selection,selectionArgs);
+        switch (uriType) {
+            case URI_FRIENDS:
+                deletedRows = database.delete(FriendsTable.NAME, selection, selectionArgs);
                 break;
-            case FRIEND_ID:
+            case URI_FRIEND_ID:
                 String id = uri.getLastPathSegment();
 
-                if(!TextUtils.isEmpty(selection)) {
-                    deletedRows = database.delete(FriendsTable.TABLE_NAME,
+                if (!TextUtils.isEmpty(selection)) {
+                    deletedRows = database.delete(FriendsTable.NAME,
                             FriendsTable._ID + " = " + id,
                             null);
                 } else {
-                    deletedRows = database.delete(FriendsTable.TABLE_NAME,
+                    deletedRows = database.delete(FriendsTable.NAME,
                             FriendsTable._ID + " = " + id + " and " + selection + " = ?",
                             selectionArgs);
                 }
@@ -127,7 +142,7 @@ public class VingContentProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Incorrect uri: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri,null);
+        getContext().getContentResolver().notifyChange(uri, null);
 
         return deletedRows;
     }
@@ -138,22 +153,22 @@ public class VingContentProvider extends ContentProvider {
         int updatedRows;
         int uriType = sUriMatcher.match(uri);
 
-        switch(uriType) {
-            case FRIENDS:
-                updatedRows = database.update(FriendsTable.TABLE_NAME,values,selection,selectionArgs);
+        switch (uriType) {
+            case URI_FRIENDS:
+                updatedRows = database.update(FriendsTable.NAME, values, selection, selectionArgs);
                 break;
-            case FRIEND_ID:
+            case URI_FRIEND_ID:
                 String id = uri.getLastPathSegment();
 
-                if(TextUtils.isEmpty(selection)) {
-                    updatedRows = database.update(FriendsTable.TABLE_NAME,
+                if (TextUtils.isEmpty(selection)) {
+                    updatedRows = database.update(FriendsTable.NAME,
                             values,
-                            FriendsTable.TABLE_NAME + " = " + id,
+                            FriendsTable.NAME + " = " + id,
                             selectionArgs);
                 } else {
-                    updatedRows = database.update(FriendsTable.TABLE_NAME,
+                    updatedRows = database.update(FriendsTable.NAME,
                             values,
-                            FriendsTable.TABLE_NAME + " = " + id + " and " + selection + " = ?",
+                            FriendsTable.NAME + " = " + id + " and " + selection + " = ?",
                             selectionArgs);
                 }
 
@@ -161,7 +176,7 @@ public class VingContentProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Incorrect uri: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri,null);
+        getContext().getContentResolver().notifyChange(uri, null);
 
         return updatedRows;
     }
@@ -182,4 +197,5 @@ public class VingContentProvider extends ContentProvider {
         }
         return true;
     }
+
 }
