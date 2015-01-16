@@ -1,7 +1,5 @@
 package com.github.stakkato95.ving.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,12 +18,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.stakkato95.loader.ImageLoader;
-import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.bo.Friend;
 import com.github.stakkato95.ving.database.DbInsertingThread;
-import com.github.stakkato95.ving.database.VkDataBaseOpenHelper;
 import com.github.stakkato95.ving.manager.DataManager;
 import com.github.stakkato95.ving.processing.FriendArrayProcessor;
 import com.github.stakkato95.ving.source.VkDataSource;

@@ -5,7 +5,6 @@ import android.database.Cursor;
 
 import com.github.stakkato95.ving.bo.Friend;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,12 +12,12 @@ import java.util.List;
  */
 public class DbInsertingThread extends Thread{
 
-    private final VkDataBaseOpenHelper mDataBase;
+    private final VkDataBaseHelper mDataBase;
     private final List<Friend> mList;
 
     public DbInsertingThread(Context context, List<Friend> list) {
         mList = list;
-        mDataBase = VkDataBaseOpenHelper.get(context);
+        mDataBase = VkDataBaseHelper.get(context);
     }
 
     public void start() {
@@ -40,8 +39,8 @@ public class DbInsertingThread extends Thread{
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
 
-            //cursor.getLong(cursor.getColumnIndex(VkFriendsSummaryContract._ID));
-            cursor.getString(cursor.getColumnIndex(VkFriendsSummaryContract._LAST_NAME));
+            //cursor.getLong(cursor.getColumnIndex(FriendsTable._ID));
+            cursor.getString(cursor.getColumnIndex(FriendsTable._LAST_NAME));
             cursor.moveToNext();
         }
     }

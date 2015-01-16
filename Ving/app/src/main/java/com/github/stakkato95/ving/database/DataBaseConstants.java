@@ -12,4 +12,7 @@ public interface DataBaseConstants {
     String TYPE_REAL = "REAL";
     String TYPE_BLOB = "BLOB";
 
+    String CREATE = "CREATE TABLE IF NOT EXISTS ";
+    String DROP = "DROP TABLE IF EXISTS ";
+
 }

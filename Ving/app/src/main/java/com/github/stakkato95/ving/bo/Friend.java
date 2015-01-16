@@ -18,6 +18,7 @@ public class Friend extends JSONObjectWrapper {
     private static final String ONLINE = "online";
     private static final String ONLINE_MOBILE = "online_mobile";
 
+
     public static final Parcelable.Creator<Friend> CREATOR
             = new Parcelable.Creator<Friend>() {
         public Friend createFromParcel(Parcel in) {
@@ -40,6 +41,7 @@ public class Friend extends JSONObjectWrapper {
     protected Friend(Parcel in) {
         super(in);
     }
+
 
     public String getFirstName() {
         return getString(FIRST_NAME);

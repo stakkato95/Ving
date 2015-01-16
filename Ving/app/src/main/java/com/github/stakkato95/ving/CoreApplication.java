@@ -4,7 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.github.stakkato95.loader.ImageLoader;
-import com.github.stakkato95.ving.database.VkDataBaseOpenHelper;
+import com.github.stakkato95.ving.database.VkDataBaseHelper;
+import com.github.stakkato95.ving.source.DataBaseSource;
 import com.github.stakkato95.ving.source.HttpDataSource;
 import com.github.stakkato95.ving.source.VkDataSource;
 
@@ -16,7 +17,8 @@ public class CoreApplication extends Application {
     private HttpDataSource mHttpDataSource;
     private VkDataSource mVkDataSource;
     private ImageLoader mImageLoader;
-    private VkDataBaseOpenHelper mVkDataBaseOpenHelper;
+    private VkDataBaseHelper mVkDataBaseHelper;
+    private DataBaseSource mDataBaseSource;
 
     @Override
     public void onCreate() {
@@ -46,13 +48,19 @@ public class CoreApplication extends Application {
             }
             return mImageLoader;
         }
-        if (VkDataBaseOpenHelper.KEY.equals(name)) {
-            if(mVkDataBaseOpenHelper == null) {
+        if (VkDataBaseHelper.KEY.equals(name)) {
+            if(mVkDataBaseHelper == null) {
                 //TODO                                            IS IT CORRECT???
-                mVkDataBaseOpenHelper = new VkDataBaseOpenHelper(getApplicationContext());
-                mVkDataBaseOpenHelper.open();
+                mVkDataBaseHelper = new VkDataBaseHelper(getApplicationContext());
+                mVkDataBaseHelper.open();
             }
-            return mVkDataBaseOpenHelper;
+            return mVkDataBaseHelper;
+        }
+        if (DataBaseSource.KEY.equals(name)) {
+            if (mDataBaseSource == null) {
+                mDataBaseSource = new DataBaseSource(getApplicationContext());
+            }
+            return mDataBaseSource;
         }
         return super.getSystemService(name);
     }
