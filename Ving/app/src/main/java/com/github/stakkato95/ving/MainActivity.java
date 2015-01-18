@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.github.stakkato95.ving.fragments.CapFragment;
 import com.github.stakkato95.ving.fragments.FriendsFragment;
+import com.github.stakkato95.ving.provider.VingContentProvider;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -28,7 +29,6 @@ public class MainActivity extends ActionBarActivity {
     private CharSequence mTitle;
 
     private FragmentManager mFragmentManager;
-
 
 
     @Override
@@ -102,7 +102,6 @@ public class MainActivity extends ActionBarActivity {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
-
 
 
     //Drawer methods

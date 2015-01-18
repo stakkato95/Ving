@@ -10,12 +10,11 @@ public class Api {
     public static final String VERSION_PARAM = "v";
 
     public static final int GET_COUNT = 20;
-    public static final int FRIENDS_GET_DEFAULT_OFFSET = 0;
 
     public static final String FRIENDS_GET = BASE_PATH + "friends.get?fields=photo_100,online";
 
-    public static String getFriends() {
-        return FRIENDS_GET;
+    public static String getFriends(int offset) {
+        return FRIENDS_GET + "&count=" + GET_COUNT + "&offset=" + offset;
     }
 
 }

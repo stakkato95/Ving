@@ -2,6 +2,7 @@ package com.github.stakkato95.ving.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -97,6 +98,7 @@ public class VingContentProvider extends ContentProvider {
         SQLiteDatabase database = mVkDataBaseHelper.getSQLiteDatabase();
 
         long id;
+        Uri resultUri;
         int uriType = sUriMatcher.match(uri);
         switch (uriType) {
             case URI_FRIENDS:
@@ -104,6 +106,7 @@ public class VingContentProvider extends ContentProvider {
                     database.beginTransaction();
                     id = database.insert(FriendsTable.NAME, null, values);
                     database.setTransactionSuccessful();
+                    resultUri = ContentUris.withAppendedId(FRIENDS_CONTENT_URI, id);
                 } finally {
                     database.endTransaction();
                 }
@@ -113,7 +116,7 @@ public class VingContentProvider extends ContentProvider {
         }
 
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(FRIENDS_CONTENT_URI + "/" + id);
+        return resultUri;
     }
 
     @Override

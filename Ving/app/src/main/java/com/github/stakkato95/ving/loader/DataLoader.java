@@ -18,11 +18,11 @@ public class DataLoader {
         void onLoadingError(Exception e);
     }
 
-    public interface Callback<Output> extends BaseCallback {
+    public static interface Callback<Output> extends BaseCallback {
         void onLoadingFinished(Output output);
     }
 
-    public interface DatabaseCallback extends BaseCallback {
+    public static interface DatabaseCallback extends BaseCallback {
         void onLoadingFinished();
     }
 

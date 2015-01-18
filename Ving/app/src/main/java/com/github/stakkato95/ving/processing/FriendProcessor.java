@@ -26,6 +26,7 @@ public class FriendProcessor implements DatabaseProcessor<InputStream> {
     public FriendProcessor(Context context) {
         mContext = context;
         mContentResolver = mContext.getContentResolver();
+
     }
 
     @Override
@@ -36,18 +37,11 @@ public class FriendProcessor implements DatabaseProcessor<InputStream> {
             JSONArrayWrapper jsonArray = new JSONArrayWrapper(string);
             Cursor cursor = mContentResolver.query(VingContentProvider.FRIENDS_CONTENT_URI, new String[]{FriendsTable._ID}, null, null, null);
 
-
-            int cursorCount = cursor.getCount();
-            if (cursorCount != 0) {
-                mContentResolver.delete(VingContentProvider.FRIENDS_CONTENT_URI, null, null);
-                insertData(jsonArray);
-            } else {
-                insertData(jsonArray);
-            }
+            insertDataFrom(jsonArray);
         }
     }
 
-    private void insertData(JSONArrayWrapper jsonArray) {
+    private void insertDataFrom(JSONArrayWrapper jsonArray) {
         ContentValues[] values = new ContentValues[jsonArray.length()];
 
         for (int i = 0; i < jsonArray.length(); i++) {
