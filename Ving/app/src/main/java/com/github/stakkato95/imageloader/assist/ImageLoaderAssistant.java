@@ -1,9 +1,10 @@
-package com.github.stakkato95.loader.assist;
+package com.github.stakkato95.imageloader.assist;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
+import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,25 +14,23 @@ import java.security.NoSuchAlgorithmException;
  */
 public class ImageLoaderAssistant {
 
-    public static void closeStream(final InputStream inputStream) {
-        if(inputStream != null) {
+    public static void closeStream(@NonNull final Closeable... closeables) {
+        for (Closeable closeable : closeables) {
             try {
-                inputStream.close();
+                closeable.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static void closeStream(final OutputStream... outputStream) {
-        for(OutputStream stream : outputStream) {
-            if (outputStream != null) {
-                try {
-                    stream.flush();
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    public static void closeOutputStream(@NonNull final OutputStream... streams) {
+        for (OutputStream stream : streams) {
+            try {
+                stream.flush();
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -60,7 +59,7 @@ public class ImageLoaderAssistant {
         //method for MemoryCache
 
         //20% of free space
-        return (int)context.getFilesDir().getFreeSpace() / 5;
+        return (int) context.getFilesDir().getFreeSpace() / 5;
     }
 
     public static String generateFileName(String url) {
@@ -91,4 +90,5 @@ public class ImageLoaderAssistant {
         }
         return "";
     }
+
 }

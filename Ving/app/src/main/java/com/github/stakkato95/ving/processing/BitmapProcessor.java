@@ -10,7 +10,7 @@ import java.io.InputStream;
 /**
  * Created by Artyom on 21.11.2014.
  */
-public class BitmapProcessor implements Processor<Bitmap, InputStream> {
+public class BitmapProcessor implements Processor<InputStream, Bitmap> {
 
     @Override
     public Bitmap process(InputStream inputStream) throws Exception {

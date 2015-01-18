@@ -1,4 +1,4 @@
-package com.github.stakkato95.loader;
+package com.github.stakkato95.imageloader;
 
 import android.graphics.Bitmap;
 

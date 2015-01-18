@@ -63,17 +63,21 @@ public class Friend extends JSONObjectWrapper {
         return getString(FULL_NAME);
     }
 
-    public boolean isOnline() {
-        Long isOnline = getLong(ONLINE);
-        return isOnline == 1;
-    }
-
-    public boolean isOnlineMobile() {
-        Long isOnline = getLong(ONLINE_MOBILE);
-        return isOnline == 1;
+    public int getOnlineMode() {
+        //online_mobile = 2, online = 1, offline = 0
+        long isOnlineMobile = getLong(ONLINE_MOBILE);
+        if (isOnlineMobile == 1) {
+            return 2;
+        }
+        long isOnline = getLong(ONLINE);
+        if (isOnline == 1) {
+            return 1;
+        }
+        return 0;
     }
 
     public Long getId() {
         return getLong(ID);
     }
+
 }

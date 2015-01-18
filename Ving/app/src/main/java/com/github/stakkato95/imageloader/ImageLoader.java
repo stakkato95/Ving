@@ -1,4 +1,4 @@
-package com.github.stakkato95.loader;
+package com.github.stakkato95.imageloader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,22 +8,19 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.github.stakkato95.loader.cache.DiskCache;
-import com.github.stakkato95.loader.cache.MemoryCache;
-import com.github.stakkato95.loader.thread.FileLoadingThread;
-import com.github.stakkato95.loader.thread.FileSavingThread;
-import com.github.stakkato95.loader.thread.MemoryLoadingThread;
+import com.github.stakkato95.imageloader.cache.DiskCache;
+import com.github.stakkato95.imageloader.cache.MemoryCache;
+import com.github.stakkato95.imageloader.thread.FileLoadingThread;
+import com.github.stakkato95.imageloader.thread.FileSavingThread;
+import com.github.stakkato95.imageloader.thread.MemoryLoadingThread;
 import com.github.stakkato95.ving.CoreApplication;
-import com.github.stakkato95.ving.os.LIFOLinkedBlockingDeque;
+import com.github.stakkato95.ving.os.VingExecutor;
 import com.github.stakkato95.ving.processing.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Artyom on 11.12.2014.
@@ -32,7 +29,7 @@ public class ImageLoader {
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
-    private static ExecutorService sExecutorService;
+    private static VingExecutor sExecutor;
     private final Context mContext;
     private final MemoryCache mMemoryCache;
     private final ImageLoaderCallback mImageLoaderCallback;
@@ -52,11 +49,7 @@ public class ImageLoader {
     public static final String TAG = ImageLoader.class.getSimpleName();
 
     static {
-        sExecutorService = new ThreadPoolExecutor(CPU_COUNT,
-                CPU_COUNT,
-                0,
-                TimeUnit.NANOSECONDS,
-                new LIFOLinkedBlockingDeque<Runnable>());
+        sExecutor = new VingExecutor();
 
     }
 
@@ -92,13 +85,13 @@ public class ImageLoader {
                 if (mDiskCache.containsKey(url) && !mRequestsMap.containsValue(url)) {
 
                     //image is in DiskCache -> do loading from DiskCache
-                    sExecutorService.execute(new FileLoadingThread(url, mImageLoaderCallback, mHandler, mDiskCache));
+                    sExecutor.execute(new FileLoadingThread(url, mImageLoaderCallback, mHandler, mDiskCache));
                 } else {
 
                     //image isn't in DiskCache -> check for necessity of lading from the network
                     if (!mRequestsMap.containsValue(url)) {
                         //loading of the image from the network is required
-                        sExecutorService.execute(new MemoryLoadingThread(url, mImageLoaderCallback, mHandler, mDataSource, mBitmapProcessor));
+                        sExecutor.execute(new MemoryLoadingThread(url, mImageLoaderCallback, mHandler, mDataSource, mBitmapProcessor));
                     }
                 }
             }
@@ -164,7 +157,7 @@ public class ImageLoader {
 
             if (!mDiskCache.containsKey(url)) {
                 //if image isn't in DiskCache, put it there
-                sExecutorService.execute(new FileSavingThread(url, bmp, mImageLoaderCallback, mHandler, mDiskCache));
+                sExecutor.execute(new FileSavingThread(url, bmp, mImageLoaderCallback, mHandler, mDiskCache));
             }
 
             setBmpToView(bmp, url);

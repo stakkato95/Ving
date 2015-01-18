@@ -1,10 +1,10 @@
-package com.github.stakkato95.loader.cache;
+package com.github.stakkato95.imageloader.cache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 
-import com.github.stakkato95.loader.assist.ImageLoaderAssistant;
+import com.github.stakkato95.imageloader.assist.ImageLoaderAssistant;
 
 /**
  * Created by Artyom on 11.12.2014.

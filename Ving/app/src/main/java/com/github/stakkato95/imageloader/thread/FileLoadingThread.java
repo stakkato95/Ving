@@ -1,11 +1,11 @@
-package com.github.stakkato95.loader.thread;
+package com.github.stakkato95.imageloader.thread;
 
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.github.stakkato95.loader.ImageLoader;
-import com.github.stakkato95.loader.LoaderCallback;
-import com.github.stakkato95.loader.cache.DiskCache;
+import com.github.stakkato95.imageloader.ImageLoader;
+import com.github.stakkato95.imageloader.LoaderCallback;
+import com.github.stakkato95.imageloader.cache.DiskCache;
 
 import android.os.Handler;
 

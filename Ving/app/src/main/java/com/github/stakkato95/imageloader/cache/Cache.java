@@ -1,4 +1,4 @@
-package com.github.stakkato95.loader.cache;
+package com.github.stakkato95.imageloader.cache;
 
 /**
  * Created by Artyom on 15.12.2014.

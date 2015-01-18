@@ -3,9 +3,8 @@ package com.github.stakkato95.ving;
 import android.app.Application;
 import android.content.Context;
 
-import com.github.stakkato95.loader.ImageLoader;
+import com.github.stakkato95.imageloader.ImageLoader;
 import com.github.stakkato95.ving.database.VkDataBaseHelper;
-import com.github.stakkato95.ving.source.DataBaseSource;
 import com.github.stakkato95.ving.source.HttpDataSource;
 import com.github.stakkato95.ving.source.VkDataSource;
 
@@ -18,7 +17,6 @@ public class CoreApplication extends Application {
     private VkDataSource mVkDataSource;
     private ImageLoader mImageLoader;
     private VkDataBaseHelper mVkDataBaseHelper;
-    private DataBaseSource mDataBaseSource;
 
     @Override
     public void onCreate() {
@@ -44,6 +42,7 @@ public class CoreApplication extends Application {
         if(ImageLoader.KEY.equals(name)) {
             if(mImageLoader == null) {
                 //TODO                         IS IT CORRECT TO USE APPCONTEXT IN SUCH A WAY???
+                //20 Mb DiskCache
                 mImageLoader = new ImageLoader(getApplicationContext(), 1024 * 1024 * 20, R.drawable.ic_image_loading, R.drawable.ic_image_loading_error);
             }
             return mImageLoader;
@@ -56,12 +55,6 @@ public class CoreApplication extends Application {
             }
             return mVkDataBaseHelper;
         }
-        if (DataBaseSource.KEY.equals(name)) {
-            if (mDataBaseSource == null) {
-                mDataBaseSource = new DataBaseSource(getApplicationContext());
-            }
-            return mDataBaseSource;
-        }
         return super.getSystemService(name);
     }
 
@@ -69,7 +62,7 @@ public class CoreApplication extends Application {
         if (context == null || key == null){
             throw new IllegalArgumentException("Context and key must not be null");
         }
-        T systemService = (T) context.getSystemService(key);
+        T systemService = (T)context.getSystemService(key);
         if (systemService == null) {
             context = context.getApplicationContext();
             systemService = (T) context.getSystemService(key);

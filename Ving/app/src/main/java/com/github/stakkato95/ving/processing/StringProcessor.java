@@ -1,6 +1,6 @@
 package com.github.stakkato95.ving.processing;
 
-import com.github.stakkato95.ving.source.HttpDataSource;
+import com.github.stakkato95.imageloader.assist.ImageLoaderAssistant;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -9,7 +9,8 @@ import java.io.InputStreamReader;
 /**
  * Created by Artyom on 21.11.2014.
  */
-public class StringProcessor implements Processor<String, InputStream> {
+public class StringProcessor implements Processor<InputStream, String> {
+
     @Override
     public String process(InputStream inputStream) throws Exception {
         InputStreamReader inputStreamReader = null;
@@ -24,9 +25,8 @@ public class StringProcessor implements Processor<String, InputStream> {
             }
             return builder.toString();
         } finally {
-            HttpDataSource.close(in);
-            HttpDataSource.close(inputStreamReader);
-            HttpDataSource.close(inputStream);
+            ImageLoaderAssistant.closeStream(in, inputStream, inputStreamReader);
         }
     }
+
 }

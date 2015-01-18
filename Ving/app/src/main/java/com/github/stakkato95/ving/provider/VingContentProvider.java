@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -14,9 +13,9 @@ import android.text.TextUtils;
 import com.github.stakkato95.ving.database.FriendsTable;
 import com.github.stakkato95.ving.database.VkDataBaseHelper;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Artyom on 16.01.2015.
@@ -51,15 +50,17 @@ public class VingContentProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        int uriType = sUriMatcher.match(uri);
 
-        if (!isProjectionCorrect(projection)) {
-            throw new IllegalArgumentException("Incorrect projection column(s)");
+        if (projection != null) {
+            if (!isProjectionCorrect(uriType, projection)) {
+                throw new IllegalArgumentException("Incorrect projection column(s)");
+            }
         }
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(FriendsTable.NAME);
 
-        int uriType = sUriMatcher.match(uri);
         switch (uriType) {
             case URI_FRIENDS:
                 break;
@@ -181,21 +182,23 @@ public class VingContentProvider extends ContentProvider {
         return updatedRows;
     }
 
-    public boolean isProjectionCorrect(String[] projection) {
-        String[] existing = {
-                FriendsTable._ID,
-                FriendsTable._FULL_NAME,
-                FriendsTable._PHOTO_100,
-                FriendsTable._ONLINE,
-        };
+    public boolean isProjectionCorrect(int uriType, String[] projection) {
+        String[] existingColumns = null;
 
-        List<String> receivedColumns = new ArrayList<>(Arrays.asList(projection));
-        List<String> existingColumns = new ArrayList<>(Arrays.asList(existing));
-
-        if (!existingColumns.containsAll(existingColumns)) {
-            return false;
+        switch (uriType) {
+            case URI_FRIENDS:
+                existingColumns = FriendsTable.PROJECTION;
+                break;
+            case URI_FRIEND_ID:
+                existingColumns = FriendsTable.PROJECTION;
+                break;
         }
-        return true;
+
+
+        Set<String> receivedProjection = new HashSet<>(Arrays.asList(projection));
+        Set<String> availableProjection = new HashSet<>(Arrays.asList(existingColumns));
+
+        return availableProjection.containsAll(receivedProjection);
     }
 
 }

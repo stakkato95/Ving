@@ -1,16 +1,15 @@
-package com.github.stakkato95.loader.cache;
+package com.github.stakkato95.imageloader.cache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.github.stakkato95.loader.assist.ImageLoaderAssistant;
+import com.github.stakkato95.imageloader.assist.ImageLoaderAssistant;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -95,7 +94,7 @@ public class DiskCache implements Cache<String, Bitmap> {
             } catch (Exception e) {
                 throw new Exception("Unexpected error with file" + fileName);
             } finally {
-                ImageLoaderAssistant.closeStream(outputStream, bufferedStream);
+                ImageLoaderAssistant.closeOutputStream(outputStream, bufferedStream);
             }
         }
 

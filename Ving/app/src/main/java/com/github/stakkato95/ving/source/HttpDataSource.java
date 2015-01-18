@@ -12,9 +12,9 @@ import java.net.URL;
 /**
  * Created by Artyom on 19.11.2014.
  */
-public class HttpDataSource implements DataSource<InputStream, String> {
+public class HttpDataSource implements DataSource<String, InputStream> {
 
-    public static final String KEY = "HttpDataSource";
+    public static final String KEY = HttpDataSource.class.getSimpleName();
 
     public static HttpDataSource get(Context context) {
         return CoreApplication.get(context, KEY);
@@ -22,9 +22,7 @@ public class HttpDataSource implements DataSource<InputStream, String> {
 
     @Override
     public InputStream getResult(String p) throws Exception {
-        //download data and return
         URL url = new URL(p);
-        // Read all the text returned by the server
         return url.openStream();
     }
 

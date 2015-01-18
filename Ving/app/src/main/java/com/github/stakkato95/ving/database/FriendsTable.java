@@ -8,17 +8,30 @@ import android.provider.BaseColumns;
  */
 public final class FriendsTable implements DataBaseConstants, BaseColumns {
 
-    public static String NAME = "friends";
+    public static final String NAME = "friends";
 
-    public static String _FULL_NAME = "_last_name";
-    public static String _PHOTO_100 = "_photo_100";
-    public static String _ONLINE= "_online";
+    public static final String _FULL_NAME = "_last_name";
+    public static final String _PHOTO_100 = "_photo_100";
+    public static final String _ONLINE= "_online";
 
-    private static String CREATE_TABLE = CREATE + NAME + " ( " +
+    private static final String CREATE_TABLE = CREATE + NAME + " ( " +
             _ID + " " + TYPE_INTEGER + DIVIDER +
             _FULL_NAME + " " + TYPE_TEXT + DIVIDER +
             _PHOTO_100 + " " + TYPE_TEXT + DIVIDER +
             _ONLINE + " " + TYPE_INTEGER + " )";
+
+    public static final String[] PROJECTION = {
+            FriendsTable._ID,
+            FriendsTable._FULL_NAME,
+            FriendsTable._PHOTO_100,
+            FriendsTable._ONLINE,
+    };
+
+    public static final String[] PROJECTION_OFFLINE = {
+            FriendsTable._ID,
+            FriendsTable._FULL_NAME,
+            FriendsTable._PHOTO_100,
+    };
 
     public static void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE);
