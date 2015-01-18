@@ -96,7 +96,7 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
 
                         @Override
                         public void onLoadingFinished() {
-                            setFooterVisibility();
+                            //setFooterVisibility();
                             if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
                                 mLoaderManager.initLoader(CURSOR_LOADER, null, FriendsFragment.this);
                             } else {
@@ -211,6 +211,7 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
     }
 
     private void setFooterVisibility() {
+        //mFriendAdapter.notifyDataSetChanged();
         if (isPaginationEnabled) {
             if (REQUEST_OFFSET == Api.GET_COUNT) {
                 mListView.addFooterView(mFooter,null,false);
@@ -242,9 +243,7 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mFriendAdapter.swapCursor(null);
-    }
+    public void onLoaderReset(Loader<Cursor> loader) { }
 
     @Override
     public void onPageLimitReached(int cursorPosition) {
