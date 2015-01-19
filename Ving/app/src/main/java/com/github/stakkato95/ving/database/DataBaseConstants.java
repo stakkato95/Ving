@@ -1,9 +1,11 @@
 package com.github.stakkato95.ving.database;
 
+import android.provider.BaseColumns;
+
 /**
  * Created by Artyom on 31.12.2014.
  */
-public interface DataBaseConstants {
+public interface DataBaseConstants extends BaseColumns {
 
     String DIVIDER = ", ";
 

@@ -6,11 +6,11 @@ import android.provider.BaseColumns;
 /**
  * Created by Artyom on 31.12.2014.
  */
-public final class FriendsTable implements DataBaseConstants, BaseColumns {
+public final class FriendsTable implements DataBaseConstants {
 
     public static final String NAME = "friends";
 
-    public static final String _FULL_NAME = "_last_name";
+    public static final String _FULL_NAME = "_full_name";
     public static final String _PHOTO_100 = "_photo_100";
     public static final String _ONLINE= "_online";
 
@@ -21,16 +21,16 @@ public final class FriendsTable implements DataBaseConstants, BaseColumns {
             _ONLINE + " " + TYPE_INTEGER + " )";
 
     public static final String[] PROJECTION = {
-            FriendsTable._ID,
-            FriendsTable._FULL_NAME,
-            FriendsTable._PHOTO_100,
-            FriendsTable._ONLINE,
+            _ID,
+            _FULL_NAME,
+            _PHOTO_100,
+            _ONLINE,
     };
 
     public static final String[] PROJECTION_OFFLINE = {
-            FriendsTable._ID,
-            FriendsTable._FULL_NAME,
-            FriendsTable._PHOTO_100,
+            _ID,
+            _FULL_NAME,
+            _PHOTO_100,
     };
 
     public static void onCreate(SQLiteDatabase db) {

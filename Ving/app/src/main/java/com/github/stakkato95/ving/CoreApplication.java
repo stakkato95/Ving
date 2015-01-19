@@ -43,16 +43,14 @@ public class CoreApplication extends Application {
         }
         if(ImageLoader.KEY.equals(name)) {
             if(mImageLoader == null) {
-                //TODO                         IS IT CORRECT TO USE APPCONTEXT IN SUCH A WAY???
                 //20 Mb DiskCache
-                mImageLoader = new ImageLoader(getApplicationContext(), 1024 * 1024 * 20, R.drawable.ic_image_loading, R.drawable.ic_image_loading_error);
+                mImageLoader = new ImageLoader(getContext(), 1024 * 1024 * 20, R.drawable.ic_image_loading, R.drawable.ic_image_loading_error);
             }
             return mImageLoader;
         }
         if (VkDataBaseHelper.KEY.equals(name)) {
             if(mVkDataBaseHelper == null) {
-                //TODO                                            IS IT CORRECT???
-                mVkDataBaseHelper = new VkDataBaseHelper(getApplicationContext());
+                mVkDataBaseHelper = new VkDataBaseHelper(getContext());
                 mVkDataBaseHelper.open();
             }
             return mVkDataBaseHelper;

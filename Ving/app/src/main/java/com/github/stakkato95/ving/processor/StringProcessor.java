@@ -1,4 +1,4 @@
-package com.github.stakkato95.ving.processing;
+package com.github.stakkato95.ving.processor;
 
 import com.github.stakkato95.imageloader.assist.ImageLoaderAssistant;
 

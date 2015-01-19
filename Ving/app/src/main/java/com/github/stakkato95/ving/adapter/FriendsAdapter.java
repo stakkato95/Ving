@@ -13,7 +13,7 @@ import com.github.stakkato95.ving.database.FriendsTable;
 /**
  * Created by Artyom on 16.01.2015.
  */
-public class FriendsAdapter extends ZBaseAdapter {
+public class FriendsAdapter extends ZCursorAdapter {
 
     public FriendsAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
@@ -36,7 +36,6 @@ public class FriendsAdapter extends ZBaseAdapter {
         String photoUrl = cursor.getString(cursor.getColumnIndex(FriendsTable._PHOTO_100));
         getmImageLoader().obtainImage(photoImage, photoUrl);
 
-        onlineImage.setImageResource(DEFAULT_IMAGE_RESOURCE);
         try {
             int online = cursor.getInt(cursor.getColumnIndexOrThrow(FriendsTable._ONLINE));
             if (online == 2) {

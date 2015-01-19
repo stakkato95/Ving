@@ -1,4 +1,4 @@
-package com.github.stakkato95.ving.processing;
+package com.github.stakkato95.ving.processor;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

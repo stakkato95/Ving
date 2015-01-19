@@ -1,4 +1,4 @@
-package com.github.stakkato95.ving.fragments;
+package com.github.stakkato95.ving.fragment;
 
 import android.net.Uri;
 import android.support.v4.app.ListFragment;
@@ -24,10 +24,10 @@ import android.widget.Toast;
 
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.R;
-import com.github.stakkato95.ving.adapter.ZBaseAdapter;
+import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.loader.DataLoader;
-import com.github.stakkato95.ving.processing.DatabaseProcessor;
+import com.github.stakkato95.ving.processor.DatabaseProcessor;
 import com.github.stakkato95.ving.source.VkDataSource;
 
 import java.net.UnknownHostException;
@@ -39,7 +39,7 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
 
     private Context mContext;
     private ListView mListView;
-    private ZBaseAdapter mZAdapter;
+    private ZCursorAdapter mZAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
     private View mFooter;
@@ -60,7 +60,7 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
     public ZListFragment() {
     }
 
-    public static ZListFragment newInstance(ZBaseAdapter adapter,
+    public static ZListFragment newInstance(ZCursorAdapter adapter,
                                             DatabaseProcessor processor,
                                             String url,
                                             Uri contentType,
@@ -263,7 +263,7 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
     }
 
 
-    private void setAdapter(ZBaseAdapter adapter) {
+    private void setAdapter(ZCursorAdapter adapter) {
         mZAdapter = adapter;
     }
 

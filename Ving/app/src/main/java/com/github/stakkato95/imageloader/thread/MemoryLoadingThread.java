@@ -7,7 +7,7 @@ import android.util.Log;
 import com.github.stakkato95.imageloader.ImageLoader;
 import com.github.stakkato95.imageloader.LoaderCallback;
 import com.github.stakkato95.imageloader.assist.ImageLoaderAssistant;
-import com.github.stakkato95.ving.processing.BitmapProcessor;
+import com.github.stakkato95.ving.processor.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
 
 import java.io.InputStream;
@@ -45,7 +45,9 @@ public class MemoryLoadingThread extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            ImageLoaderAssistant.closeStream(inputStream);
+            if (inputStream != null) {
+                ImageLoaderAssistant.closeStream(inputStream);
+            }
         }
 
         loadingInThreadFinished(bmp);

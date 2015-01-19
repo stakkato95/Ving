@@ -1,9 +1,7 @@
-package com.github.stakkato95.ving.processing;
+package com.github.stakkato95.ving.processor;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
 
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.bo.Friend;
@@ -30,6 +28,7 @@ public class FriendsProcessor implements DatabaseProcessor<InputStream> {
     }
 
     private void insertDataFrom(JSONArrayWrapper jsonArray) {
+        ContentResolver resolver = CoreApplication.getContext().getContentResolver();
         ContentValues[] values = new ContentValues[jsonArray.length()];
 
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -44,7 +43,7 @@ public class FriendsProcessor implements DatabaseProcessor<InputStream> {
             value.put(FriendsTable._ONLINE, friend.getOnlineMode());
             values[i] = value;
         }
-        ContentResolver resolver = CoreApplication.getContext().getContentResolver();
+
         resolver.bulkInsert(VingContentProvider.FRIENDS_CONTENT_URI, values);
     }
 

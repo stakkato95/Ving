@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 
 import com.github.stakkato95.ving.os.VingExecutor;
-import com.github.stakkato95.ving.processing.DatabaseProcessor;
-import com.github.stakkato95.ving.processing.Processor;
+import com.github.stakkato95.ving.processor.DatabaseProcessor;
+import com.github.stakkato95.ving.processor.Processor;
 import com.github.stakkato95.ving.source.DataSource;
 
 /**

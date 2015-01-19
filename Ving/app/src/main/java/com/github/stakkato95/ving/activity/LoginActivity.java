@@ -1,4 +1,4 @@
-package com.github.stakkato95.ving;
+package com.github.stakkato95.ving.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +10,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
+import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.auth.Account;
 import com.github.stakkato95.ving.auth.VkOAuthHelper;
 

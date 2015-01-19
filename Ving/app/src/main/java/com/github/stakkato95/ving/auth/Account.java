@@ -3,8 +3,6 @@ package com.github.stakkato95.ving.auth;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.github.stakkato95.ving.MainActivity;
-import com.github.stakkato95.ving.StartActivity;
 import com.github.stakkato95.ving.auth.secure.EncryptManager;
 
 /**

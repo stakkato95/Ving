@@ -1,4 +1,4 @@
-package com.github.stakkato95.ving;
+package com.github.stakkato95.ving.activity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -13,9 +13,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.github.stakkato95.ving.fragments.CapFragment;
-import com.github.stakkato95.ving.fragments.ZListFragment;
-import com.github.stakkato95.ving.fragments.assist.DrawerMenuItem;
+import com.github.stakkato95.ving.R;
+import com.github.stakkato95.ving.fragment.CapFragment;
+import com.github.stakkato95.ving.fragment.ZListFragment;
+import com.github.stakkato95.ving.fragment.assist.DrawerMenuItem;
 
 import java.util.ArrayList;
 import java.util.List;

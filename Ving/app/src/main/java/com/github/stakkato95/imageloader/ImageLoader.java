@@ -15,7 +15,7 @@ import com.github.stakkato95.imageloader.thread.FileSavingThread;
 import com.github.stakkato95.imageloader.thread.MemoryLoadingThread;
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.os.VingExecutor;
-import com.github.stakkato95.ving.processing.BitmapProcessor;
+import com.github.stakkato95.ving.processor.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
 
 import java.util.Map;
@@ -149,7 +149,7 @@ public class ImageLoader {
         public void onLoadingFinished(final Bitmap bmp, final String url) {
 
             synchronized (mMemoryCache) {
-                if (!mMemoryCache.containsKey(url)) {
+                if (url != null && bmp != null && !mMemoryCache.containsKey(url)) {
                     //if image isn't in MemoryCache, put it there
                     mMemoryCache.put(url, bmp);
                 }

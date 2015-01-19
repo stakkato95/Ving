@@ -1,4 +1,4 @@
-package com.github.stakkato95.ving.fragments;
+package com.github.stakkato95.ving.fragment;
 
 import android.app.ListFragment;
 

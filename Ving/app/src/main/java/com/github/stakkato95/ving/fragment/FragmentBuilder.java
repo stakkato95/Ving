@@ -1,26 +1,25 @@
-package com.github.stakkato95.ving.fragments;
+package com.github.stakkato95.ving.fragment;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.github.stakkato95.ving.adapter.ZBaseAdapter;
-import com.github.stakkato95.ving.processing.DatabaseProcessor;
-import com.github.stakkato95.ving.source.DataSource;
+import com.github.stakkato95.ving.adapter.ZCursorAdapter;
+import com.github.stakkato95.ving.processor.DatabaseProcessor;
 
 /**
  * Created by Artyom on 19.01.2015.
  */
 public class FragmentBuilder {
 
-    private ZBaseAdapter mZBaseAdapter;
+    private ZCursorAdapter mZCursorAdapter;
     private DatabaseProcessor mDatabaseProcessor;
     private String mRequestUrl;
     private Uri mContentType;
     private String[] mProjection;
     private String[] mProjectionOffline;
 
-    public FragmentBuilder setAdapter(@NonNull ZBaseAdapter adapter) {
-        mZBaseAdapter = adapter;
+    public FragmentBuilder setAdapter(@NonNull ZCursorAdapter adapter) {
+        mZCursorAdapter = adapter;
         return this;
     }
 
@@ -50,7 +49,7 @@ public class FragmentBuilder {
     }
 
     public ZListFragment createFragment() {
-        return ZListFragment.newInstance(mZBaseAdapter, mDatabaseProcessor, mRequestUrl, mContentType, mProjection, mProjectionOffline);
+        return ZListFragment.newInstance(mZCursorAdapter, mDatabaseProcessor, mRequestUrl, mContentType, mProjection, mProjectionOffline);
     }
 
 }

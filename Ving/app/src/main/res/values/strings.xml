@@ -16,6 +16,7 @@
     <string name="load_more">Ещё</string>
 
     <string name="friends">Друзья</string>
+    <string name="dialogs">Сообщения</string>
 
     <string-array name="drawer_items_array">
         <item>Друзья</item>

@@ -1,4 +1,4 @@
-package com.github.stakkato95.ving.processing;
+package com.github.stakkato95.ving.processor;
 
 /**
  * Created by Artyom on 21.11.2014.

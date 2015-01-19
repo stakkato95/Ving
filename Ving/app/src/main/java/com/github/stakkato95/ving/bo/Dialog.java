@@ -10,12 +10,13 @@ import org.json.JSONObject;
  */
 public class Dialog extends JSONObjectWrapper {
 
+    private static final String ID = "id";
+    private static final String USER_ID = "user_id"; //in dialog your or interlocutor, in chat different people
     private static final String PHOTO = "photo_100";
-    private static final String USER_ID = "id";
     private static final String DATE = "date";
     private static final String ROUTE = "out"; //1 - from user, 0 - to user
     private static final String READ_STATE = "read_state"; //1 - read, 0 - unread
-    private static final String TITLE = "title";
+    private static final String TITLE = "title"; //only for chats, not for dialogs
     private static final String BODY = "body";
 
     public Dialog(String jsonObject) {
@@ -40,5 +41,37 @@ public class Dialog extends JSONObjectWrapper {
             return new Dialog[size];
         }
     };
+
+    public String getPhoto() {
+        return getString(PHOTO);
+    }
+
+    public long getId() {
+        return getLong(ID);
+    }
+
+    public long getUserId() {
+        return getLong(USER_ID);
+    }
+
+    public long getDate() {
+        return getLong(DATE);
+    }
+
+    public long getRoute() {
+        return getLong(ROUTE);
+    }
+
+    public long getReadState() {
+        return getLong(READ_STATE);
+    }
+
+    public String getTitle() {
+        return getString(TITLE);
+    }
+
+    public String getBody() {
+        return getString(BODY);
+    }
 
 }

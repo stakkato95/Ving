@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.github.stakkato95.ving.database.DialogsTable;
 import com.github.stakkato95.ving.database.FriendsTable;
 import com.github.stakkato95.ving.database.VkDataBaseHelper;
 
@@ -27,13 +28,18 @@ public class VingContentProvider extends ContentProvider {
 
     private static final int URI_FRIENDS = 0;
     private static final int URI_FRIEND_ID = 1;
+    private static final int URI_DIALOGS = 2;
+    private static final int URI_DIALOGS_ID = 3;
 
     private static final String AUTHORITY = "com.github.stakkato95.ving.provider";
 
     public static final Uri FRIENDS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + FriendsTable.NAME);
+    public static final Uri DIALOGS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DialogsTable.NAME);
 
     public static final String FRIENDS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
     public static final String FRIEND_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
+    public static final String DIALOGS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogsTable.NAME;
+    public static final String DIALOGS_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogsTable.NAME;
 
     private static final UriMatcher sUriMatcher;
 
@@ -41,6 +47,8 @@ public class VingContentProvider extends ContentProvider {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME, URI_FRIENDS);
         sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME + "/#", URI_FRIEND_ID);
+        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME, URI_DIALOGS);
+        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME + "/#", URI_DIALOGS_ID);
     }
 
     @Override
