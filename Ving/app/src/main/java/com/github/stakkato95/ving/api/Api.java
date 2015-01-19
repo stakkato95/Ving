@@ -11,10 +11,15 @@ public class Api {
 
     public static final int GET_COUNT = 30;
 
-    public static final String FRIENDS_GET = BASE_PATH + "friends.get?fields=photo_100,online";
+    public static final String GET_FRIENDS = BASE_PATH + "friends.get?fields=photo_100,online";
+    public static final String GET_DIALOGS = BASE_PATH + "friends.get?fields=photo_100,online";
 
-    public static String getFriends(int offset) {
-        return FRIENDS_GET + "&count=" + GET_COUNT + "&offset=" + offset;
+    public static String getFriends() {
+        return GET_FRIENDS;
+    }
+
+    public static String getDialogs() {
+        return GET_DIALOGS;
     }
 
 }

@@ -13,6 +13,7 @@ import com.github.stakkato95.ving.source.VkDataSource;
  */
 public class CoreApplication extends Application {
 
+    private static Context mContext;
     private HttpDataSource mHttpDataSource;
     private VkDataSource mVkDataSource;
     private ImageLoader mImageLoader;
@@ -21,6 +22,7 @@ public class CoreApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = this;
         mHttpDataSource = new HttpDataSource();
         mVkDataSource = new VkDataSource();
     }
@@ -71,5 +73,9 @@ public class CoreApplication extends Application {
             throw new IllegalStateException(key + " not available");
         }
         return systemService;
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 }

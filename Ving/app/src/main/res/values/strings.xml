@@ -7,15 +7,15 @@
     <string name="auth_button">Авторизироваться</string>
     <string name="auth_text">Настройте свой аккаунт</string>
     <string name="auth_description">Вам необходим выполнить вход через ваш аккаунт Вконтакте</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Ving</string>
     <string name="title_activity_friend_details">FriendDetailsActivity</string>
     <string name="retry_loading">Повтор</string>
     <string name="loading_error">Проверьте подключение и\nповторите попытку</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="load_more">Ещё</string>
-    <string name="all_friends">Все друзья</string>
-    <string name="online_friends">Друзья онлайн</string>
+
+    <string name="friends">Друзья</string>
 
     <string-array name="drawer_items_array">
         <item>Друзья</item>
@@ -23,7 +23,5 @@
         <item>Фотографии</item>
         <item>Видео</item>
     </string-array>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

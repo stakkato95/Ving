@@ -1,12 +1,12 @@
 package com.github.stakkato95.ving;
 
-import android.support.v4.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,8 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.github.stakkato95.ving.fragments.CapFragment;
-import com.github.stakkato95.ving.fragments.FriendsFragment;
-import com.github.stakkato95.ving.provider.VingContentProvider;
+import com.github.stakkato95.ving.fragments.ZListFragment;
+import com.github.stakkato95.ving.fragments.assist.DrawerMenuItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -27,6 +30,12 @@ public class MainActivity extends ActionBarActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private static List<DrawerMenuItem> mDrawerMenuItems;
+
+    static {
+        mDrawerMenuItems = new ArrayList<>();
+        mDrawerMenuItems.add(DrawerMenuItem.FRIENDS);
+    }
 
     private FragmentManager mFragmentManager;
 
@@ -41,7 +50,8 @@ public class MainActivity extends ActionBarActivity {
         setSupportActionBar(mToolbar);
 
         //Drawer content
-        mTitle = mDrawerTitle = getTitle();
+        setTitle(mTitle = mDrawerMenuItems.get(0).getTitle());
+        mDrawerTitle = getTitle();
         mScreenTitles = getResources().getStringArray(R.array.drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
@@ -82,9 +92,9 @@ public class MainActivity extends ActionBarActivity {
         mFragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
-            mDrawerList.setItemChecked(0,true);
+            mDrawerList.setItemChecked(0, true);
 
-            FriendsFragment fragment = new FriendsFragment();
+            ZListFragment fragment = DrawerMenuItem.FRIENDS.create();
             mFragmentManager.beginTransaction()
                     .add(R.id.container, fragment)
                     .commit();
@@ -112,10 +122,12 @@ public class MainActivity extends ActionBarActivity {
 
     private void selectItem(Integer position) {
         Fragment fragment = null;
+        CharSequence title = null;
 
         switch (position) {
             case 0:
-                fragment =  new FriendsFragment();
+                fragment = DrawerMenuItem.FRIENDS.create();
+                title = DrawerMenuItem.FRIENDS.getTitle();
                 break;
             case 1:
                 fragment = CapFragment.newInstance("Сообщения в разработка");
@@ -136,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
 
             mDrawerList.setItemChecked(position, true);
-            setTitle(mScreenTitles[position]);
+            setTitle(title);
             mDrawerLayout.closeDrawer(mDrawerList);
         }
     }
@@ -149,4 +161,5 @@ public class MainActivity extends ActionBarActivity {
         }
         super.onBackPressed();
     }
+
 }

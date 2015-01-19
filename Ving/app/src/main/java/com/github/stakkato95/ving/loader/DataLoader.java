@@ -37,7 +37,7 @@ public class DataLoader {
         sExecutor = new VingExecutor();
     }
 
-    public <Input,SourceOutput,Output> void getDataToDatabase(final DatabaseCallback callback,
+    public <Input,SourceOutput> void getDataToDatabase(final DatabaseCallback callback,
                                                           final Input input,
                                                           final DataSource<Input, SourceOutput> source,
                                                           final DatabaseProcessor<SourceOutput> processor) {

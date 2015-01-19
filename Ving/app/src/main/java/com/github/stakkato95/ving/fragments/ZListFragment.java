@@ -1,12 +1,13 @@
 package com.github.stakkato95.ving.fragments;
 
+import android.net.Uri;
+import android.support.v4.app.ListFragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -23,21 +24,22 @@ import android.widget.Toast;
 
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.R;
-import com.github.stakkato95.ving.adapter.FriendsAdapter;
+import com.github.stakkato95.ving.adapter.ZBaseAdapter;
 import com.github.stakkato95.ving.api.Api;
-import com.github.stakkato95.ving.database.FriendsTable;
 import com.github.stakkato95.ving.loader.DataLoader;
-import com.github.stakkato95.ving.processing.FriendProcessor;
-import com.github.stakkato95.ving.provider.VingContentProvider;
+import com.github.stakkato95.ving.processing.DatabaseProcessor;
 import com.github.stakkato95.ving.source.VkDataSource;
 
 import java.net.UnknownHostException;
 
-public class FriendsFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor>, FriendsAdapter.Callback {
+/**
+ * Created by Artyom on 18.01.2015.
+ */
+public class ZListFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
     private Context mContext;
     private ListView mListView;
-    private FriendsAdapter mFriendAdapter;
+    private ZBaseAdapter mZAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
     private View mFooter;
@@ -46,12 +48,32 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
     private static final int CURSOR_LOADER = 0;
     private LoaderManager mLoaderManager;
     private ContentResolver mContentResolver;
+    private Uri mContentType;
+    private String[] mProjection;
+    private String[] mProjectionOffline;
 
-    private FriendProcessor mFriendProcessor;
+    private DatabaseProcessor mProcessor;
     private VkDataSource mVkDataSource;
     private int REQUEST_OFFSET;
+    private String mRequestUrl;
 
-    public FriendsFragment() {
+    public ZListFragment() {
+    }
+
+    public static ZListFragment newInstance(ZBaseAdapter adapter,
+                                            DatabaseProcessor processor,
+                                            String url,
+                                            Uri contentType,
+                                            String[] projection,
+                                            String[] projectionOffline) {
+        ZListFragment configurableFragment = new ZListFragment();
+        configurableFragment.setAdapter(adapter);
+        configurableFragment.setProcessor(processor);
+        configurableFragment.setRequestUrl(url);
+        configurableFragment.setContentType(contentType);
+        configurableFragment.setProjection(projection);
+        configurableFragment.setProjectionOffline(projectionOffline);
+        return configurableFragment;
     }
 
     @Override
@@ -60,26 +82,25 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
         mContext = getActivity();
         mContentResolver = mContext.getContentResolver();
         cleanDatabaseOut();
-        mFriendProcessor = new FriendProcessor(mContext);
         mVkDataSource = VkDataSource.get(mContext);
         mLoaderManager = getActivity().getSupportLoaderManager();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_friends, container, false);
+        View view = inflater.inflate(R.layout.fragment_zlist, container, false);
 
         mFooter = View.inflate(mContext, R.layout.view_footer, null);
-        mFriendAdapter = new FriendsAdapter(mContext, null, 0, this);
         mListView = (ListView) view.findViewById(android.R.id.list);
-        mListView.setAdapter(mFriendAdapter);
+        mListView.setAdapter(mZAdapter);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             private int mPreviousTotalItemCount = 0;
             private static final int VISIBLE_THRESHOLD = 5;
 
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) { }
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -98,10 +119,10 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
                         public void onLoadingFinished() {
                             //setFooterVisibility();
                             if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
-                                mLoaderManager.initLoader(CURSOR_LOADER, null, FriendsFragment.this);
+                                mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
                             } else {
                                 mLoaderManager.destroyLoader(CURSOR_LOADER);
-                                mLoaderManager.initLoader(CURSOR_LOADER, null, FriendsFragment.this);
+                                mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
                             }
                         }
 
@@ -114,7 +135,7 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
                         public void onLoadingError(Exception e) {
 
                         }
-                    },getRequestUrl(REQUEST_OFFSET),mVkDataSource,mFriendProcessor);
+                    }, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
                     REQUEST_OFFSET += Api.GET_COUNT;
                 }
             }
@@ -143,11 +164,11 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
 
 
     private String getRequestUrl(int offset) {
-        return Api.getFriends(offset);
+        return mRequestUrl + "&count=" + Api.GET_COUNT + "&offset=" + offset;
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) CoreApplication.get(mContext, mContext.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = CoreApplication.get(mContext, mContext.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isAvailable();
     }
@@ -168,10 +189,10 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
         mProgressBar.setVisibility(View.GONE);
 
         if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
-            mLoaderManager.initLoader(CURSOR_LOADER, null, FriendsFragment.this);
+            mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
         } else {
             mLoaderManager.destroyLoader(CURSOR_LOADER);
-            mLoaderManager.initLoader(CURSOR_LOADER, null, FriendsFragment.this);
+            mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
         }
     }
 
@@ -188,13 +209,13 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
     private void loadData() {
         REQUEST_OFFSET = 0;
         DataLoader loader = new DataLoader(mContext);
-        loader.getDataToDatabase(this, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mFriendProcessor);
+        loader.getDataToDatabase(this, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
         REQUEST_OFFSET += Api.GET_COUNT;
     }
 
     private void cleanDatabaseOut() {
-        if(isNetworkAvailable()) {
-            mContentResolver.delete(VingContentProvider.FRIENDS_CONTENT_URI,null,null);
+        if (isNetworkAvailable()) {
+            mContentResolver.delete(mContentType, null, null);
         }
     }
 
@@ -211,42 +232,59 @@ public class FriendsFragment extends ListFragment implements DataLoader.Database
     }
 
     private void setFooterVisibility() {
-        //mFriendAdapter.notifyDataSetChanged();
         if (isPaginationEnabled) {
             if (REQUEST_OFFSET == Api.GET_COUNT) {
-                mListView.addFooterView(mFooter,null,false);
+                mListView.addFooterView(mFooter, null, false);
                 mListView.setFooterDividersEnabled(true);
             }
         } else {
             mListView.removeFooterView(mFooter);
         }
-        isPaginationEnabled = (getRealAdapterCount(mFriendAdapter) % Api.GET_COUNT) == 0;
+        isPaginationEnabled = (getRealAdapterCount(mZAdapter) % Api.GET_COUNT) == 0;
     }
-
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection;
         if (isNetworkAvailable()) {
-            projection = FriendsTable.PROJECTION;
-        } else {
-            projection = FriendsTable.PROJECTION_OFFLINE;
+            return new CursorLoader(mContext, mContentType, mProjection, null, null, null);
         }
-        return new CursorLoader(mContext, VingContentProvider.FRIENDS_CONTENT_URI, projection, null, null, null);
+        return new CursorLoader(mContext, mContentType, mProjectionOffline, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mFriendAdapter.swapCursor(data);
+        mZAdapter.swapCursor(data);
         setFooterVisibility();
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) { }
-
-    @Override
-    public void onPageLimitReached(int cursorPosition) {
-
+    public void onLoaderReset(Loader<Cursor> loader) {
     }
+
+
+    private void setAdapter(ZBaseAdapter adapter) {
+        mZAdapter = adapter;
+    }
+
+    private void setProcessor(DatabaseProcessor processor) {
+        mProcessor = processor;
+    }
+
+    private void setRequestUrl(String requestUrl) {
+        mRequestUrl = requestUrl;
+    }
+
+    private void setContentType(Uri contentType) {
+        mContentType = contentType;
+    }
+
+    private void setProjection(String[] projection) {
+        mProjection = projection;
+    }
+
+    private void setProjectionOffline(String[] projectionOffline) {
+        mProjectionOffline = projectionOffline;
+    }
+
 }

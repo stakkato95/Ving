@@ -19,17 +19,6 @@ public class Friend extends JSONObjectWrapper {
     private static final String ONLINE_MOBILE = "online_mobile";
 
 
-    public static final Parcelable.Creator<Friend> CREATOR
-            = new Parcelable.Creator<Friend>() {
-        public Friend createFromParcel(Parcel in) {
-            return new Friend(in);
-        }
-
-        public Friend[] newArray(int size) {
-            return new Friend[size];
-        }
-    };
-
     public Friend(String jsonObject) {
         super(jsonObject);
     }
@@ -42,6 +31,16 @@ public class Friend extends JSONObjectWrapper {
         super(in);
     }
 
+    public static final Parcelable.Creator<Friend> CREATOR
+            = new Parcelable.Creator<Friend>() {
+        public Friend createFromParcel(Parcel in) {
+            return new Friend(in);
+        }
+
+        public Friend[] newArray(int size) {
+            return new Friend[size];
+        }
+    };
 
     public String getFirstName() {
         return getString(FIRST_NAME);
