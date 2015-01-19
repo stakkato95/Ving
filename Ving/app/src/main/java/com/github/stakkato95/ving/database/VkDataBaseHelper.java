@@ -38,6 +38,7 @@ public class VkDataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void open() {
+        //TODO don't use single instance of database
         mDataBase = this.getWritableDatabase();
     }
 

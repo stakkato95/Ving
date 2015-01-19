@@ -26,6 +26,7 @@ public class VingContentProvider extends ContentProvider {
 
     private VkDataBaseHelper mVkDataBaseHelper;
 
+    //TODO enums
     private static final int URI_FRIENDS = 0;
     private static final int URI_FRIEND_ID = 1;
     private static final int URI_DIALOGS = 2;
@@ -53,6 +54,7 @@ public class VingContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        //TODO NPE
         mVkDataBaseHelper = VkDataBaseHelper.get(getContext());
         return true;
     }
@@ -129,6 +131,7 @@ public class VingContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        //TODO writable/readable
         SQLiteDatabase database = mVkDataBaseHelper.getSQLiteDatabase();
         int deletedRows;
         int uriType = sUriMatcher.match(uri);

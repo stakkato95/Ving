@@ -73,6 +73,10 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
         configurableFragment.setContentType(contentType);
         configurableFragment.setProjection(projection);
         configurableFragment.setProjectionOffline(projectionOffline);
+        Bundle args = new Bundle();
+        //init args
+        configurableFragment.setArguments(args);
+        //TODO need use Bundle args
         return configurableFragment;
     }
 

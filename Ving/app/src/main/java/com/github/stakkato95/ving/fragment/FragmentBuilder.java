@@ -9,6 +9,7 @@ import com.github.stakkato95.ving.processor.DatabaseProcessor;
 /**
  * Created by Artyom on 19.01.2015.
  */
+//TODO удалить нафик
 public class FragmentBuilder {
 
     private ZCursorAdapter mZCursorAdapter;
