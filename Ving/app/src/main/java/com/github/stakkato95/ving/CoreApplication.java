@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.github.stakkato95.imageloader.ImageLoader;
-import com.github.stakkato95.ving.database.VkDataBaseHelper;
+import com.github.stakkato95.ving.database.DBHelper;
 import com.github.stakkato95.ving.source.HttpDataSource;
 import com.github.stakkato95.ving.source.VkDataSource;
 
@@ -13,16 +13,14 @@ import com.github.stakkato95.ving.source.VkDataSource;
  */
 public class CoreApplication extends Application {
 
-    private static Context mContext;
     private HttpDataSource mHttpDataSource;
     private VkDataSource mVkDataSource;
     private ImageLoader mImageLoader;
-    private VkDataBaseHelper mVkDataBaseHelper;
+    private DBHelper mDBHelper;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = this;
         mHttpDataSource = new HttpDataSource();
         mVkDataSource = new VkDataSource();
     }
@@ -44,16 +42,9 @@ public class CoreApplication extends Application {
         if(ImageLoader.KEY.equals(name)) {
             if(mImageLoader == null) {
                 //20 Mb DiskCache
-                mImageLoader = new ImageLoader(getContext(), 1024 * 1024 * 20, R.drawable.ic_image_loading, R.drawable.ic_image_loading_error);
+                mImageLoader = new ImageLoader(getApplicationContext(), 1024 * 1024 * 20, R.drawable.ic_image_loading, R.drawable.ic_image_loading_error);
             }
             return mImageLoader;
-        }
-        if (VkDataBaseHelper.KEY.equals(name)) {
-            if(mVkDataBaseHelper == null) {
-                mVkDataBaseHelper = new VkDataBaseHelper(getContext());
-                mVkDataBaseHelper.open();
-            }
-            return mVkDataBaseHelper;
         }
         return super.getSystemService(name);
     }
@@ -73,7 +64,4 @@ public class CoreApplication extends Application {
         return systemService;
     }
 
-    public static Context getContext() {
-        return mContext;
-    }
 }

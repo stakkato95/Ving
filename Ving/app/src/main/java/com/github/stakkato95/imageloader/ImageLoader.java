@@ -14,7 +14,7 @@ import com.github.stakkato95.imageloader.thread.FileLoadingThread;
 import com.github.stakkato95.imageloader.thread.FileSavingThread;
 import com.github.stakkato95.imageloader.thread.MemoryLoadingThread;
 import com.github.stakkato95.ving.CoreApplication;
-import com.github.stakkato95.ving.os.VingExecutor;
+import com.github.stakkato95.ving.os.ZExecutor;
 import com.github.stakkato95.ving.processor.BitmapProcessor;
 import com.github.stakkato95.ving.source.HttpDataSource;
 
@@ -29,7 +29,7 @@ public class ImageLoader {
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
-    private static VingExecutor sExecutor;
+    private static ZExecutor sExecutor;
     private final Context mContext;
     private final MemoryCache mMemoryCache;
     private final ImageLoaderCallback mImageLoaderCallback;
@@ -49,7 +49,7 @@ public class ImageLoader {
     public static final String TAG = ImageLoader.class.getSimpleName();
 
     static {
-        sExecutor = new VingExecutor();
+        sExecutor = new ZExecutor();
 
     }
 

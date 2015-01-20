@@ -2,33 +2,27 @@ package com.github.stakkato95.ving.processor;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 
-import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.bo.Friend;
 import com.github.stakkato95.ving.bo.JSONArrayWrapper;
 import com.github.stakkato95.ving.database.FriendsTable;
-import com.github.stakkato95.ving.provider.VingContentProvider;
+import com.github.stakkato95.ving.provider.ZContentProvider;
 
 import org.json.JSONObject;
-
-import java.io.InputStream;
 
 /**
  * Created by Artyom on 21.11.2014.
  */
-public class FriendsProcessor implements DatabaseProcessor<InputStream> {
+public class FriendsProcessor extends DatabaseProcessor {
 
-    @Override
-    public void process(InputStream inputStream) throws Exception {
-        if (inputStream != null) {
-            String string = new StringProcessor().process(inputStream);
-            JSONArrayWrapper jsonArray = new JSONArrayWrapper(string);
-            insertDataFrom(jsonArray);
-        }
+    public FriendsProcessor(Context context) {
+        super(context);
     }
 
-    private void insertDataFrom(JSONArrayWrapper jsonArray) {
-        ContentResolver resolver = CoreApplication.getContext().getContentResolver();
+    @Override
+    protected void insertDataFrom(JSONArrayWrapper jsonArray) {
+        ContentResolver resolver = getContext().getContentResolver();
         ContentValues[] values = new ContentValues[jsonArray.length()];
 
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -44,7 +38,7 @@ public class FriendsProcessor implements DatabaseProcessor<InputStream> {
             values[i] = value;
         }
 
-        resolver.bulkInsert(VingContentProvider.FRIENDS_CONTENT_URI, values);
+        resolver.bulkInsert(ZContentProvider.FRIENDS_CONTENT_URI, values);
     }
 
 }

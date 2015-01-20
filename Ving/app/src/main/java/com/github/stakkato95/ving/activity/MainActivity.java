@@ -31,15 +31,15 @@ public class MainActivity extends ActionBarActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private static List<DrawerMenuItem> mDrawerMenuItems;
+    private static List<DrawerMenuItem> sDrawerMenuItems;
 
     static {
-        mDrawerMenuItems = new ArrayList<>();
-        mDrawerMenuItems.add(DrawerMenuItem.FRIENDS);
+        sDrawerMenuItems = new ArrayList<>();
+        sDrawerMenuItems.add(DrawerMenuItem.FRIENDS);
+        //sDrawerMenuItems.add(DrawerMenuItem.DIALOGS);
     }
 
     private FragmentManager mFragmentManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +51,13 @@ public class MainActivity extends ActionBarActivity {
         setSupportActionBar(mToolbar);
 
         //Drawer content
-        setTitle(mTitle = mDrawerMenuItems.get(0).getTitle());
+        mTitle = getResources().getString(sDrawerMenuItems.get(0).getTitle());
+        setTitle(mTitle);
         mDrawerTitle = getTitle();
-        mScreenTitles = getResources().getStringArray(R.array.drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
 
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mScreenTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, sDrawerMenuItems));
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -95,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
             mDrawerList.setItemChecked(0, true);
 
-            ZListFragment fragment = DrawerMenuItem.FRIENDS.create();
+            ZListFragment fragment = sDrawerMenuItems.get(0).getFragment();
             mFragmentManager.beginTransaction()
                     .add(R.id.container, fragment)
                     .commit();
@@ -127,11 +127,12 @@ public class MainActivity extends ActionBarActivity {
 
         switch (position) {
             case 0:
-                fragment = DrawerMenuItem.FRIENDS.create();
-                title = DrawerMenuItem.FRIENDS.getTitle();
+                fragment = sDrawerMenuItems.get(0).getFragment();
+                title = getResources().getString(sDrawerMenuItems.get(0).getTitle());
                 break;
             case 1:
-                fragment = CapFragment.newInstance("Сообщения в разработка");
+                fragment = sDrawerMenuItems.get(1).getFragment();
+                title = getResources().getString(sDrawerMenuItems.get(1).getTitle());
                 break;
             case 2:
                 fragment = CapFragment.newInstance("Фотографии в разработка");

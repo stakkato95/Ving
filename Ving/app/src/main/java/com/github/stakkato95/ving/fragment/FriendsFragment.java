@@ -2,46 +2,47 @@ package com.github.stakkato95.ving.fragment;
 
 import android.net.Uri;
 
-import com.github.stakkato95.ving.adapter.DialogsAdapter;
+import com.github.stakkato95.ving.adapter.FriendsAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
-import com.github.stakkato95.ving.database.DialogsTable;
+import com.github.stakkato95.ving.database.FriendsTable;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
-import com.github.stakkato95.ving.processor.DialogsProcessor;
+import com.github.stakkato95.ving.processor.FriendsProcessor;
 import com.github.stakkato95.ving.provider.ZContentProvider;
 
 /**
- * Created by Artyom on 18.01.2015.
+ * Created by Artyom on 19.01.2015.
  */
-public class DialogsFragment extends ZListFragment {
+public class FriendsFragment extends ZListFragment {
+
     @Override
     public ZCursorAdapter getAdapter() {
-        return new DialogsAdapter(getActivity(), null, 0);
+        return new FriendsAdapter(getActivity(), null, 0);
     }
 
     @Override
     public DatabaseProcessor getProcessor() {
-        return new DialogsProcessor(getActivity());
+        return new FriendsProcessor(getActivity());
     }
 
     @Override
     public String getRequestUrl() {
-        return Api.getDialogs();
+        return Api.getFriends();
     }
 
     @Override
     public Uri getContentUri() {
-        return ZContentProvider.DIALOGS_CONTENT_URI;
+        return ZContentProvider.FRIENDS_CONTENT_URI;
     }
 
     @Override
     public String[] getProjection() {
-        return DialogsTable.PROJECTION;
+        return FriendsTable.PROJECTION;
     }
 
     @Override
     public String[] getProjectionOffline() {
-        return DialogsTable.PROJECTION;
+        return FriendsTable.PROJECTION_OFFLINE;
     }
 
 }

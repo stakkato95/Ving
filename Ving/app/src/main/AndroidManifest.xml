@@ -30,7 +30,7 @@
         </activity>
 
         <provider
-            android:name=".provider.VingContentProvider"
+            android:name=".provider.ZContentProvider"
             android:authorities="com.github.stakkato95.ving.provider"
             android:exported="false">
         </provider>

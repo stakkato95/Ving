@@ -1,12 +1,13 @@
 package com.github.stakkato95.ving.loader;
 
-import android.content.Context;
 import android.os.Handler;
 
-import com.github.stakkato95.ving.os.VingExecutor;
+import com.github.stakkato95.ving.os.ZExecutor;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
 import com.github.stakkato95.ving.processor.Processor;
 import com.github.stakkato95.ving.source.DataSource;
+
+import java.io.InputStream;
 
 /**
  * Created by Artyom on 17.01.2015.
@@ -26,25 +27,25 @@ public class DataLoader {
         void onLoadingFinished();
     }
 
-    private static final VingExecutor sExecutor;
+    private static final ZExecutor sExecutor;
     private final Handler mHandler;
 
-    public DataLoader(Context context) {
+    public DataLoader() {
         mHandler = new Handler();
     }
 
     static {
-        sExecutor = new VingExecutor();
+        sExecutor = new ZExecutor();
     }
 
-    public <Input,SourceOutput> void getDataToDatabase(final DatabaseCallback callback,
-                                                          final Input input,
-                                                          final DataSource<Input, SourceOutput> source,
-                                                          final DatabaseProcessor<SourceOutput> processor) {
+    public void getDataToDatabase(final DatabaseCallback callback,
+                                                          final String input,
+                                                          final DataSource<String, InputStream> source,
+                                                          final DatabaseProcessor processor) {
         sExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                SourceOutput sourceOutput = null;
+                InputStream sourceOutput = null;
 
                 try {
                     mHandler.post(new Runnable() {

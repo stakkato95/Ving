@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Artyom on 17.01.2015.
  */
-public class VingExecutor {
+public class ZExecutor {
 
     private static final int CPU_COUNT;
     private static final ExecutorService sExecutor;

@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 /**
  * Created by Artyom on 18.01.2015.
  */
-public class ZListFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class ZListFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
     private Context mContext;
     private ListView mListView;
@@ -52,6 +52,7 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
     private String[] mProjection;
     private String[] mProjectionOffline;
 
+    private DataLoader mDataLoader;
     private DatabaseProcessor mProcessor;
     private VkDataSource mVkDataSource;
     private int REQUEST_OFFSET;
@@ -60,34 +61,14 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
     public ZListFragment() {
     }
 
-    public static ZListFragment newInstance(ZCursorAdapter adapter,
-                                            DatabaseProcessor processor,
-                                            String url,
-                                            Uri contentType,
-                                            String[] projection,
-                                            String[] projectionOffline) {
-        ZListFragment configurableFragment = new ZListFragment();
-        configurableFragment.setAdapter(adapter);
-        configurableFragment.setProcessor(processor);
-        configurableFragment.setRequestUrl(url);
-        configurableFragment.setContentType(contentType);
-        configurableFragment.setProjection(projection);
-        configurableFragment.setProjectionOffline(projectionOffline);
-        Bundle args = new Bundle();
-        //init args
-        configurableFragment.setArguments(args);
-        //TODO need use Bundle args
-        return configurableFragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
         mContentResolver = mContext.getContentResolver();
-        cleanDatabaseOut();
-        mVkDataSource = VkDataSource.get(mContext);
         mLoaderManager = getActivity().getSupportLoaderManager();
+        mDataLoader = new DataLoader();
+        mVkDataSource = VkDataSource.get(mContext);
     }
 
     @Override
@@ -96,6 +77,7 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
 
         mFooter = View.inflate(mContext, R.layout.view_footer, null);
         mListView = (ListView) view.findViewById(android.R.id.list);
+        mZAdapter = getAdapter();
         mListView.setAdapter(mZAdapter);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -116,8 +98,7 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
                 }
                 if (mPreviousTotalItemCount != totalItemCount && (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
                     mPreviousTotalItemCount = totalItemCount;
-                    DataLoader loader = new DataLoader(mContext);
-                    loader.getDataToDatabase(new DataLoader.DatabaseCallback() {
+                    mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
 
                         @Override
                         public void onLoadingFinished() {
@@ -144,18 +125,22 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
                 }
             }
         });
-
         mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 isPaginationEnabled = false;
-                cleanDatabaseOut();
+                mListView.removeFooterView(mFooter);
                 loadData();
             }
         });
 
+        mContentType = getContentUri();
+        mRequestUrl = getRequestUrl();
+        mProcessor = getProcessor();
+        mProjection = getProjection();
+        mProjectionOffline = getProjectionOffline();
 
         loadData();
         return view;
@@ -211,9 +196,9 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
     }
 
     private void loadData() {
+        cleanDatabaseOut();
         REQUEST_OFFSET = 0;
-        DataLoader loader = new DataLoader(mContext);
-        loader.getDataToDatabase(this, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
+        mDataLoader.getDataToDatabase(this, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
         REQUEST_OFFSET += Api.GET_COUNT;
     }
 
@@ -267,28 +252,16 @@ public class ZListFragment extends ListFragment implements DataLoader.DatabaseCa
     }
 
 
-    private void setAdapter(ZCursorAdapter adapter) {
-        mZAdapter = adapter;
-    }
+    public abstract ZCursorAdapter getAdapter();
 
-    private void setProcessor(DatabaseProcessor processor) {
-        mProcessor = processor;
-    }
+    public abstract DatabaseProcessor getProcessor();
 
-    private void setRequestUrl(String requestUrl) {
-        mRequestUrl = requestUrl;
-    }
+    public abstract String getRequestUrl();
 
-    private void setContentType(Uri contentType) {
-        mContentType = contentType;
-    }
+    public abstract Uri getContentUri();
 
-    private void setProjection(String[] projection) {
-        mProjection = projection;
-    }
+    public abstract String[] getProjection();
 
-    private void setProjectionOffline(String[] projectionOffline) {
-        mProjectionOffline = projectionOffline;
-    }
+    public abstract String[] getProjectionOffline();
 
 }

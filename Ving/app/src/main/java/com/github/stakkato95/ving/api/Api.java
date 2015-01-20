@@ -11,8 +11,8 @@ public class Api {
 
     public static final int GET_COUNT = 30;
 
-    public static final String GET_FRIENDS = BASE_PATH + "friends.get?fields=photo_100,online";
-    public static final String GET_DIALOGS = BASE_PATH + "friends.get?fields=photo_100,online";
+    private static final String GET_FRIENDS = BASE_PATH + "friends.get?fields=photo_100,online";
+    private static final String GET_DIALOGS = BASE_PATH + "messages.getDialogs?";
 
     public static String getFriends() {
         return GET_FRIENDS;

@@ -34,8 +34,9 @@ public class FriendsAdapter extends ZCursorAdapter {
         fullNameText.setText(fullName);
 
         String photoUrl = cursor.getString(cursor.getColumnIndex(FriendsTable._PHOTO_100));
-        getmImageLoader().obtainImage(photoImage, photoUrl);
+        getImageLoader().obtainImage(photoImage, photoUrl);
 
+        onlineImage.setImageBitmap(null);
         try {
             int online = cursor.getInt(cursor.getColumnIndexOrThrow(FriendsTable._ONLINE));
             if (online == 2) {

@@ -25,7 +25,7 @@ public abstract class ZCursorAdapter extends CursorAdapter {
         return mLayoutInflater;
     }
 
-    protected ImageLoader getmImageLoader() {
+    protected ImageLoader getImageLoader() {
         return mImageLoader;
     }
 
