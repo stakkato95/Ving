@@ -19,7 +19,7 @@ public class JSONArrayWrapper {
         }
     }
 
-    public JSONObject getObject(int index) {
+    public JSONObject getJSONObject(int index) {
         try {
             return mJSONArray.getJSONObject(index);
         } catch (JSONException e) {

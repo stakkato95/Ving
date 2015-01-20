@@ -1,6 +1,7 @@
 package com.github.stakkato95.ving.loader;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import com.github.stakkato95.ving.os.ZExecutor;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
@@ -45,8 +46,6 @@ public class DataLoader {
         sExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                InputStream sourceOutput = null;
-
                 try {
                     mHandler.post(new Runnable() {
                         @Override
@@ -54,35 +53,27 @@ public class DataLoader {
                             callback.onLoadingStarted();
                         }
                     });
-                    sourceOutput = source.getResult(input);
-
-
-                } catch (final Exception e){
+                    InputStream sourceOutput = source.getResult(input);
+                    processor.process(sourceOutput);
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onLoadingFinished();
+                        }
+                    });
+                } catch (final Exception e) {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             callback.onLoadingError(e);
                         }
                     });
-                } finally {
-                    try {
-                        processor.process(sourceOutput);
-                    } catch (Exception e) {
-                        //exception is just impossible
-                    } finally {
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onLoadingFinished();
-                            }
-                        });
-                    }
                 }
             }
         });
     }
 
-    public <Input,SourceOutput,Output> void getData(final Callback callback,
+    public <Input,SourceOutput,Output> void getDataAsynch(final Callback callback,
                                                        final Input input,
                                                        final DataSource<Input,SourceOutput> source,
                                                        final Processor<SourceOutput,Output> processor) {
@@ -115,6 +106,13 @@ public class DataLoader {
                 }
             }
         });
+    }
+
+    public static  <Input,SourceOutput,Output> Output getDataDirectly(Input input,
+                                             DataSource<Input,SourceOutput> source,
+                                             Processor<SourceOutput,Output> processor) throws Exception {
+        SourceOutput sourceOutput = source.getResult(input);
+        return processor.process(sourceOutput);
     }
 
 }

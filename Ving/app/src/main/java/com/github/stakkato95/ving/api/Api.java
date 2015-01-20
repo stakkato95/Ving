@@ -13,6 +13,7 @@ public class Api {
 
     private static final String GET_FRIENDS = BASE_PATH + "friends.get?fields=photo_100,online";
     private static final String GET_DIALOGS = BASE_PATH + "messages.getDialogs?";
+    private static final String GET_USERS = BASE_PATH + "users.get?user_ids=";
 
     public static String getFriends() {
         return GET_FRIENDS;
@@ -20,6 +21,10 @@ public class Api {
 
     public static String getDialogs() {
         return GET_DIALOGS;
+    }
+
+    public static String getUsers() {
+        return GET_USERS;
     }
 
 }

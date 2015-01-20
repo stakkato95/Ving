@@ -36,7 +36,7 @@ public class MainActivity extends ActionBarActivity {
     static {
         sDrawerMenuItems = new ArrayList<>();
         sDrawerMenuItems.add(DrawerMenuItem.FRIENDS);
-        //sDrawerMenuItems.add(DrawerMenuItem.DIALOGS);
+        sDrawerMenuItems.add(DrawerMenuItem.DIALOGS);
     }
 
     private FragmentManager mFragmentManager;

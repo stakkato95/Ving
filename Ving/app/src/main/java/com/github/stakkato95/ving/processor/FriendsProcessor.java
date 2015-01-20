@@ -26,7 +26,7 @@ public class FriendsProcessor extends DatabaseProcessor {
         ContentValues[] values = new ContentValues[jsonArray.length()];
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getObject(i);
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
             Friend friend = new Friend(jsonObject);
             friend.createFullName();
 
