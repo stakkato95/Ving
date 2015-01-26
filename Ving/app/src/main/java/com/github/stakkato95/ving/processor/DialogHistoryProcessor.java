@@ -62,6 +62,7 @@ public class DialogHistoryProcessor extends DatabaseProcessor {
         }
         User[] users = DataLoader.getDataDirectly(Api.getUsers() + idBatch, new VkDataSource(), new UserProcessor());
 
+        //TODO remove
         Map<Long, ContentValues> values = new TreeMap<>(new Comparator<Long>() {
             @Override
             public int compare(Long lhs, Long rhs) {
@@ -79,10 +80,13 @@ public class DialogHistoryProcessor extends DatabaseProcessor {
             for (ContentValues value : configuredValues) {
                 value.put(DialogHistoryTable._FROM_ID, user.getFullName());
                 value.put(DialogHistoryTable._PHOTO_100, user.getPhoto());
+
+                //TODO remove
                 long location = value.getAsLong(DialogHistoryTable._DATE);
                 values.put(location, value);
             }
         }
+        //TODO remove partly
         ContentValues[] insertableValues = values.values().toArray(new ContentValues[values.size()]);
         resolver.bulkInsert(ZContentProvider.DIALOGS_HISTORY_CONTENT_URI, insertableValues);
     }

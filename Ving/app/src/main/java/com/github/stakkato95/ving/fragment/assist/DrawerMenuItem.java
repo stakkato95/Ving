@@ -10,7 +10,9 @@ import com.github.stakkato95.ving.fragment.ZListFragment;
  */
 public enum DrawerMenuItem {
 
+    //TODO remove magic about fragment, need to be fragment creator orr something else
     FRIENDS(R.string.friends, new FriendsFragment()),
+    //TODO remove magic about fragment
     DIALOGS(R.string.dialogs, new DialogsFragment());
 
 

@@ -32,11 +32,13 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    //TODO remove magic
     private static List<DrawerMenuItem> sDrawerMenuItems;
 
     public static final String KEY_REQUEST_FIELD = "key_request_field";
 
     static {
+        //TODO remove magic
         sDrawerMenuItems = new ArrayList<>();
         sDrawerMenuItems.add(DrawerMenuItem.DIALOGS);
         sDrawerMenuItems.add(DrawerMenuItem.FRIENDS);

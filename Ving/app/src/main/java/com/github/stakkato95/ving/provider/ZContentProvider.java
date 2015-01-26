@@ -29,6 +29,8 @@ import java.util.Set;
  */
 public class ZContentProvider extends ContentProvider {
 
+    //TODO go to read about enums :(
+    //ordinal
     enum UriType {
         FRIEND(0),
         FRIEND_ID(1),
@@ -37,9 +39,12 @@ public class ZContentProvider extends ContentProvider {
         DIALOG_HISTORY(4),
         DIALOG_HISTORY_ID(5);
 
+        //TODO remove magic
         private int mCode;
+
         private static final Map<Integer,UriType> sEnumMap;
 
+        //TODO remove magic
         static {
             sEnumMap = new HashMap<>();
             for (UriType uri : UriType.values()) {
@@ -47,15 +52,18 @@ public class ZContentProvider extends ContentProvider {
             }
         }
 
+        //TODO remove magic
         UriType(int code) {
             mCode = code;
         }
 
+        //TODO remove magic
         //these two methods exists just because UriMatcher detect uri type by its int value
         public int getIntCode() {
             return mCode;
         }
 
+        //TODO remove magic
         public static UriType cast(int index) {
             return sEnumMap.get(index);
         }

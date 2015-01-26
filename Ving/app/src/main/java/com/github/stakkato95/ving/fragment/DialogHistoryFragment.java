@@ -44,6 +44,7 @@ import java.net.UnknownHostException;
  */
 public class DialogHistoryFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
+    //TODO remove
     private Context mContext;
     private ListView mListView;
     private ZCursorAdapter mZAdapter;
@@ -55,12 +56,14 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
     private static final int CURSOR_LOADER = 0;
     private LoaderManager mLoaderManager;
     private ContentResolver mContentResolver;
+    //TODO
     private Uri mContentType;
     private String[] mProjection;
 
     private DataLoader mDataLoader;
     private DatabaseProcessor mProcessor;
     private VkDataSource mVkDataSource;
+    //TODO
     private int REQUEST_OFFSET;
     private String mRequestField;
 
@@ -116,6 +119,8 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
 
                         @Override
                         public void onLoadingFinished() {
+
+                            //TODO use restart
                             if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
                                 mLoaderManager.initLoader(CURSOR_LOADER, null, DialogHistoryFragment.this);
                             } else {
@@ -131,7 +136,7 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
 
                         @Override
                         public void onLoadingError(Exception e) {
-
+//TODO
                         }
                     }, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
                     REQUEST_OFFSET += Api.GET_COUNT;
@@ -142,6 +147,7 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
 
         mProgressBar = (ProgressBar)view.findViewById(android.R.id.progress);
         mErrorText  = (TextView)view.findViewById(R.id.loading_error_text_view);;
+        //TODO
         ImageView mSend = (ImageView)view.findViewById(R.id.dialog_history_send);
         mSend.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -149,6 +155,7 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
                 int maskedAction = event.getActionMasked();
                 switch (maskedAction) {
                     case MotionEvent.ACTION_DOWN:
+                        //TODO
                         v.setBackgroundColor(getResources().getColor(R.color.button_material_light));
                         return true;
                     case MotionEvent.ACTION_UP:
