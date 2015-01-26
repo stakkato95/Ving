@@ -6,6 +6,7 @@ import com.github.stakkato95.ving.adapter.FriendsAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.FriendsTable;
+import com.github.stakkato95.ving.fragment.assist.FragmentId;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
 import com.github.stakkato95.ving.processor.FriendsProcessor;
 import com.github.stakkato95.ving.provider.ZContentProvider;
@@ -43,6 +44,11 @@ public class FriendsFragment extends ZListFragment {
     @Override
     public String[] getProjectionOffline() {
         return FriendsTable.PROJECTION_OFFLINE;
+    }
+
+    @Override
+    public FragmentId getFragmentId() {
+        return FragmentId.FRIEND;
     }
 
 }

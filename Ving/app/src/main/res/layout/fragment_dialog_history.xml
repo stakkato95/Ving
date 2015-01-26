@@ -1,0 +1,55 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.github.stakkato95.ving.fragment.DialogHistoryFragment">
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/decor_view"
+        android:stackFromBottom="true"/>
+
+    <include
+        layout="@layout/view_on_error_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <View
+        android:id="@+id/decor_view"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/ListDivider"
+        android:layout_above="@+id/container"/>
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:hint="@string/edit_text_hint"
+            android:inputType="textLongMessage"
+            android:id="@+id/dialog_history_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"/>
+
+        <ImageView
+            android:contentDescription="@string/abc_action_bar_home_description"
+            android:clickable="true"
+            android:focusable="true"
+            android:id="@+id/dialog_history_send"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_content_send"/>
+
+        </LinearLayout>
+
+</RelativeLayout>

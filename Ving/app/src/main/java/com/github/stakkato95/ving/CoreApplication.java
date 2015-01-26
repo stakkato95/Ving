@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.github.stakkato95.imageloader.ImageLoader;
-import com.github.stakkato95.ving.database.DBHelper;
+import com.github.stakkato95.ving.database.ZDataBase;
 import com.github.stakkato95.ving.source.HttpDataSource;
 import com.github.stakkato95.ving.source.VkDataSource;
 
@@ -16,7 +16,7 @@ public class CoreApplication extends Application {
     private HttpDataSource mHttpDataSource;
     private VkDataSource mVkDataSource;
     private ImageLoader mImageLoader;
-    private DBHelper mDBHelper;
+    private ZDataBase mDBHelper;
 
     @Override
     public void onCreate() {

@@ -8,7 +8,7 @@
     android:paddingRight="16dp">
 
     <ImageView
-        android:id="@android:id/icon"
+        android:id="@+id/dialog_photo"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="centerCrop"
@@ -16,11 +16,37 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"/>
 
+    <!--TODO why not layout_width="20dp"-->
+    <ImageView
+        android:id="@+id/dialog_last_sender"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="40dp"
+        android:paddingStart="40dp"/>
+
     <TextView
-        android:id="@android:id/text1"
+        android:id="@+id/dialog_name"
         android:textSize="16sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="56dp"/>
+
+    <TextView
+        android:id="@+id/dialog_body"
+        android:textSize="14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/dialog_last_sender"
+        android:layout_toEndOf="@+id/dialog_last_sender"
+        android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:id="@+id/dialog_date"
+        android:textSize="12sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

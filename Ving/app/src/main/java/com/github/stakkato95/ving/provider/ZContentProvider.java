@@ -11,9 +11,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.github.stakkato95.ving.bo.Dialog;
-import com.github.stakkato95.ving.database.DBHelper;
-import com.github.stakkato95.ving.database.DialogsDBHelper;
+import com.github.stakkato95.ving.database.DialogHistoryTable;
+import com.github.stakkato95.ving.database.ZBaseColumns;
+import com.github.stakkato95.ving.database.ZDataBase;
 import com.github.stakkato95.ving.database.DialogsTable;
 import com.github.stakkato95.ving.database.FriendsTable;
 
@@ -30,10 +30,12 @@ import java.util.Set;
 public class ZContentProvider extends ContentProvider {
 
     enum UriType {
-        FRIENDS(0),
+        FRIEND(0),
         FRIEND_ID(1),
-        DIALOGS(2),
-        DIALOGS_ID(3);
+        DIALOG(2),
+        DIALOG_ID(3),
+        DIALOG_HISTORY(4),
+        DIALOG_HISTORY_ID(5);
 
         private int mCode;
         private static final Map<Integer,UriType> sEnumMap;
@@ -54,42 +56,56 @@ public class ZContentProvider extends ContentProvider {
             return mCode;
         }
 
-        public static UriType castToUri(int index) {
+        public static UriType cast(int index) {
             return sEnumMap.get(index);
         }
     }
 
-    private DBHelper mDBHelper;
+    private ZDataBase mDBHelper;
     private static final String AUTHORITY = "com.github.stakkato95.ving.provider";
 
     public static final Uri FRIENDS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + FriendsTable.NAME);
     public static final Uri DIALOGS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DialogsTable.NAME);
+    public static final Uri DIALOGS_HISTORY_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DialogHistoryTable.NAME);
 
     public static final String FRIENDS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
     public static final String FRIEND_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
     public static final String DIALOGS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogsTable.NAME;
     public static final String DIALOGS_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogsTable.NAME;
+    public static final String DIALOGS_HISTORY_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogHistoryTable.NAME;
+    public static final String DIALOGS_HISTORY_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogHistoryTable.NAME;
 
     private static final UriMatcher sUriMatcher;
+    private static Map<UriType,String> sContentType;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME, UriType.FRIENDS.getIntCode());
+        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME, UriType.FRIEND.getIntCode());
         sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME + "/#", UriType.FRIEND_ID.getIntCode());
-        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME, UriType.DIALOGS.getIntCode());
-        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME + "/#", UriType.DIALOGS_ID.getIntCode());
+        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME, UriType.DIALOG.getIntCode());
+        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME + "/#", UriType.DIALOG_ID.getIntCode());
+        sUriMatcher.addURI(AUTHORITY, DialogHistoryTable.NAME, UriType.DIALOG_HISTORY.getIntCode());
+        sUriMatcher.addURI(AUTHORITY, DialogHistoryTable.NAME + "/#", UriType.DIALOG_HISTORY_ID.getIntCode());
+
+        sContentType = new HashMap<>();
+        sContentType.put(UriType.FRIEND,FRIENDS_CONTENT_TYPE);
+        sContentType.put(UriType.FRIEND_ID,FRIEND_CONTENT_ITEM_TYPE);
+        sContentType.put(UriType.DIALOG,DIALOGS_CONTENT_TYPE);
+        sContentType.put(UriType.DIALOG_ID, DIALOGS_CONTENT_ITEM_TYPE);
+        sContentType.put(UriType.DIALOG_HISTORY, DIALOGS_HISTORY_CONTENT_TYPE);
+        sContentType.put(UriType.DIALOG_HISTORY_ID, DIALOGS_HISTORY_CONTENT_ITEM_TYPE);
     }
 
     @Override
     public boolean onCreate() {
         //TODO NPE
-        mDBHelper = new DBHelper(getContext());
+        mDBHelper = new ZDataBase(getContext());
         return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        UriType uriType = UriType.castToUri(sUriMatcher.match(uri));
+        UriType uriType = UriType.cast(sUriMatcher.match(uri));
 
         if (projection != null) {
             if (!isProjectionCorrect(uriType, projection)) {
@@ -97,25 +113,12 @@ public class ZContentProvider extends ContentProvider {
             }
         }
 
+        String tableName = uri.getLastPathSegment();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(tableName);
 
-        switch (uriType) {
-            case FRIENDS:
-                queryBuilder.setTables(FriendsTable.NAME);
-                break;
-            case FRIEND_ID:
-                queryBuilder.appendWhere(FriendsTable._ID + " = " + uri.getLastPathSegment());
-                queryBuilder.setTables(FriendsTable.NAME);
-                break;
-            case DIALOGS:
-                queryBuilder.setTables(DialogsTable.NAME);
-                break;
-            case DIALOGS_ID:
-                queryBuilder.setTables(DialogsTable.NAME);
-                queryBuilder.appendWhere(DialogsTable._ID + " = " + uri.getLastPathSegment());
-                break;
-            default:
-                throw new IllegalArgumentException("Incorrect uri: " + uri);
+        if (uri.getPathSegments().size() != 1) {
+            queryBuilder.appendWhere(ZBaseColumns._ID + " = " + uri.getLastPathSegment());
         }
 
         SQLiteDatabase database = mDBHelper.getWritableDatabase();
@@ -127,47 +130,25 @@ public class ZContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        UriType uriType = UriType.castToUri(sUriMatcher.match(uri));
-
-        switch (uriType) {
-            case FRIENDS:
-                return FRIENDS_CONTENT_TYPE;
-            case FRIEND_ID:
-                return FRIEND_CONTENT_ITEM_TYPE;
-            case DIALOGS:
-                return DIALOGS_CONTENT_TYPE;
-            case DIALOGS_ID:
-                return DIALOGS_CONTENT_ITEM_TYPE;
-        }
-
-        return null;
+        UriType uriType = UriType.cast(sUriMatcher.match(uri));
+        return sContentType.get(uriType);
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        String tableName;
-        Uri contentUri;
         Uri resultUri;
-        UriType uriType = UriType.castToUri(sUriMatcher.match(uri));
-        switch (uriType) {
-            case FRIENDS:
-                tableName = FriendsTable.NAME;
-                contentUri = FRIENDS_CONTENT_URI;
-                break;
-            case DIALOGS:
-                tableName = DialogsTable.NAME;
-                contentUri = DIALOGS_CONTENT_URI;
-                break;
-            default:
-                throw new IllegalArgumentException("Incorrect uri: " + uri);
+
+        if (uri.getPathSegments().size() != 1) {
+            throw new IllegalArgumentException("Incorrect uri: " + uri);
         }
 
+        String tableName = uri.getLastPathSegment();
         SQLiteDatabase database = mDBHelper.getWritableDatabase();
         try {
             database.beginTransaction();
             long id = database.insert(tableName, null, values);
             database.setTransactionSuccessful();
-            resultUri = ContentUris.withAppendedId(contentUri, id);
+            resultUri = ContentUris.withAppendedId(uri, id);
         } finally {
             database.endTransaction();
         }
@@ -179,37 +160,18 @@ public class ZContentProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         int deletedRows;
-        String tableName = null;
         String id;
-        UriType uriType = UriType.castToUri(sUriMatcher.match(uri));
+        String tableName = uri.getLastPathSegment();
 
-        switch (uriType) {
-            case FRIENDS:
-                tableName = FriendsTable.NAME;
-                break;
-            case FRIEND_ID:
-                id = uri.getLastPathSegment();
-                if (!TextUtils.isEmpty(selection)) {
-                    selection = FriendsTable._ID + " = " + id;
-                    selectionArgs = null;
-                } else {
-                    selection = FriendsTable._ID + " = " + id + " and " + selection + " = ?";
-                }
-                break;
-            case DIALOGS:
-                tableName = DialogsTable.NAME;
-                break;
-            case DIALOGS_ID:
-                id = uri.getLastPathSegment();
-                if (!TextUtils.isEmpty(selection)) {
-                    selection = DialogsTable._ID + " = " + id;
-                    selectionArgs = null;
-                } else {
-                    selection = DialogsTable._ID + " = " + id + " and " + selection + " = ?";
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Incorrect uri: " + uri);
+        //TODO handle situation with incorrect uri
+        if (uri.getPathSegments().size() != 1) {
+            id = uri.getLastPathSegment();
+            if (!TextUtils.isEmpty(selection)) {
+                selection = ZBaseColumns._ID + " = " + id;
+                selectionArgs = null;
+            } else {
+                selection = ZBaseColumns._ID + " = " + id + " and " + selection + " = ?";
+            }
         }
 
         SQLiteDatabase database = mDBHelper.getWritableDatabase();
@@ -221,35 +183,17 @@ public class ZContentProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         int updatedRows;
-        String tableName = null;
         String id;
-        UriType uriType = UriType.castToUri(sUriMatcher.match(uri));
+        String tableName = uri.getLastPathSegment();
 
-        switch (uriType) {
-            case FRIENDS:
-                tableName = FriendsTable.NAME;
-                break;
-            case FRIEND_ID:
-                id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    selection = FriendsTable.NAME + " = " + id;
-                } else {
-                    selection = FriendsTable.NAME + " = " + id + " and " + selection + " = ?";
-                }
-                break;
-            case DIALOGS:
-                tableName = DialogsTable.NAME;
-                break;
-            case DIALOGS_ID:
-                id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    selection = DialogsTable.NAME + " = " + id;
-                } else {
-                    selection = DialogsTable.NAME + " = " + id + " and " + selection + " = ?";
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Incorrect uri: " + uri);
+        if (uri.getPathSegments().size() != 1) {
+            id = uri.getLastPathSegment();
+            if (!TextUtils.isEmpty(selection)) {
+                selection = ZBaseColumns._ID + " = " + id;
+                selectionArgs = null;
+            } else {
+                selection = ZBaseColumns._ID + " = " + id + " and " + selection + " = ?";
+            }
         }
 
         SQLiteDatabase database = mDBHelper.getWritableDatabase();
@@ -263,17 +207,23 @@ public class ZContentProvider extends ContentProvider {
         String[] existingColumns = null;
 
         switch (uriType) {
-            case FRIENDS:
+            case FRIEND:
                 existingColumns = FriendsTable.PROJECTION;
                 break;
             case FRIEND_ID:
                 existingColumns = FriendsTable.PROJECTION;
                 break;
-            case DIALOGS:
+            case DIALOG:
                 existingColumns = DialogsTable.PROJECTION;
                 break;
-            case DIALOGS_ID:
+            case DIALOG_ID:
                 existingColumns = DialogsTable.PROJECTION;
+                break;
+            case DIALOG_HISTORY:
+                existingColumns = DialogHistoryTable.PROJECTION;
+                break;
+            case DIALOG_HISTORY_ID:
+                existingColumns = DialogHistoryTable.PROJECTION;
                 break;
         }
 

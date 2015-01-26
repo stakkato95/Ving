@@ -2,12 +2,14 @@ package com.github.stakkato95.imageloader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.github.stakkato95.imageloader.assist.ImageHelper;
 import com.github.stakkato95.imageloader.cache.DiskCache;
 import com.github.stakkato95.imageloader.cache.MemoryCache;
 import com.github.stakkato95.imageloader.thread.FileLoadingThread;
@@ -27,8 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ImageLoader {
 
-    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-
     private static ZExecutor sExecutor;
     private final Context mContext;
     private final MemoryCache mMemoryCache;
@@ -42,6 +42,7 @@ public class ImageLoader {
     //resources for loading images & images with errors
     private final int mLoadingImageResourceId;
     private final int mErrorImageResourceId;
+    private boolean isCircled = false;
 
     public static final String KEY = ImageLoader.class.getSimpleName();
     public static ImageLoader get(Context context) { return CoreApplication.get(context, KEY); }
@@ -101,6 +102,11 @@ public class ImageLoader {
 
     }
 
+    public ImageLoader setCircled() {
+        isCircled = true;
+        return this;
+    }
+
     private void setBmpToView(Bitmap bmp, String url) {
 
         Set<Map.Entry<ImageView, String>> keyValuePair = mRequestsMap.entrySet();
@@ -111,6 +117,9 @@ public class ImageLoader {
                 ImageView targetView = pair.getKey();
 
                 if (targetView != null) {
+                    if (isCircled) {
+                        bmp = ImageHelper.getRounded(bmp);
+                    }
                     targetView.setImageBitmap(bmp);
                     Log.d(TAG, "image " + url + " is laid");
                 }
@@ -122,7 +131,7 @@ public class ImageLoader {
 
     }
 
-    private void setBmpToView(Integer resourceId, String url) {
+    private void setBmpToView(String url) {
 
         Set<Map.Entry<ImageView, String>> keyValuePair = mRequestsMap.entrySet();
 
@@ -132,7 +141,11 @@ public class ImageLoader {
                 ImageView targetView = pair.getKey();
 
                 if (targetView != null) {
-                    targetView.setImageResource(resourceId);
+                    Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), mErrorImageResourceId);
+                    if (isCircled) {
+                        bmp = ImageHelper.getRounded(bmp);
+                    }
+                    targetView.setImageBitmap(bmp);
                     Log.d(TAG, "image " + url + " is laid");
                 }
 
@@ -173,7 +186,7 @@ public class ImageLoader {
                 if (mRequestsMap.containsValue(url)) {
 
                     //setting an error icon from resources
-                    setBmpToView(mErrorImageResourceId, url);
+                    setBmpToView(url);
                 }
             }
 

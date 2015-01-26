@@ -32,8 +32,13 @@
         <provider
             android:name=".provider.ZContentProvider"
             android:authorities="com.github.stakkato95.ving.provider"
-            android:exported="false">
+            android:exported="false" >
         </provider>
+
+        <activity
+            android:name=".activity.DialogHistoryActivity"
+            android:label="@string/title_activity_dialog_history" >
+        </activity>
     </application>
 
 </manifest>

@@ -21,7 +21,7 @@ public class FriendsProcessor extends DatabaseProcessor {
     }
 
     @Override
-    protected void insertDataFrom(JSONArrayWrapper jsonArray) {
+    protected void insertDataFrom(JSONArrayWrapper jsonArray) throws Exception {
         ContentResolver resolver = getContext().getContentResolver();
         ContentValues[] values = new ContentValues[jsonArray.length()];
 

@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 /**
  * Created by Artyom on 31.12.2014.
  */
-public interface DataBaseConstants extends BaseColumns {
+public interface ZBaseColumns extends BaseColumns {
 
     String DIVIDER = ", ";
 

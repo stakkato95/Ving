@@ -14,7 +14,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="load_more">Ещё</string>
-
     <string name="friends">Друзья</string>
     <string name="dialogs">Сообщения</string>
 
@@ -24,5 +23,9 @@
         <item>Фотографии</item>
         <item>Видео</item>
     </string-array>
+
+    <string name="title_activity_dialog_history">DialogHistoryActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="edit_text_hint">Сообщение</string>
 
 </resources>

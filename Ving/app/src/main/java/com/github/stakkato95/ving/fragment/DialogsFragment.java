@@ -6,6 +6,7 @@ import com.github.stakkato95.ving.adapter.DialogsAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.DialogsTable;
+import com.github.stakkato95.ving.fragment.assist.FragmentId;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
 import com.github.stakkato95.ving.processor.DialogsProcessor;
 import com.github.stakkato95.ving.provider.ZContentProvider;
@@ -44,4 +45,8 @@ public class DialogsFragment extends ZListFragment {
         return DialogsTable.PROJECTION;
     }
 
+    @Override
+    public FragmentId getFragmentId() {
+        return FragmentId.DIALOG;
+    }
 }

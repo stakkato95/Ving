@@ -25,10 +25,11 @@
 
     <ImageView
         android:id="@android:id/icon1"
+        android:layout_height="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@android:id/text1"
-        android:layout_marginTop="8dp"
-        android:paddingLeft="56dp"/>
+        android:layout_toRightOf="@android:id/text1"
+        android:layout_toEndOf="@android:id/text1"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"/>
 
 </RelativeLayout>

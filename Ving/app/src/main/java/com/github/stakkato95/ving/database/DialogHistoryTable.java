@@ -5,14 +5,14 @@ import com.github.stakkato95.util.MultiValueMap;
 import java.util.ArrayList;
 
 /**
- * Created by Artyom on 19.01.2015.
+ * Created by Artyom on 25.01.2015.
  */
-public final class DialogsTable extends ZTable {
+public final class DialogHistoryTable extends ZTable {
 
-    public static final String NAME = "dialogs";
+    public static final String NAME = "dialog_history";
 
-    public static final String _DIALOG_NAME = "_dialog_name"; //identified by friend's full_name, or dialog's title
-    public static final String _LAST_SENDER_PHOTO_100 = "_last_sender_photo_100";
+    public static final String _USER_ID = "_user_id";
+    public static final String _FROM_ID = "_from_id";
     public static final String _PHOTO_100 = "_photo_100";
     public static final String _DATE = "_date";
     public static final String _ROUTE = "_route";
@@ -25,12 +25,12 @@ public final class DialogsTable extends ZTable {
         sDBMap = new MultiValueMap<>();
         sDBMap.put(TYPE_INTEGER, new ArrayList<String>() {{
             add(_ID);
-            add(_READ_STATE);
+            add(_USER_ID);
+            add(_FROM_ID);
             add(_ROUTE);
+            add(_READ_STATE);
         }});
         sDBMap.put(TYPE_TEXT, new ArrayList<String>() {{
-            add(_DIALOG_NAME);
-            add(_LAST_SENDER_PHOTO_100);
             add(_PHOTO_100);
             add(_DATE);
             add(_BODY);
@@ -49,12 +49,10 @@ public final class DialogsTable extends ZTable {
 
     public static final String[] PROJECTION = {
             _ID,
-            _DIALOG_NAME,
-            _LAST_SENDER_PHOTO_100,
+            _FROM_ID,
             _PHOTO_100,
             _DATE,
             _ROUTE,
-            _READ_STATE,
             _BODY
     };
 

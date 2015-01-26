@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 
+import com.github.stakkato95.util.MultiValueMap;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.bo.Dialog;
 import com.github.stakkato95.ving.bo.JSONArrayWrapper;
@@ -15,21 +16,26 @@ import com.github.stakkato95.ving.source.VkDataSource;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Created by Artyom on 19.01.2015.
  */
 public class DialogsProcessor extends DatabaseProcessor {
-
-    public static final String ONE_INTERLOCUTOR_DIALOG = " ... ";
 
     public DialogsProcessor(Context context) {
         super(context);
     }
 
     @Override
-    protected void insertDataFrom(JSONArrayWrapper jsonArray) {
+    protected void insertDataFrom(JSONArrayWrapper jsonArray) throws Exception {
         ContentResolver resolver = getContext().getContentResolver();
-        ContentValues[] values = new ContentValues[jsonArray.length()];
+        MultiValueMap<Long,ContentValues> valuesMap = new MultiValueMap<>();
 
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -37,32 +43,53 @@ public class DialogsProcessor extends DatabaseProcessor {
 
             ContentValues value = new ContentValues();
             value.put(DialogsTable._ID, dialog.getId());
-            value.put(DialogsTable._DATE, dialog.getDate());
             value.put(DialogsTable._ROUTE, dialog.getRoute());
             value.put(DialogsTable._READ_STATE, dialog.getReadState());
-            value.put(DialogsTable._BODY, dialog.getBody());
 
-            if (dialog.getTitle().equals(ONE_INTERLOCUTOR_DIALOG)) {
-                User user = null;
-                try {
-                    //TODO exception is thrown, because we get not a json OBJECT, but a json ARRAY
-                    user = DataLoader.getDataDirectly(Api.getUsers() + dialog.getUserId(), new VkDataSource(), new UserProcessor());
-                } catch (Exception e) {
-                    //TODO throw this one and make method throwable
-                }
-                if (user != null) {
-                    String dialogName = user.getFullName();
-                    String photo = user.getPhoto();
-                    value.put(DialogsTable._DIALOG_NAME, dialogName);
-                    value.put(DialogsTable._PHOTO_100, photo);
-                }
-            } else {
+            Date date = new Date(dialog.getDate());
+            value.put(DialogsTable._DATE, date.toString().substring(0,10));
+
+            String dialogBody = dialog.getBody();
+            if (dialog.getBody().contains("\n")) {
+                dialogBody = dialogBody.replaceAll("\n"," ");
+            }
+            value.put(DialogsTable._BODY, dialogBody);
+
+            if (!dialog.getTitle().equals(Api.ONE_INTERLOCUTOR_DIALOG)) {
+                value.put(DialogsTable._ID, dialog.getChatId());
                 value.put(DialogsTable._DIALOG_NAME, dialog.getTitle());
                 value.put(DialogsTable._PHOTO_100, dialog.getPhoto());
+            } else {
+                value.put(DialogsTable._ID, dialog.getUserId());
             }
-            values[i] = value;
+            valuesMap.put(dialog.getUserId(),value);
         }
-        resolver.bulkInsert(ZContentProvider.DIALOGS_CONTENT_URI, values);
+
+        long id;
+        Set<Map.Entry<Long,List<ContentValues>>> keyValuePairs = valuesMap.entrySet();
+        StringBuilder idBatch = new StringBuilder();
+        for (Map.Entry<Long,List<ContentValues>> pair : keyValuePairs) {
+            id = pair.getKey();
+            idBatch.append(id).append(',');
+        }
+        User[] users = DataLoader.getDataDirectly(Api.getUsers() + idBatch, new VkDataSource(), new UserProcessor());
+
+        List<ContentValues> values = new ArrayList<>();
+        for (User user : users) {
+            List<ContentValues> configuredValues = valuesMap.get(user.getId());
+
+            for (ContentValues value : configuredValues) {
+                if (!value.containsKey(DialogsTable._DIALOG_NAME)) {
+                    value.put(DialogsTable._DIALOG_NAME, user.getFullName());
+                    value.put(DialogsTable._PHOTO_100, user.getPhoto());
+                } else {
+                    value.put(DialogsTable._LAST_SENDER_PHOTO_100, user.getPhoto());
+                }
+                values.add(value);
+            }
+        }
+        ContentValues[] insertableValues = new ContentValues[values.size()];
+        resolver.bulkInsert(ZContentProvider.DIALOGS_CONTENT_URI, values.toArray(insertableValues));
     }
 
 }

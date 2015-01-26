@@ -25,7 +25,7 @@ public abstract class DatabaseProcessor {
         }
     }
 
-    protected abstract void insertDataFrom(JSONArrayWrapper jsonArray);
+    protected abstract void insertDataFrom(JSONArrayWrapper jsonArray) throws Exception;
 
     protected final Context getContext() {
         return mContext;

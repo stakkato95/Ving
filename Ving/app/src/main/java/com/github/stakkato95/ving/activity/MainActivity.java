@@ -1,5 +1,6 @@
 package com.github.stakkato95.ving.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,15 +18,15 @@ import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.fragment.CapFragment;
 import com.github.stakkato95.ving.fragment.ZListFragment;
 import com.github.stakkato95.ving.fragment.assist.DrawerMenuItem;
+import com.github.stakkato95.ving.fragment.assist.FragmentId;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ZListFragment.ClickCallback {
 
     //Drawer content
-    private String[] mScreenTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -33,10 +34,12 @@ public class MainActivity extends ActionBarActivity {
     private CharSequence mTitle;
     private static List<DrawerMenuItem> sDrawerMenuItems;
 
+    public static final String KEY_REQUEST_FIELD = "key_request_field";
+
     static {
         sDrawerMenuItems = new ArrayList<>();
-        sDrawerMenuItems.add(DrawerMenuItem.FRIENDS);
         sDrawerMenuItems.add(DrawerMenuItem.DIALOGS);
+        sDrawerMenuItems.add(DrawerMenuItem.FRIENDS);
     }
 
     private FragmentManager mFragmentManager;
@@ -46,18 +49,22 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //material actionbar with arrow
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        setSupportActionBar(toolbar);
 
         //Drawer content
+        String[] drawerTitles = new String[sDrawerMenuItems.size()];
+        for (int i = 0; i < sDrawerMenuItems.size(); i++) {
+            drawerTitles[i] = getResources().getString(sDrawerMenuItems.get(i).getTitle());
+        }
+
         mTitle = getResources().getString(sDrawerMenuItems.get(0).getTitle());
         setTitle(mTitle);
         mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
 
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, sDrawerMenuItems));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, drawerTitles));
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -68,7 +75,7 @@ public class MainActivity extends ActionBarActivity {
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
-                mToolbar,
+                toolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
         ) {
@@ -134,12 +141,6 @@ public class MainActivity extends ActionBarActivity {
                 fragment = sDrawerMenuItems.get(1).getFragment();
                 title = getResources().getString(sDrawerMenuItems.get(1).getTitle());
                 break;
-            case 2:
-                fragment = CapFragment.newInstance("Фотографии в разработка");
-                break;
-            case 3:
-                fragment = CapFragment.newInstance("Видео в разработка");
-                break;
             default:
                 break;
         }
@@ -162,6 +163,25 @@ public class MainActivity extends ActionBarActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public void showDetails(FragmentId fragmentId, String requestField) {
+        Intent intent = null;
+
+        switch (fragmentId) {
+            case FRIEND:
+                //intent = new Intent(this, UserActivity.class);
+                break;
+            case DIALOG:
+                intent = new Intent(this, DialogHistoryActivity.class);
+                break;
+            default:
+                break;
+        }
+
+        intent.putExtra(KEY_REQUEST_FIELD, requestField);
+        startActivity(intent);
     }
 
 }
