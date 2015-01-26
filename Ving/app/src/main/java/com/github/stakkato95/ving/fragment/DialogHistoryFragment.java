@@ -49,6 +49,8 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
     private ZCursorAdapter mZAdapter;
     private ProgressBar mProgressBar;
     private TextView mErrorText;
+    private View mHeader;
+    private boolean isPaginationEnabled = true;
 
     private static final int CURSOR_LOADER = 0;
     private LoaderManager mLoaderManager;
@@ -90,11 +92,11 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
         View view = inflater.inflate(R.layout.fragment_dialog_history, container, false);
 
         mZAdapter = new DialogHistoryAdapter(mContext,null,0);
+        mHeader = View.inflate(mContext, R.layout.view_footer, null);
         mListView = (ListView)view.findViewById(android.R.id.list);
         mListView.setAdapter(mZAdapter);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
-            private int mPreviousTotalItemCount = 0;
             private static final int VISIBLE_THRESHOLD = 5;
 
             @Override
@@ -106,16 +108,14 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
                 ListAdapter adapter = view.getAdapter();
                 int currentAdapterCount = getRealAdapterCount(adapter);
 
-                if (currentAdapterCount == 0) {
+                if (currentAdapterCount == (firstVisibleItem + visibleItemCount)) {
                     return;
                 }
-                if (mPreviousTotalItemCount != totalItemCount && (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
-                    mPreviousTotalItemCount = totalItemCount;
+                if (firstVisibleItem <= VISIBLE_THRESHOLD) {
                     mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
 
                         @Override
                         public void onLoadingFinished() {
-                            //setFooterVisibility();
                             if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
                                 mLoaderManager.initLoader(CURSOR_LOADER, null, DialogHistoryFragment.this);
                             } else {
@@ -233,16 +233,16 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
         return count;
     }
 
-    private void setFooterVisibility() {
-//        if (isPaginationEnabled) {
-//            if (REQUEST_OFFSET == Api.GET_COUNT) {
-//                mListView.addFooterView(mFooter, null, false);
-//                mListView.setFooterDividersEnabled(true);
-//            }
-//        } else {
-//            mListView.removeFooterView(mFooter);
-//        }
-//        isPaginationEnabled = (getRealAdapterCount(mDialogHistoryAdapter) % Api.GET_COUNT) == 0;
+    private void setHeaderVisibility() {
+        if (isPaginationEnabled) {
+            if (REQUEST_OFFSET == Api.GET_COUNT) {
+                mListView.addHeaderView(mHeader, null, false);
+                mListView.setFooterDividersEnabled(true);
+            }
+        } else {
+            mListView.removeHeaderView(mHeader);
+        }
+        isPaginationEnabled = (getRealAdapterCount(mZAdapter) % Api.GET_COUNT) == 0;
     }
 
 
@@ -257,7 +257,7 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mZAdapter.swapCursor(data);
-        setFooterVisibility();
+        setHeaderVisibility();
     }
 
     @Override

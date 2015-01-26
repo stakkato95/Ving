@@ -113,7 +113,6 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
 
                         @Override
                         public void onLoadingFinished() {
-                            //setFooterVisibility();
                             if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
                                 mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
                             } else {
