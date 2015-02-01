@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * Created by Artyom on 23.01.2015.
  */
-public class MultiValueMap<K,V> {
+public class MultiValueMap<K, V> {
 
     private Map<K, List<V>> mMap = new LinkedHashMap<>();
 
@@ -21,8 +21,7 @@ public class MultiValueMap<K,V> {
         } else {
             List<V> list = mMap.get(key);
             list.add(value);
-            mMap.remove(key);
-            return mMap.put(key, list);
+            return list;
         }
     }
 
@@ -32,9 +31,7 @@ public class MultiValueMap<K,V> {
         } else {
             List<V> list = mMap.get(key);
             list.addAll(values);
-            //TODO
-            mMap.remove(key);
-            return mMap.put(key, list);
+            return list;
         }
     }
 

@@ -45,7 +45,6 @@ public class FileLoadingThread extends Thread {
     }
 
     private void performLoadingFinished(final Bitmap bmp) {
-        Log.d(TAG, "file loading in " + currentThread().getId() + " thread finished");
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -55,7 +54,6 @@ public class FileLoadingThread extends Thread {
     }
 
     private void performReceivedError(final Exception e) {
-        Log.d(TAG, currentThread().getId() + " thread finished with error");
         mHandler.post(new Runnable() {
             @Override
             public void run() {

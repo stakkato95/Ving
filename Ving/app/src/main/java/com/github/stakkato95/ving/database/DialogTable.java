@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by Artyom on 19.01.2015.
  */
-public final class DialogsTable extends ZTable {
+public final class DialogTable extends ZTable {
 
     public static final String NAME = "dialogs";
 

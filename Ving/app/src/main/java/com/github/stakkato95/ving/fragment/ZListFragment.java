@@ -84,10 +84,22 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_zlist, container, false);
 
-        mErrorText  = (TextView)view.findViewById(R.id.loading_error_text_view);
+        mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
         mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
         mFooter = View.inflate(mContext, R.layout.view_footer, null);
+        mFooter.setVisibility(View.GONE);
+
+        mFooter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(),"fjdshkfjs",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         mListView = (ListView) view.findViewById(android.R.id.list);
+        mListView.setFooterDividersEnabled(false);
+        mListView.addFooterView(mFooter);
         mZAdapter = getAdapter();
         mListView.setAdapter(mZAdapter);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -109,28 +121,24 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
                 }
                 if (mPreviousTotalItemCount != totalItemCount && (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
                     mPreviousTotalItemCount = totalItemCount;
-                    mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
-
-                        @Override
-                        public void onLoadingFinished() {
-                            if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
-                                mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
-                            } else {
-                                mLoaderManager.destroyLoader(CURSOR_LOADER);
-                                mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
-                            }
-                        }
-
-                        @Override
-                        public void onLoadingStarted() {
-
-                        }
-
-                        @Override
-                        public void onLoadingError(Exception e) {
-
-                        }
-                    }, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
+//                    mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
+//
+//                        @Override
+//                        public void onLoadingFinished() {
+//                                mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
+//
+//                        }
+//
+//                        @Override
+//                        public void onLoadingStarted() {
+//
+//                        }
+//
+//                        @Override
+//                        public void onLoadingError(Exception e) {
+//
+//                        }
+//                    }, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
                     REQUEST_OFFSET += Api.GET_COUNT;
                 }
             }
@@ -140,7 +148,6 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
             @Override
             public void onRefresh() {
                 isPaginationEnabled = false;
-                mListView.removeFooterView(mFooter);
                 loadData();
             }
         });
@@ -157,9 +164,11 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        String requestField = (String)v.getTag() + id;
+        String requestField = (String) v.getTag() + id;
         ClickCallback callback = getCallback();
-        callback.showDetails(getFragmentId(), requestField);
+        if (callback != null) {
+            callback.showDetails(getFragmentId(), requestField);
+        }
     }
 
     private ClickCallback getCallback() {
@@ -241,8 +250,12 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     private void setFooterVisibility() {
         if (isPaginationEnabled) {
             if (REQUEST_OFFSET == Api.GET_COUNT) {
-                mListView.addFooterView(mFooter, null, false);
-                mListView.setFooterDividersEnabled(true);
+                if (mListView.getFooterViewsCount() == 0) {
+                    mListView.addFooterView(mFooter, null, false);
+                } else if (mFooter.getVisibility() == View.GONE){
+                    mFooter.setVisibility(View.VISIBLE);
+                    mListView.setFooterDividersEnabled(true);
+                }
             }
         } else {
             mListView.removeFooterView(mFooter);

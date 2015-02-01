@@ -19,7 +19,7 @@ public class ZDataBase extends SQLiteOpenHelper {
     static {
         sTables = new LinkedHashSet<>();
         sTables.add(FriendsTable.class);
-        sTables.add(DialogsTable.class);
+        sTables.add(DialogTable.class);
         sTables.add(DialogHistoryTable.class);
     }
 

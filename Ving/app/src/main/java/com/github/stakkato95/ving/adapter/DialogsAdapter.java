@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.api.Api;
-import com.github.stakkato95.ving.database.DialogsTable;
+import com.github.stakkato95.ving.database.DialogTable;
 
 /**
  * Created by Artyom on 20.01.2015.
@@ -33,10 +33,10 @@ public class DialogsAdapter extends ZCursorAdapter {
         TextView lastMessage = (TextView)view.findViewById(R.id.dialog_body);
         TextView date = (TextView)view.findViewById(R.id.dialog_date);
 
-        String titleText = cursor.getString(cursor.getColumnIndex(DialogsTable._DIALOG_NAME));
-        String lastMessageText = cursor.getString(cursor.getColumnIndex(DialogsTable._BODY));
-        String photoUrl = cursor.getString(cursor.getColumnIndex(DialogsTable._PHOTO_100));
-        String dateText = cursor.getString(cursor.getColumnIndex(DialogsTable._DATE));
+        String titleText = cursor.getString(cursor.getColumnIndex(DialogTable._DIALOG_NAME));
+        String lastMessageText = cursor.getString(cursor.getColumnIndex(DialogTable._BODY));
+        String photoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
+        String dateText = cursor.getString(cursor.getColumnIndex(DialogTable._DATE));
 
         title.setText(titleText);
         lastMessage.setText(lastMessageText);
@@ -44,13 +44,13 @@ public class DialogsAdapter extends ZCursorAdapter {
         getImageLoader().obtainImage(photo, photoUrl);
 
         String lastSenderPhotoUrl = null;
-        if (cursor.getString(cursor.getColumnIndex(DialogsTable._LAST_SENDER_PHOTO_100)) != null) {
-            lastSenderPhotoUrl = cursor.getString(cursor.getColumnIndex(DialogsTable._LAST_SENDER_PHOTO_100));
+        if (cursor.getString(cursor.getColumnIndex(DialogTable._LAST_SENDER_PHOTO_100)) != null) {
+            lastSenderPhotoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._LAST_SENDER_PHOTO_100));
             view.setTag(Api.FIELD_DIALOG_HISTORY_CHAT_ID);
         } else {
-            long route = cursor.getLong(cursor.getColumnIndex(DialogsTable._ROUTE));
+            long route = cursor.getLong(cursor.getColumnIndex(DialogTable._ROUTE));
             if (route == Api.ROUTE_IN) {
-                lastSenderPhotoUrl = cursor.getString(cursor.getColumnIndex(DialogsTable._PHOTO_100));
+                lastSenderPhotoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
             }
             view.setTag(Api.FIELD_DIALOG_HISTORY_USER_ID);
         }

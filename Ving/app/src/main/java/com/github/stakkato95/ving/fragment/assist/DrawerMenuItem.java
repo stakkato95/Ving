@@ -8,27 +8,36 @@ import com.github.stakkato95.ving.fragment.ZListFragment;
 /**
  * Created by Artyom on 28.12.2014.
  */
-public enum DrawerMenuItem {
+public enum DrawerMenuItem implements FragmentCreator {
 
-    //TODO remove magic about fragment, need to be fragment creator orr something else
-    FRIENDS(R.string.friends, new FriendsFragment()),
-    //TODO remove magic about fragment
-    DIALOGS(R.string.dialogs, new DialogsFragment());
+    DIALOGS(R.string.dialogs, new FragmentCreator() {
+        @Override
+        public ZListFragment createFragment() {
+            return new DialogsFragment();
+        }
+    }),
+    FRIENDS(R.string.friends, new FragmentCreator() {
+        @Override
+        public ZListFragment createFragment() {
+            return new FriendsFragment();
+        }
+    });
 
 
     private int mTitle;
-    private ZListFragment mZListFragment;
+    private FragmentCreator mFragmentCreator;
 
-    DrawerMenuItem(int title, ZListFragment fragment) {
+    DrawerMenuItem(int title, FragmentCreator fragmentCreator) {
         mTitle = title;
-        mZListFragment = fragment;
+        mFragmentCreator = fragmentCreator;
     }
 
-    public int getTitle() {
+    public int getTitleResource() {
         return mTitle;
     }
-    public ZListFragment getFragment() {
-        return mZListFragment;
-    }
 
+    @Override
+    public ZListFragment createFragment() {
+        return mFragmentCreator.createFragment();
+    }
 }

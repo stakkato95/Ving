@@ -37,7 +37,6 @@ public class FileSavingThread extends Thread {
     }
 
     private void performReceivedError(final Exception e) {
-        Log.d(ImageLoader.TAG, "file saving in " + currentThread().getId() + " thread finished with error");
         mHandler.post(new Runnable() {
             @Override
             public void run() {

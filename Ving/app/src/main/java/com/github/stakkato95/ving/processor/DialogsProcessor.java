@@ -9,7 +9,7 @@ import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.bo.Dialog;
 import com.github.stakkato95.ving.bo.JSONArrayWrapper;
 import com.github.stakkato95.ving.bo.User;
-import com.github.stakkato95.ving.database.DialogsTable;
+import com.github.stakkato95.ving.database.DialogTable;
 import com.github.stakkato95.ving.loader.DataLoader;
 import com.github.stakkato95.ving.provider.ZContentProvider;
 import com.github.stakkato95.ving.source.VkDataSource;
@@ -17,7 +17,6 @@ import com.github.stakkato95.ving.source.VkDataSource;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,25 +41,25 @@ public class DialogsProcessor extends DatabaseProcessor {
             Dialog dialog = new Dialog(jsonObject);
 
             ContentValues value = new ContentValues();
-            value.put(DialogsTable._ID, dialog.getId());
-            value.put(DialogsTable._ROUTE, dialog.getRoute());
-            value.put(DialogsTable._READ_STATE, dialog.getReadState());
+            value.put(DialogTable._ID, dialog.getId());
+            value.put(DialogTable._ROUTE, dialog.getRoute());
+            value.put(DialogTable._READ_STATE, dialog.getReadState());
 
             Date date = new Date(dialog.getDate());
-            value.put(DialogsTable._DATE, date.toString().substring(0,10));
+            value.put(DialogTable._DATE, date.toString().substring(0,10));
 
             String dialogBody = dialog.getBody();
             if (dialog.getBody().contains("\n")) {
                 dialogBody = dialogBody.replaceAll("\n"," ");
             }
-            value.put(DialogsTable._BODY, dialogBody);
+            value.put(DialogTable._BODY, dialogBody);
 
             if (!dialog.getTitle().equals(Api.ONE_INTERLOCUTOR_DIALOG)) {
-                value.put(DialogsTable._ID, dialog.getChatId());
-                value.put(DialogsTable._DIALOG_NAME, dialog.getTitle());
-                value.put(DialogsTable._PHOTO_100, dialog.getPhoto());
+                value.put(DialogTable._ID, dialog.getChatId());
+                value.put(DialogTable._DIALOG_NAME, dialog.getTitle());
+                value.put(DialogTable._PHOTO_100, dialog.getPhoto());
             } else {
-                value.put(DialogsTable._ID, dialog.getUserId());
+                value.put(DialogTable._ID, dialog.getUserId());
             }
             valuesMap.put(dialog.getUserId(),value);
         }
@@ -79,11 +78,11 @@ public class DialogsProcessor extends DatabaseProcessor {
             List<ContentValues> configuredValues = valuesMap.get(user.getId());
 
             for (ContentValues value : configuredValues) {
-                if (!value.containsKey(DialogsTable._DIALOG_NAME)) {
-                    value.put(DialogsTable._DIALOG_NAME, user.getFullName());
-                    value.put(DialogsTable._PHOTO_100, user.getPhoto());
+                if (!value.containsKey(DialogTable._DIALOG_NAME)) {
+                    value.put(DialogTable._DIALOG_NAME, user.getFullName());
+                    value.put(DialogTable._PHOTO_100, user.getPhoto());
                 } else {
-                    value.put(DialogsTable._LAST_SENDER_PHOTO_100, user.getPhoto());
+                    value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto());
                 }
                 values.add(value);
             }

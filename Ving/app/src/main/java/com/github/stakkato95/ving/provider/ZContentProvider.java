@@ -9,12 +9,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.github.stakkato95.ving.database.DialogHistoryTable;
+import com.github.stakkato95.ving.database.DialogTable;
 import com.github.stakkato95.ving.database.ZBaseColumns;
 import com.github.stakkato95.ving.database.ZDataBase;
-import com.github.stakkato95.ving.database.DialogsTable;
 import com.github.stakkato95.ving.database.FriendsTable;
 
 import java.util.Arrays;
@@ -29,79 +30,57 @@ import java.util.Set;
  */
 public class ZContentProvider extends ContentProvider {
 
-    //TODO go to read about enums :(
-    //ordinal
     enum UriType {
-        FRIEND(0),
-        FRIEND_ID(1),
-        DIALOG(2),
-        DIALOG_ID(3),
-        DIALOG_HISTORY(4),
-        DIALOG_HISTORY_ID(5);
-
-        //TODO remove magic
-        private int mCode;
-
-        private static final Map<Integer,UriType> sEnumMap;
-
-        //TODO remove magic
-        static {
-            sEnumMap = new HashMap<>();
-            for (UriType uri : UriType.values()) {
-                sEnumMap.put(uri.getIntCode(), uri);
-            }
-        }
-
-        //TODO remove magic
-        UriType(int code) {
-            mCode = code;
-        }
-
-        //TODO remove magic
-        //these two methods exists just because UriMatcher detect uri type by its int value
-        public int getIntCode() {
-            return mCode;
-        }
-
-        //TODO remove magic
-        public static UriType cast(int index) {
-            return sEnumMap.get(index);
-        }
+        FRIEND,
+        FRIEND_ID,
+        DIALOG,
+        DIALOG_ID,
+        DIALOG_HISTORY,
+        DIALOG_HISTORY_ID
     }
 
     private ZDataBase mDBHelper;
     private static final String AUTHORITY = "com.github.stakkato95.ving.provider";
 
     public static final Uri FRIENDS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + FriendsTable.NAME);
-    public static final Uri DIALOGS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DialogsTable.NAME);
+    public static final Uri DIALOGS_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DialogTable.NAME);
     public static final Uri DIALOGS_HISTORY_CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DialogHistoryTable.NAME);
 
     public static final String FRIENDS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
     public static final String FRIEND_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + FriendsTable.NAME;
-    public static final String DIALOGS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogsTable.NAME;
-    public static final String DIALOGS_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogsTable.NAME;
+    public static final String DIALOGS_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogTable.NAME;
+    public static final String DIALOGS_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogTable.NAME;
     public static final String DIALOGS_HISTORY_CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogHistoryTable.NAME;
     public static final String DIALOGS_HISTORY_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogHistoryTable.NAME;
 
     private static final UriMatcher sUriMatcher;
-    private static Map<UriType,String> sContentType;
+    private static Map<Integer,String> sContentType;
+    private static Map<Integer,String[]> sProjections;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME, UriType.FRIEND.getIntCode());
-        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME + "/#", UriType.FRIEND_ID.getIntCode());
-        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME, UriType.DIALOG.getIntCode());
-        sUriMatcher.addURI(AUTHORITY, DialogsTable.NAME + "/#", UriType.DIALOG_ID.getIntCode());
-        sUriMatcher.addURI(AUTHORITY, DialogHistoryTable.NAME, UriType.DIALOG_HISTORY.getIntCode());
-        sUriMatcher.addURI(AUTHORITY, DialogHistoryTable.NAME + "/#", UriType.DIALOG_HISTORY_ID.getIntCode());
+        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME, UriType.FRIEND.ordinal());
+        sUriMatcher.addURI(AUTHORITY, FriendsTable.NAME + "/#", UriType.FRIEND_ID.ordinal());
+        sUriMatcher.addURI(AUTHORITY, DialogTable.NAME, UriType.DIALOG.ordinal());
+        sUriMatcher.addURI(AUTHORITY, DialogTable.NAME + "/#", UriType.DIALOG_ID.ordinal());
+        sUriMatcher.addURI(AUTHORITY, DialogHistoryTable.NAME, UriType.DIALOG_HISTORY.ordinal());
+        sUriMatcher.addURI(AUTHORITY, DialogHistoryTable.NAME + "/#", UriType.DIALOG_HISTORY_ID.ordinal());
 
         sContentType = new HashMap<>();
-        sContentType.put(UriType.FRIEND,FRIENDS_CONTENT_TYPE);
-        sContentType.put(UriType.FRIEND_ID,FRIEND_CONTENT_ITEM_TYPE);
-        sContentType.put(UriType.DIALOG,DIALOGS_CONTENT_TYPE);
-        sContentType.put(UriType.DIALOG_ID, DIALOGS_CONTENT_ITEM_TYPE);
-        sContentType.put(UriType.DIALOG_HISTORY, DIALOGS_HISTORY_CONTENT_TYPE);
-        sContentType.put(UriType.DIALOG_HISTORY_ID, DIALOGS_HISTORY_CONTENT_ITEM_TYPE);
+        sContentType.put(UriType.FRIEND.ordinal(),FRIENDS_CONTENT_TYPE);
+        sContentType.put(UriType.FRIEND_ID.ordinal(),FRIEND_CONTENT_ITEM_TYPE);
+        sContentType.put(UriType.DIALOG.ordinal(),DIALOGS_CONTENT_TYPE);
+        sContentType.put(UriType.DIALOG_ID.ordinal(), DIALOGS_CONTENT_ITEM_TYPE);
+        sContentType.put(UriType.DIALOG_HISTORY.ordinal(), DIALOGS_HISTORY_CONTENT_TYPE);
+        sContentType.put(UriType.DIALOG_HISTORY_ID.ordinal(), DIALOGS_HISTORY_CONTENT_ITEM_TYPE);
+
+        sProjections = new HashMap<>();
+        sProjections.put(UriType.FRIEND.ordinal(), FriendsTable.PROJECTION);
+        sProjections.put(UriType.FRIEND_ID.ordinal(), FriendsTable.PROJECTION);
+        sProjections.put(UriType.DIALOG.ordinal(), DialogTable.PROJECTION);
+        sProjections.put(UriType.DIALOG_ID.ordinal(), DialogTable.PROJECTION);
+        sProjections.put(UriType.DIALOG_HISTORY.ordinal(), DialogHistoryTable.PROJECTION);
+        sProjections.put(UriType.DIALOG_HISTORY_ID.ordinal(), DialogHistoryTable.PROJECTION);
     }
 
     @Override
@@ -113,7 +92,7 @@ public class ZContentProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        UriType uriType = UriType.cast(sUriMatcher.match(uri));
+        int uriType = sUriMatcher.match(uri);
 
         if (projection != null) {
             if (!isProjectionCorrect(uriType, projection)) {
@@ -138,7 +117,7 @@ public class ZContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        UriType uriType = UriType.cast(sUriMatcher.match(uri));
+        int uriType = sUriMatcher.match(uri);
         return sContentType.get(uriType);
     }
 
@@ -161,8 +140,23 @@ public class ZContentProvider extends ContentProvider {
             database.endTransaction();
         }
 
-        getContext().getContentResolver().notifyChange(uri, null);
+
+        //getContext().getContentResolver().notifyChange(uri, null);
         return resultUri;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, @NonNull ContentValues[] values) {
+        int numValues = values.length;
+        for (int i = 0; i < numValues; i++) {
+            if (i == numValues - 1) {
+                insert(uri, values[i]);
+                getContext().getContentResolver().notifyChange(uri, null);
+            } else {
+                insert(uri, values[i]);
+            }
+        }
+        return numValues;
     }
 
     @Override
@@ -211,32 +205,10 @@ public class ZContentProvider extends ContentProvider {
         return updatedRows;
     }
 
-    public boolean isProjectionCorrect(UriType uriType, String[] projection) {
-        String[] existingColumns = null;
-
-        switch (uriType) {
-            case FRIEND:
-                existingColumns = FriendsTable.PROJECTION;
-                break;
-            case FRIEND_ID:
-                existingColumns = FriendsTable.PROJECTION;
-                break;
-            case DIALOG:
-                existingColumns = DialogsTable.PROJECTION;
-                break;
-            case DIALOG_ID:
-                existingColumns = DialogsTable.PROJECTION;
-                break;
-            case DIALOG_HISTORY:
-                existingColumns = DialogHistoryTable.PROJECTION;
-                break;
-            case DIALOG_HISTORY_ID:
-                existingColumns = DialogHistoryTable.PROJECTION;
-                break;
-        }
-
-        Set<String> receivedProjection = new HashSet<>(Arrays.asList(projection));
+    public boolean isProjectionCorrect(int uriType, String[] projection) {
+        String[] existingColumns = sProjections.get(uriType);
         Set<String> availableProjection;
+        Set<String> receivedProjection = new HashSet<>(Arrays.asList(projection));
         if (existingColumns != null) {
             availableProjection = new HashSet<>(Arrays.asList(existingColumns));
         } else {

@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.github.stakkato95.imageloader.assist.ImageHelper;
@@ -74,7 +73,6 @@ public class ImageLoader {
         imageView.setImageResource(mLoadingImageResourceId);
 
         if (mMemoryCache.containsKey(url)) {
-            Log.d(TAG, "image " + url + " is obtained from lruCache");
             Bitmap targetBmp = mMemoryCache.get(url);
 
             //if request isn't added the image won't be displayed
@@ -121,7 +119,6 @@ public class ImageLoader {
                         bmp = ImageHelper.getRounded(bmp);
                     }
                     targetView.setImageBitmap(bmp);
-                    Log.d(TAG, "image " + url + " is laid");
                 }
 
                 mRequestsMap.remove(targetView);
@@ -146,7 +143,6 @@ public class ImageLoader {
                         bmp = ImageHelper.getRounded(bmp);
                     }
                     targetView.setImageBitmap(bmp);
-                    Log.d(TAG, "image " + url + " is laid");
                 }
 
                 mRequestsMap.remove(targetView);

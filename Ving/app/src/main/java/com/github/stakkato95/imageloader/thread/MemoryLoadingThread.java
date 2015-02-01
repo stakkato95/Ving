@@ -34,9 +34,6 @@ public class MemoryLoadingThread extends Thread {
 
     @Override
     public void run() {
-
-        Log.d(TAG, currentThread().getId() + " thread is launched");
-
         InputStream inputStream = null;
         Bitmap bmp = null;
         try {
@@ -54,7 +51,6 @@ public class MemoryLoadingThread extends Thread {
     }
 
     private void loadingInThreadFinished(final Bitmap bmp) {
-        Log.d(TAG,"loading in " + currentThread().getId() + " thread finished");
         mHandler.post(new Runnable() {
             @Override
             public void run() {

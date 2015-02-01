@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.github.stakkato95.ving.R;
-import com.github.stakkato95.ving.fragment.CapFragment;
 import com.github.stakkato95.ving.fragment.ZListFragment;
 import com.github.stakkato95.ving.fragment.assist.DrawerMenuItem;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;
@@ -32,17 +31,10 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    //TODO remove magic
-    private static List<DrawerMenuItem> sDrawerMenuItems;
+    private String[] mDrawerTitles;
 
     public static final String KEY_REQUEST_FIELD = "key_request_field";
 
-    static {
-        //TODO remove magic
-        sDrawerMenuItems = new ArrayList<>();
-        sDrawerMenuItems.add(DrawerMenuItem.DIALOGS);
-        sDrawerMenuItems.add(DrawerMenuItem.FRIENDS);
-    }
 
     private FragmentManager mFragmentManager;
 
@@ -50,23 +42,21 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(toolbar);
 
         //Drawer content
-        String[] drawerTitles = new String[sDrawerMenuItems.size()];
-        for (int i = 0; i < sDrawerMenuItems.size(); i++) {
-            drawerTitles[i] = getResources().getString(sDrawerMenuItems.get(i).getTitle());
+        mDrawerTitles = new String[DrawerMenuItem.values().length];
+        for (int i = 0; i < DrawerMenuItem.values().length; i++) {
+            mDrawerTitles[i] = getResources().getString(DrawerMenuItem.values()[i].getTitleResource());
         }
 
-        mTitle = getResources().getString(sDrawerMenuItems.get(0).getTitle());
-        setTitle(mTitle);
+        setTitle(mTitle = mDrawerTitles[0]);
         mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
 
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, drawerTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mDrawerTitles));
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -104,7 +94,7 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
         if (savedInstanceState == null) {
             mDrawerList.setItemChecked(0, true);
 
-            ZListFragment fragment = sDrawerMenuItems.get(0).getFragment();
+            ZListFragment fragment = DrawerMenuItem.values()[0].createFragment();
             mFragmentManager.beginTransaction()
                     .add(R.id.container, fragment)
                     .commit();
@@ -136,12 +126,12 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
 
         switch (position) {
             case 0:
-                fragment = sDrawerMenuItems.get(0).getFragment();
-                title = getResources().getString(sDrawerMenuItems.get(0).getTitle());
+                fragment = DrawerMenuItem.values()[0].createFragment();
+                title = mDrawerTitles[0];
                 break;
             case 1:
-                fragment = sDrawerMenuItems.get(1).getFragment();
-                title = getResources().getString(sDrawerMenuItems.get(1).getTitle());
+                fragment = DrawerMenuItem.values()[1].createFragment();
+                title = mDrawerTitles[1];
                 break;
             default:
                 break;
@@ -182,8 +172,11 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
                 break;
         }
 
-        intent.putExtra(KEY_REQUEST_FIELD, requestField);
-        startActivity(intent);
+        if (intent != null) {
+            intent.putExtra(KEY_REQUEST_FIELD, requestField);
+            startActivity(intent);
+        }
     }
+
 
 }
