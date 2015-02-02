@@ -15,7 +15,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -25,12 +24,12 @@ import android.widget.Toast;
 
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.R;
+import com.github.stakkato95.ving.adapter.DialogsAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;
 import com.github.stakkato95.ving.loader.DataLoader;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
-import com.github.stakkato95.ving.processor.StringProcessor;
 import com.github.stakkato95.ving.source.VkDataSource;
 import com.github.stakkato95.ving.utils.FragmentUtils;
 
@@ -52,19 +51,18 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     private TextView mErrorText;
     private ProgressBar mProgressBar;
     private View mFooter;
-    private boolean isPaginationEnabled = true;
 
     private static final int CURSOR_LOADER = 0;
     private LoaderManager mLoaderManager;
     private ContentResolver mContentResolver;
-    private Uri mContentType;
+    private Uri mUri;
     private String[] mProjection;
     private String[] mProjectionOffline;
 
     private DataLoader mDataLoader;
     private DatabaseProcessor mProcessor;
     private VkDataSource mVkDataSource;
-    private int REQUEST_OFFSET;
+    private int mRequestOffset;
     private String mRequestUrl;
 
     public ZListFragment() {
@@ -87,72 +85,51 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
         mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
         mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
         mFooter = View.inflate(mContext, R.layout.view_footer, null);
-        mFooter.setVisibility(View.GONE);
-
         mFooter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(),"fjdshkfjs",Toast.LENGTH_SHORT).show();
+                mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
+
+                    @Override
+                    public void onLoadingFinished() {
+                        mFooter.findViewById(android.R.id.progress).setVisibility(View.GONE);
+                        mFooter.findViewById(android.R.id.text1).setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onLoadingStarted() {
+                        mFooter.findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
+                        mFooter.findViewById(android.R.id.text1).setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onLoadingError(Exception e) {
+                        mFooter.findViewById(android.R.id.progress).setVisibility(View.GONE);
+                        mFooter.findViewById(android.R.id.text1).setVisibility(View.VISIBLE);
+                        onError(e);
+                    }
+                }, getRequestUrl(mRequestOffset), mVkDataSource, mProcessor);
+                mRequestOffset += Api.GET_COUNT;
             }
         });
 
 
         mListView = (ListView) view.findViewById(android.R.id.list);
-        mListView.setFooterDividersEnabled(false);
         mListView.addFooterView(mFooter);
+        mListView.setFooterDividersEnabled(false);
         mZAdapter = getAdapter();
         mListView.setAdapter(mZAdapter);
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            private int mPreviousTotalItemCount = 0;
-            private static final int VISIBLE_THRESHOLD = 5;
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                ListAdapter adapter = view.getAdapter();
-                int currentAdapterCount = getRealAdapterCount(adapter);
-
-                if (currentAdapterCount == 0) {
-                    return;
-                }
-                if (mPreviousTotalItemCount != totalItemCount && (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
-                    mPreviousTotalItemCount = totalItemCount;
-//                    mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
-//
-//                        @Override
-//                        public void onLoadingFinished() {
-//                                mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
-//
-//                        }
-//
-//                        @Override
-//                        public void onLoadingStarted() {
-//
-//                        }
-//
-//                        @Override
-//                        public void onLoadingError(Exception e) {
-//
-//                        }
-//                    }, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
-                    REQUEST_OFFSET += Api.GET_COUNT;
-                }
-            }
-        });
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                isPaginationEnabled = false;
+                mFooter.setVisibility(View.GONE);
+                mListView.setFooterDividersEnabled(false);
                 loadData();
             }
         });
 
-        mContentType = getContentUri();
+        mUri = getContentUri();
         mRequestUrl = getRequestUrl();
         mProcessor = getProcessor();
         mProjection = getProjection();
@@ -164,7 +141,7 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        String requestField = (String) v.getTag() + id;
+        String requestField = (String) v.getTag(DialogsAdapter.ID_KEY) + id;
         ClickCallback callback = getCallback();
         if (callback != null) {
             callback.showDetails(getFragmentId(), requestField);
@@ -201,21 +178,21 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
         }
         mProgressBar.setVisibility(View.GONE);
 
-        if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
-            mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
-        } else {
-            mLoaderManager.destroyLoader(CURSOR_LOADER);
-            mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
-        }
+        startAsynchLoad();
     }
 
     @Override
     public void onLoadingError(Exception e) {
         mSwipeRefreshLayout.setRefreshing(false);
+        onError(e);
+        startAsynchLoad();
+    }
+
+    private void onError(Exception e) {
         mProgressBar.setVisibility(View.GONE);
 
         if (UnknownHostException.class.isInstance(e)) {
-            Toast.makeText(mContext, "Проверьте подключение и\n" + "      повторите попытку", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Проверьте подключение и\n" + "      повторите попытку", Toast.LENGTH_SHORT).show();
         } else {
             mErrorText.setVisibility(View.VISIBLE);
             mErrorText.setText(e.getMessage());
@@ -224,14 +201,23 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
 
     private void loadData() {
         cleanDatabaseOut();
-        REQUEST_OFFSET = 0;
-        mDataLoader.getDataToDatabase(this, getRequestUrl(REQUEST_OFFSET), mVkDataSource, mProcessor);
-        REQUEST_OFFSET += Api.GET_COUNT;
+        mRequestOffset = 0;
+        mDataLoader.getDataToDatabase(this, getRequestUrl(mRequestOffset), mVkDataSource, mProcessor);
+        mRequestOffset += Api.GET_COUNT;
+    }
+
+    private void startAsynchLoad() {
+        if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
+            mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
+        } else {
+            mLoaderManager.destroyLoader(CURSOR_LOADER);
+            mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
+        }
     }
 
     private void cleanDatabaseOut() {
         if (isNetworkAvailable()) {
-            mContentResolver.delete(mContentType, null, null);
+            mContentResolver.delete(mUri, null, null);
         }
     }
 
@@ -248,28 +234,31 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     }
 
     private void setFooterVisibility() {
-        if (isPaginationEnabled) {
-            if (REQUEST_OFFSET == Api.GET_COUNT) {
-                if (mListView.getFooterViewsCount() == 0) {
-                    mListView.addFooterView(mFooter, null, false);
-                } else if (mFooter.getVisibility() == View.GONE){
-                    mFooter.setVisibility(View.VISIBLE);
-                    mListView.setFooterDividersEnabled(true);
+        if ((getRealAdapterCount(mZAdapter) % Api.GET_COUNT) == 0) {
+            if (mRequestOffset == Api.GET_COUNT) {
+                if (!mSwipeRefreshLayout.isRefreshing()) {
+                    if (mListView.getFooterViewsCount() == 0) {
+                        mListView.addFooterView(mFooter, null, false);
+                    }
+                    if (mFooter.getVisibility() == View.GONE) {
+                        mFooter.setVisibility(View.VISIBLE);
+                        mListView.setFooterDividersEnabled(true);
+                    }
                 }
             }
         } else {
             mListView.removeFooterView(mFooter);
         }
-        isPaginationEnabled = (getRealAdapterCount(mZAdapter) % Api.GET_COUNT) == 0;
     }
 
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (isNetworkAvailable()) {
-            return new CursorLoader(mContext, mContentType, mProjection, null, null, null);
+            return new CursorLoader(mContext, mUri, mProjection, null, null, null);
+        } else {
+            return new CursorLoader(mContext, mUri, mProjectionOffline, null, null, null);
         }
-        return new CursorLoader(mContext, mContentType, mProjectionOffline, null, null, null);
     }
 
     @Override

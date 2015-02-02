@@ -22,8 +22,8 @@ public class Api {
     public static final String FIELD_USER_IDS = "user_ids=";
     public static final String FIELD_DIALOG_HISTORY_CHAT_ID = "chat_id=";
     public static final String FIELD_DIALOG_HISTORY_USER_ID = "user_id=";
-    public static final String FIELD_COUNT = "&count=";
-    public static final String FIELD_OFFSET = "&offset=";
+    public static final String FIELD_COUNT = "count=";
+    public static final String FIELD_OFFSET = "offset=";
     public static final String FIELD_MESSAGE_PREVIEW = "preview_length=";
 
     private static final String GET_FRIENDS = BASE_PATH + "friends.get?fields=" + FIELD_PHOTO_100 + "," + FIELD_ONLINE;

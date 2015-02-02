@@ -48,7 +48,6 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
     private ProgressBar mProgressBar;
     private TextView mErrorText;
     private View mHeader;
-    private boolean isPaginationEnabled = true;
 
     private static final int CURSOR_LOADER = 0;
     private LoaderManager mLoaderManager;
@@ -88,7 +87,8 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dialog_history, container, false);
 
-        mZAdapter = new DialogHistoryAdapter(getActivity(), null, 0);
+        mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
+        mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
         mHeader = View.inflate(getActivity(), R.layout.view_footer, null);
         mHeader.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +97,6 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
 
                     @Override
                     public void onLoadingFinished() {
-                        //mLoaderManager.initLoader(CURSOR_LOADER, null, DialogHistoryFragment.this);
                     }
 
                     @Override
@@ -117,49 +116,13 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
         mListView = (ListView) view.findViewById(android.R.id.list);
         mListView.addHeaderView(mHeader);
         mListView.setHeaderDividersEnabled(true);
+        mZAdapter = new DialogHistoryAdapter(getActivity(), null, 0);
         mListView.setAdapter(mZAdapter);
+
+
+
+
         mListView.removeHeaderView(mHeader);
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            private static final int VISIBLE_THRESHOLD = 5;
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//                ListAdapter adapter = view.getAdapter();
-//                int currentAdapterCount = getRealAdapterCount(adapter);
-//
-//                if (currentAdapterCount == (firstVisibleItem + visibleItemCount)) {
-//                    return;
-//                }
-//                if (firstVisibleItem <= VISIBLE_THRESHOLD) {
-//                    mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
-//
-//                        @Override
-//                        public void onLoadingFinished() {
-//                            //mLoaderManager.initLoader(CURSOR_LOADER, null, DialogHistoryFragment.this);
-//                        }
-//
-//                        @Override
-//                        public void onLoadingStarted() {
-//
-//                        }
-//
-//                        @Override
-//                        public void onLoadingError(Exception e) {
-//                            onError(e);
-//                        }
-//                    }, getRequestUrl(mRequestOffset), mVkDataSource, mProcessor);
-//                    mRequestOffset += Api.GET_COUNT;
-//                }
-            }
-        });
-
-        mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
-        mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
         ImageView mSend = (ImageView) view.findViewById(R.id.dialog_history_send);
         mSend.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -227,7 +190,7 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
     }
 
     private String getRequestUrl(int offset) {
-        return Api.getDialogHistory() + mRequestField + Api.FIELD_COUNT + Api.GET_COUNT + Api.FIELD_OFFSET + offset;
+        return Api.getDialogHistory() + mRequestField + "&" + Api.FIELD_COUNT + Api.GET_COUNT + "&" +  Api.FIELD_OFFSET + offset;
     }
 
     private boolean isNetworkAvailable() {
@@ -256,9 +219,13 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
     }
 
     private void setHeaderVisibility() {
-        if (isPaginationEnabled = (getRealAdapterCount(mZAdapter) % Api.GET_COUNT) == 0) {
+        if ((getRealAdapterCount(mZAdapter) % Api.GET_COUNT) == 0 && isNetworkAvailable()) {
             if (mListView.getHeaderViewsCount() == 0) {
                 mListView.addHeaderView(mHeader);
+            }
+            if (mHeader.getVisibility() == View.GONE) {
+                mHeader.setVisibility(View.VISIBLE);
+                mListView.setFooterDividersEnabled(true);
             }
         } else {
             mListView.removeHeaderView(mHeader);
@@ -268,19 +235,20 @@ public class DialogHistoryFragment extends ListFragment implements DataLoader.Da
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), mUri, mProjection, null, null, null);
+        return new CursorLoader(getActivity(), mUri, mProjection, null, null, DialogHistoryTable._DATE + " ASC");
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        int itemIndex;
-        if (data.getCount() % Api.GET_COUNT == 0) {
-            itemIndex = Api.GET_COUNT + mListView.getHeaderViewsCount();
-        } else {
-            itemIndex = data.getCount() % Api.GET_COUNT;
-        }
         mZAdapter.changeCursor(data);
         setHeaderVisibility();
+        int itemIndex;
+        if (mZAdapter.getCount() % Api.GET_COUNT == 0) {
+            itemIndex = Api.GET_COUNT + mListView.getHeaderViewsCount();
+        } else {
+            itemIndex = mZAdapter.getCount() % Api.GET_COUNT;
+        }
+
         //magic number that is obtained by trial and error
         int androidMagic = mHeader.getHeight() + 2;
         mListView.setSelectionFromTop(itemIndex, androidMagic);

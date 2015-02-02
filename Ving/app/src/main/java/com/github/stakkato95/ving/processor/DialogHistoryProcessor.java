@@ -16,6 +16,7 @@ import com.github.stakkato95.ving.source.VkDataSource;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -59,28 +60,16 @@ public class DialogHistoryProcessor extends DatabaseProcessor {
         }
         User[] users = DataLoader.getDataDirectly(Api.getUsers() + idBatch, new VkDataSource(), new UserProcessor());
 
-        Map<Long, ContentValues> values = new TreeMap<>(new Comparator<Long>() {
-            @Override
-            public int compare(Long lhs, Long rhs) {
-                if (lhs <= rhs) {
-                    return 1;
-                } else if (lhs > rhs) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
-
+        List<ContentValues> values = new ArrayList<>();
         for (User user : users) {
             List<ContentValues> configuredValues = valuesMap.get(user.getId());
             for (ContentValues value : configuredValues) {
                 value.put(DialogHistoryTable._FROM_ID, user.getFullName());
                 value.put(DialogHistoryTable._PHOTO_100, user.getPhoto());
-                long position = value.getAsLong(DialogHistoryTable._DATE);
-                values.put(position, value);
+                values.add(value);
             }
         }
-        resolver.bulkInsert(ZContentProvider.DIALOGS_HISTORY_CONTENT_URI, values.values().toArray(new ContentValues[values.size()]));
+        resolver.bulkInsert(ZContentProvider.DIALOGS_HISTORY_CONTENT_URI, values.toArray(new ContentValues[values.size()]));
     }
 
 }

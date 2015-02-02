@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.stakkato95.ving.R;
-import com.github.stakkato95.ving.activity.MainActivity;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.DialogTable;
 
@@ -17,18 +16,53 @@ import com.github.stakkato95.ving.database.DialogTable;
  */
 public class DialogHistoryAdapter extends ZCursorAdapter {
 
+    private class ViewHolder {
+        public ImageView interlocutorPhoto;
+        public TextView interlocutorMessage;
+        public ImageView userPhoto;
+        public TextView userMessage;
+    }
+
     public DialogHistoryAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return getLayoutInflater().inflate(R.layout.adapter_dialog_history, parent, false);
+        View view = getLayoutInflater().inflate(R.layout.adapter_dialog_history, parent, false);
+        ViewHolder vh = new ViewHolder();
+        vh.interlocutorPhoto = (ImageView) view.findViewById(R.id.interlocutor_photo);
+        vh.interlocutorMessage = (TextView) view.findViewById(R.id.interlocutor_message);
+        vh.userPhoto = (ImageView) view.findViewById(R.id.user_photo);
+        vh.userMessage = (TextView) view.findViewById(R.id.user_message);
+        view.setTag(vh);
+        return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        ViewHolder vh = (ViewHolder) view.getTag();
 
+        String messageText = cursor.getString(cursor.getColumnIndex(DialogTable._BODY));
+        String photoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
+        long route = cursor.getLong(cursor.getColumnIndex(DialogTable._ROUTE));
+        if (route == Api.ROUTE_OUT) {
+            vh.interlocutorMessage.setVisibility(View.GONE);
+            vh.interlocutorPhoto.setVisibility(View.GONE);
+            vh.userMessage.setVisibility(View.VISIBLE);
+            vh.userPhoto.setVisibility(View.VISIBLE);
+
+            vh.userMessage.setText(messageText);
+            getImageLoader().obtainImage(vh.userPhoto, photoUrl);
+        } else {
+            vh.interlocutorMessage.setVisibility(View.VISIBLE);
+            vh.interlocutorPhoto.setVisibility(View.VISIBLE);
+            vh.userMessage.setVisibility(View.GONE);
+            vh.userPhoto.setVisibility(View.GONE);
+
+            vh.interlocutorMessage.setText(messageText);
+            getImageLoader().obtainImage(vh.interlocutorPhoto, photoUrl);
+        }
     }
 
     @Override
@@ -36,44 +70,4 @@ public class DialogHistoryAdapter extends ZCursorAdapter {
         return false;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Cursor cursor = getItem(position);
-
-        if (convertView == null) {
-            convertView = getLayoutInflater().inflate(R.layout.adapter_dialog_history, parent, false);
-        }
-        ImageView interlocutorPhoto = (ImageView) convertView.findViewById(R.id.interlocutor_photo);
-        TextView interlocutorMessage = (TextView)convertView.findViewById(R.id.interlocutor_message);
-        ImageView userPhoto = (ImageView) convertView.findViewById(R.id.user_photo);
-        TextView userMessage = (TextView)convertView.findViewById(R.id.user_message);
-
-        String messageText = cursor.getString(cursor.getColumnIndex(DialogTable._BODY));
-        String photoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
-        long route = cursor.getLong(cursor.getColumnIndex(DialogTable._ROUTE));
-        if (route == Api.ROUTE_OUT) {
-            interlocutorMessage.setVisibility(View.GONE);
-            interlocutorPhoto.setVisibility(View.GONE);
-            userMessage.setVisibility(View.VISIBLE);
-            userPhoto.setVisibility(View.VISIBLE);
-
-            userMessage.setText(messageText);
-            getImageLoader().obtainImage(userPhoto, photoUrl);
-        } else {
-            interlocutorMessage.setVisibility(View.VISIBLE);
-            interlocutorPhoto.setVisibility(View.VISIBLE);
-            userMessage.setVisibility(View.GONE);
-            userPhoto.setVisibility(View.GONE);
-
-            interlocutorMessage.setText(messageText);
-            getImageLoader().obtainImage(interlocutorPhoto, photoUrl);
-        }
-
-        return convertView;
-    }
-
-    @Override
-    public Cursor getItem(int position) {
-        return (Cursor) super.getItem(getCount() - 1 - position);
-    }
 }

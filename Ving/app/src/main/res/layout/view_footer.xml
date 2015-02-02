@@ -2,21 +2,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="32dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:visibility="gone">
 
     <ProgressBar
         android:id="@android:id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_centerInParent="true"
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/footer_text"
+        android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/header_text"/>
+        android:text="@string/header_text"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"/>
 
 </RelativeLayout>
