@@ -25,7 +25,6 @@ import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.loader.DataLoader;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
-import com.github.stakkato95.ving.processor.Processor;
 import com.github.stakkato95.ving.source.VkDataSource;
 
 import java.net.UnknownHostException;
@@ -46,11 +45,11 @@ public abstract class ZBaseListFragment extends ListFragment implements DataLoad
     private ContentResolver mContentResolver;
     protected Uri mUri;
 
-    private DataLoader mDataLoader;
-    private DatabaseProcessor mProcessor;
-    private VkDataSource mVkDataSource;
+    protected DataLoader mDataLoader;
+    protected DatabaseProcessor mProcessor;
+    protected VkDataSource mVkDataSource;
     protected String mRequestUrl;
-    private int mRequestOffset;
+    protected int mRequestOffset;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,16 +63,15 @@ public abstract class ZBaseListFragment extends ListFragment implements DataLoad
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayout(),container,false);
+        mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
+        mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
+        mListView = (ListView)view.findViewById(android.R.id.list);
+
         whileOnCreateView(view);
 
-        mListView = (ListView)view.findViewById(android.R.id.list);
         mZAdapter = getAdapter();
         mListView.setAdapter(mZAdapter);
-
-        mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
-        mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
-
-        getFooder().setOnClickListener(new View.OnClickListener() {
+        mFooder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDataLoader.getDataToDatabase(new DataLoader.DatabaseCallback() {
@@ -92,19 +90,19 @@ public abstract class ZBaseListFragment extends ListFragment implements DataLoad
 
                     @Override
                     public void onLoadingError(Exception e) {
-                        getFooder().findViewById(android.R.id.progress).setVisibility(View.GONE);
-                        getFooder().findViewById(android.R.id.text1).setVisibility(View.VISIBLE);
+                        mFooder.findViewById(android.R.id.progress).setVisibility(View.GONE);
+                        mFooder.findViewById(android.R.id.text1).setVisibility(View.VISIBLE);
                         onError(e);
                     }
                 }, getRequestUrl(mRequestOffset), mVkDataSource, mProcessor);
                 mRequestOffset += Api.GET_COUNT;
             }
         });
-
-        mUri = getContentUri();
+        mUri = getUri();
         mRequestUrl = getRequestUrl();
         mProcessor = getProcessor();
 
+        loadData();
         return view;
     }
 
@@ -128,7 +126,7 @@ public abstract class ZBaseListFragment extends ListFragment implements DataLoad
     }
 
     protected String getRequestUrl(int offset) {
-        return mRequestUrl + "&count=" + Api.GET_COUNT + "&offset=" + offset;
+        return mRequestUrl + "&" + Api.FIELD_COUNT + Api.GET_COUNT + "&" +  Api.FIELD_OFFSET + offset;
     }
 
     protected void onError(Exception e) {
@@ -163,10 +161,22 @@ public abstract class ZBaseListFragment extends ListFragment implements DataLoad
         }
     }
 
+    //DataLoder
     @Override
     public void onLoadingError(Exception e) {
         onError(e);
         startAsynchLoad();
+    }
+
+    @Override
+    public void onLoadingFinished() {
+        startAsynchLoad();
+    }
+
+    //LoaderManager
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mZAdapter.swapCursor(data);
     }
 
     @Override
@@ -182,8 +192,6 @@ public abstract class ZBaseListFragment extends ListFragment implements DataLoad
 
     public abstract String getRequestUrl();
 
-    public abstract Uri getContentUri();
-
-    public abstract View getFooder();
+    public abstract Uri getUri();
 
 }

@@ -1,9 +1,9 @@
 package com.github.stakkato95.ving.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +13,6 @@ import com.github.stakkato95.ving.fragment.DialogHistoryFragment;
 
 public class DialogHistoryActivity extends ActionBarActivity {
 
-    private FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +24,11 @@ public class DialogHistoryActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         String requestField = getIntent().getStringExtra(MainActivity.KEY_REQUEST_FIELD);
-        mFragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
             DialogHistoryFragment fragment = DialogHistoryFragment.newInstance(requestField);
-            mFragmentManager.beginTransaction()
+            fragmentManager.beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
         }

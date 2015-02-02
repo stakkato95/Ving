@@ -31,7 +31,7 @@ public class DialogsFragment extends ZListFragment {
     }
 
     @Override
-    public Uri getContentUri() {
+    public Uri getUri() {
         return ZContentProvider.DIALOGS_CONTENT_URI;
     }
 

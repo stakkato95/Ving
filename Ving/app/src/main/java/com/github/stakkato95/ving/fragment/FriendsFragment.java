@@ -32,7 +32,7 @@ public class FriendsFragment extends ZListFragment {
     }
 
     @Override
-    public Uri getContentUri() {
+    public Uri getUri() {
         return ZContentProvider.FRIENDS_CONTENT_URI;
     }
 
