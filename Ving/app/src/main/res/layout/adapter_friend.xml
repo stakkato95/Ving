@@ -8,7 +8,7 @@
     android:paddingRight="16dp">
 
     <ImageView
-        android:id="@android:id/icon"
+        android:id="@+id/user_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="centerCrop"
@@ -16,20 +16,22 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"/>
 
+    <ImageView
+        android:id="@+id/online_image"
+        android:layout_height="10dp"
+        android:layout_width="10dp"
+        android:layout_toRightOf="@+id/user_name"
+        android:layout_toEndOf="@+id/user_name"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_margin="4dp"/>
+
     <TextView
-        android:id="@android:id/text1"
-        android:textSize="16sp"
+        android:id="@+id/user_name"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="56dp"/>
-
-    <ImageView
-        android:id="@android:id/icon1"
-        android:layout_height="10dp"
-        android:layout_width="wrap_content"
-        android:layout_toRightOf="@android:id/text1"
-        android:layout_toEndOf="@android:id/text1"
-        android:paddingLeft="8dp"
-        android:paddingStart="8dp"/>
+        android:layout_marginLeft="56dp"
+        android:layout_marginStart="56dp"/>
 
 </RelativeLayout>

@@ -42,7 +42,7 @@ public class DialogsFragment extends ZListFragment {
 
     @Override
     public String[] getProjectionOffline() {
-        return DialogTable.PROJECTION;
+        return DialogTable.PROJECTION_OFFLINE;
     }
 
     @Override

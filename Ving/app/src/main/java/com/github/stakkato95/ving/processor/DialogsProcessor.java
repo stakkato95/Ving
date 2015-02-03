@@ -13,9 +13,11 @@ import com.github.stakkato95.ving.database.DialogTable;
 import com.github.stakkato95.ving.loader.DataLoader;
 import com.github.stakkato95.ving.provider.ZContentProvider;
 import com.github.stakkato95.ving.source.VkDataSource;
+import com.github.stakkato95.ving.utils.ProcessingUtils;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,27 +41,27 @@ public class DialogsProcessor extends DatabaseProcessor {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             Dialog dialog = new Dialog(jsonObject);
+            String stringDate = ProcessingUtils.getDate(dialog.getDate());
+            String dialogBody = dialog.getBody();
+            if (dialog.getBody().contains("\n")) {
+                dialogBody = dialogBody.replaceAll("\n"," ");
+            }
 
             ContentValues value = new ContentValues();
             value.put(DialogTable._ID, dialog.getId());
             value.put(DialogTable._ROUTE, dialog.getRoute());
             value.put(DialogTable._READ_STATE, dialog.getReadState());
-
-            Date date = new Date(dialog.getDate());
-            value.put(DialogTable._DATE, date.toString().substring(0,10));
-
-            String dialogBody = dialog.getBody();
-            if (dialog.getBody().contains("\n")) {
-                dialogBody = dialogBody.replaceAll("\n"," ");
-            }
+            value.put(DialogTable._DATE, stringDate);
             value.put(DialogTable._BODY, dialogBody);
 
-            if (!dialog.getTitle().equals(Api.ONE_INTERLOCUTOR_DIALOG)) {
+            if (dialog.getTitle().equals(Api.ONE_INTERLOCUTOR_DIALOG)) {
+                value.put(DialogTable._ID, dialog.getUserId());
+                value.put(DialogTable._TYPE, DialogTable.ONE_INTERLOCUTOR);
+            } else {
                 value.put(DialogTable._ID, dialog.getChatId());
+                value.put(DialogTable._TYPE, DialogTable.CHAT);
                 value.put(DialogTable._DIALOG_NAME, dialog.getTitle());
                 value.put(DialogTable._PHOTO_100, dialog.getPhoto());
-            } else {
-                value.put(DialogTable._ID, dialog.getUserId());
             }
             valuesMap.put(dialog.getUserId(),value);
         }
@@ -79,8 +81,14 @@ public class DialogsProcessor extends DatabaseProcessor {
 
             for (ContentValues value : configuredValues) {
                 if (!value.containsKey(DialogTable._DIALOG_NAME)) {
+                    //means one interlocutor dialog
                     value.put(DialogTable._DIALOG_NAME, user.getFullName());
                     value.put(DialogTable._PHOTO_100, user.getPhoto());
+                    value.put(DialogTable._ONLINE, user.getOnlineMode());
+
+                    if (value.getAsInteger(DialogTable._ROUTE) == Api.ROUTE_OUT) {
+                        value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto());
+                    }
                 } else {
                     value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto());
                 }

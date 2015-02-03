@@ -69,9 +69,7 @@ public class ImageLoader {
     }
 
     public void obtainImage(@NonNull ImageView imageView, @NonNull String url) {
-
         imageView.setImageResource(mLoadingImageResourceId);
-
         if (mMemoryCache.containsKey(url)) {
             Bitmap targetBmp = mMemoryCache.get(url);
 

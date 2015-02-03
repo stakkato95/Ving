@@ -42,7 +42,7 @@ public abstract class ZBaseListFragment extends ListFragment implements DataLoad
 
     private static final int CURSOR_LOADER = 0;
     private LoaderManager mLoaderManager;
-    private ContentResolver mContentResolver;
+    protected ContentResolver mContentResolver;
     protected Uri mUri;
 
     protected DataLoader mDataLoader;

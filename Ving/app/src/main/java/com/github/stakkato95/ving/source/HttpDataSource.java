@@ -26,13 +26,4 @@ public class HttpDataSource implements DataSource<String, InputStream> {
         return url.openStream();
     }
 
-    public static void close(Closeable in) {
-        if (in != null) {
-            try {
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

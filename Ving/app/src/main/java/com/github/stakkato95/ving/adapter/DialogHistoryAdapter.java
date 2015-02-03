@@ -31,9 +31,9 @@ public class DialogHistoryAdapter extends ZCursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = getLayoutInflater().inflate(R.layout.adapter_dialog_history, parent, false);
         ViewHolder vh = new ViewHolder();
-        vh.interlocutorPhoto = (ImageView) view.findViewById(R.id.interlocutor_photo);
+        vh.interlocutorPhoto = (ImageView) view.findViewById(R.id.interlocutor_image);
         vh.interlocutorMessage = (TextView) view.findViewById(R.id.interlocutor_message);
-        vh.userPhoto = (ImageView) view.findViewById(R.id.user_photo);
+        vh.userPhoto = (ImageView) view.findViewById(R.id.user_image);
         vh.userMessage = (TextView) view.findViewById(R.id.user_message);
         view.setTag(vh);
         return view;
@@ -53,7 +53,10 @@ public class DialogHistoryAdapter extends ZCursorAdapter {
             vh.userPhoto.setVisibility(View.VISIBLE);
 
             vh.userMessage.setText(messageText);
-            getImageLoader().obtainImage(vh.userPhoto, photoUrl);
+
+            if (photoUrl != null) {
+                getImageLoader().obtainImage(vh.userPhoto, photoUrl);
+            }
         } else {
             vh.interlocutorMessage.setVisibility(View.VISIBLE);
             vh.interlocutorPhoto.setVisibility(View.VISIBLE);

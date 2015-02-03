@@ -2,13 +2,13 @@
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:id="@+id/adapter_friend"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
     <ImageView
-        android:id="@+id/dialog_photo"
+        android:id="@+id/dialog_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="centerCrop"
@@ -16,37 +16,48 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"/>
 
-    <!--TODO why not layout_width="20dp"-->
     <ImageView
-        android:id="@+id/dialog_last_sender"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_alignParentBottom="true"
-        android:paddingLeft="40dp"
-        android:paddingStart="40dp"/>
+        android:id="@+id/last_sender_image"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_below="@+id/dialog_name"
+        android:layout_marginLeft="56dp"
+        android:layout_marginStart="56dp"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/online_image"
+        android:layout_height="10dp"
+        android:layout_width="10dp"
+        android:layout_toRightOf="@+id/dialog_name"
+        android:layout_toEndOf="@+id/dialog_name"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_margin="4dp"/>
 
     <TextView
         android:id="@+id/dialog_name"
-        android:textSize="16sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="56dp"/>
-
-    <TextView
-        android:id="@+id/dialog_body"
         android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/dialog_last_sender"
-        android:layout_toEndOf="@+id/dialog_last_sender"
-        android:layout_alignParentBottom="true"/>
+        android:layout_marginLeft="56dp"
+        android:layout_marginStart="56dp"/>
+
+    <TextView
+        android:id="@+id/dialog_body"
+        android:textSize="12sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_name"/>
+        <!--android:layout_alignLeft="@id/dialog_name"/>-->
 
     <TextView
         android:id="@+id/dialog_date"
         android:textSize="12sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="56dp"
+        android:layout_marginStart="56dp"/>
 
 </RelativeLayout>

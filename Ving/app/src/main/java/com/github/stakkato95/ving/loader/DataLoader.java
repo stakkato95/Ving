@@ -15,7 +15,7 @@ import java.io.InputStream;
  */
 public class DataLoader {
 
-    private interface BaseCallback {
+    private static interface BaseCallback {
         void onLoadingStarted();
         void onLoadingError(Exception e);
     }

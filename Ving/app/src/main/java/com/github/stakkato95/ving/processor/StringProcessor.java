@@ -1,6 +1,6 @@
 package com.github.stakkato95.ving.processor;
 
-import com.github.stakkato95.imageloader.assist.ImageLoaderAssistant;
+import com.github.stakkato95.ving.utils.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ public class StringProcessor implements Processor<InputStream, String> {
             }
             return builder.toString();
         } finally {
-            ImageLoaderAssistant.closeStream(in, inputStream, inputStreamReader);
+            IOUtils.closeStream(in, inputStream, inputStreamReader);
         }
     }
 

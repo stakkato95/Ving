@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.github.stakkato95.ving.source.HttpDataSource;
+import com.github.stakkato95.ving.utils.IOUtils;
 
 import java.io.InputStream;
 
@@ -17,7 +18,7 @@ public class BitmapProcessor implements Processor<InputStream, Bitmap> {
         try {
             return BitmapFactory.decodeStream(inputStream);
         } finally {
-            HttpDataSource.close(inputStream);
+            IOUtils.closeStream(inputStream);
         }
     }
 

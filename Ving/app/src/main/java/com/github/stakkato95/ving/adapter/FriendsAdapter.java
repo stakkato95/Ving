@@ -29,9 +29,9 @@ public class FriendsAdapter extends ZCursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = getLayoutInflater().inflate(R.layout.adapter_friend, parent, false);
         ViewHolder vh = new ViewHolder();
-        vh.photo = (ImageView) view.findViewById(android.R.id.icon);
-        vh.onlineImage = (ImageView) view.findViewById(android.R.id.icon1);
-        vh.fullNameText = (TextView) view.findViewById(android.R.id.text1);
+        vh.photo = (ImageView) view.findViewById(R.id.user_image);
+        vh.onlineImage = (ImageView) view.findViewById(R.id.online_image);
+        vh.fullNameText = (TextView) view.findViewById(R.id.user_name);
         view.setTag(vh);
         return view;
     }

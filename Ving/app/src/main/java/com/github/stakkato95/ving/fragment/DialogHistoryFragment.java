@@ -1,30 +1,41 @@
 package com.github.stakkato95.ving.fragment;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.activity.MainActivity;
 import com.github.stakkato95.ving.adapter.DialogHistoryAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
+import com.github.stakkato95.ving.api.Shipper;
+import com.github.stakkato95.ving.api.ShipperBuilder;
 import com.github.stakkato95.ving.database.DialogHistoryTable;
 import com.github.stakkato95.ving.processor.DatabaseProcessor;
 import com.github.stakkato95.ving.processor.DialogHistoryProcessor;
+import com.github.stakkato95.ving.processor.MessageSendProcessor;
 import com.github.stakkato95.ving.provider.ZContentProvider;
+
+import java.util.Date;
 
 /**
  * Created by Artyom on 02.02.2015.
  */
-public class DialogHistoryFragment extends ZBaseListFragment {
+public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.Callback<Integer> {
 
     private String mRequestField;
+    private EditText mEditText;
+    private ProgressBar mShippingProgress;
+    
+    private static final String emptyString = "";
 
     public static DialogHistoryFragment newInstance(String requestField) {
         DialogHistoryFragment fragment = new DialogHistoryFragment();
@@ -56,24 +67,51 @@ public class DialogHistoryFragment extends ZBaseListFragment {
     @Override
     public void whileOnCreateView(View view) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
+        mShippingProgress = (ProgressBar)mFooder.findViewById(android.R.id.progress);
+        
         mListView.addHeaderView(mFooder);
         mListView.setHeaderDividersEnabled(true);
 
+        mEditText = (EditText)view.findViewById(R.id.dialog_history_message);
         ImageView mSend = (ImageView) view.findViewById(R.id.dialog_history_send);
-        mSend.setOnTouchListener(new View.OnTouchListener() {
+//        mSend.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                int maskedAction = event.getActionMasked();
+//                switch (maskedAction) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        v.setBackgroundColor(getResources().getColor(R.color.button_material_light));
+//                        return true;
+//                    case MotionEvent.ACTION_UP:
+//                        v.setBackgroundColor(getResources().getColor(R.color.WindowBackground));
+//                        return true;
+//                    default:
+//                        return true;
+//                }
+//            }
+//        });
+        mSend.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int maskedAction = event.getActionMasked();
-                switch (maskedAction) {
-                    case MotionEvent.ACTION_DOWN:
-                        v.setBackgroundColor(getResources().getColor(R.color.button_material_light));
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        v.setBackgroundColor(getResources().getColor(R.color.WindowBackground));
-                        return true;
-                    default:
-                        return true;
-                }
+            public void onClick(View v) {
+                String messageText = mEditText.getText().toString();
+                mEditText.setText(emptyString);
+                mShippingProgress.setVisibility(View.VISIBLE);
+
+                Shipper shipper = new ShipperBuilder()
+                        .setRequestField(mRequestField)
+                        .setMessageText(messageText)
+                        .setProcessor(new MessageSendProcessor())
+                        .setCallback(DialogHistoryFragment.this)
+                        .setContext(getActivity())
+                        .build();
+                shipper.send();
+
+                long date = new Date().getTime();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DialogHistoryTable._BODY, messageText);
+                contentValues.put(DialogHistoryTable._DATE, date);
+                contentValues.put(DialogHistoryTable._ROUTE, Api.ROUTE_OUT);
+                mContentResolver.bulkInsert(mUri, new ContentValues[] { contentValues });
             }
         });
 
@@ -118,7 +156,7 @@ public class DialogHistoryFragment extends ZBaseListFragment {
         mProgressBar.setVisibility(View.GONE);
     }
 
-
+    //LoaderManager
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = " ASC";
@@ -139,5 +177,11 @@ public class DialogHistoryFragment extends ZBaseListFragment {
         //magic number that is obtained by trial and error
         int androidMagic = mFooder.getHeight() + 2;
         mListView.setSelectionFromTop(itemIndex, androidMagic);
+    }
+
+    //Shipper.Callback
+    @Override
+    public void onShippingPerformed(Integer messageId) {
+        mShippingProgress.setVisibility(View.GONE);
     }
 }

@@ -1,5 +1,7 @@
 package com.github.stakkato95.ving.bo;
 
+import com.github.stakkato95.ving.api.Api;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +15,7 @@ public class JSONArrayWrapper {
 
     public JSONArrayWrapper(String string) {
         try {
-            mJSONArray = new JSONObject(string).getJSONObject("response").getJSONArray("items");
+            mJSONArray = new JSONObject(string).getJSONObject(Api.JSON_RESPONSE).getJSONArray(Api.JSON_ITEMS);
         } catch (JSONException e) {
             throw new IllegalArgumentException("invalid json string");
         }

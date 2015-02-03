@@ -35,7 +35,7 @@
         <EditText
             android:hint="@string/edit_text_hint"
             android:inputType="textLongMessage"
-            android:id="@+id/dialog_history_edit"
+            android:id="@+id/dialog_history_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6"/>

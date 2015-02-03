@@ -18,6 +18,11 @@ public final class DialogTable extends ZTable {
     public static final String _ROUTE = "_route";
     public static final String _READ_STATE = "_read_state";
     public static final String _BODY = "_body";
+    public static final String _ONLINE = "_online";
+    public static final String _TYPE = "_type";
+
+    public static final int CHAT = 1;
+    public static final int ONE_INTERLOCUTOR = 0;
 
     private static MultiValueMap<String,String> sDBMap;
 
@@ -27,6 +32,8 @@ public final class DialogTable extends ZTable {
             add(_ID);
             add(_READ_STATE);
             add(_ROUTE);
+            add(_ONLINE);
+            add(_TYPE);
         }});
         sDBMap.put(TYPE_TEXT, new ArrayList<String>() {{
             add(_DIALOG_NAME);
@@ -55,7 +62,21 @@ public final class DialogTable extends ZTable {
             _DATE,
             _ROUTE,
             _READ_STATE,
-            _BODY
+            _BODY,
+            _ONLINE,
+            _TYPE
+    };
+
+    public static final String[] PROJECTION_OFFLINE = {
+            _ID,
+            _DIALOG_NAME,
+            _LAST_SENDER_PHOTO_100,
+            _PHOTO_100,
+            _DATE,
+            _ROUTE,
+            _READ_STATE,
+            _BODY,
+            _TYPE
     };
 
 }
