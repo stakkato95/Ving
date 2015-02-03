@@ -12,12 +12,12 @@ public class Api {
     public static final String JSON_RESPONSE = "response";
     public static final String JSON_ITEMS = "items";
 
-    public static final int GET_COUNT = 30;
     public static final String ONE_INTERLOCUTOR_DIALOG = " ... ";
-    public static final int ROUTE_IN = 0;
-    public static final int ROUTE_OUT = 1;
-    public static final int READ = 1;
-    public static final int UNREAD = 0;
+    public static final int GET_COUNT = 30;
+    public static final int MESSAGE_ROUTE_IN = 0;
+    public static final int MESSAGE_ROUTE_OUT = 1;
+    public static final int MESSAGE_STATE_READ = 1;
+    public static final int MESSAGE_STATE_UNREAD = 0;
     public static final int MESSAGE_PREVIEW_LENGTH = 35;
 
     public static final String FIELD_PHOTO_100 = "photo_100";

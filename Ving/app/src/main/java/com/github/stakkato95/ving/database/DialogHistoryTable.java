@@ -15,6 +15,7 @@ public final class DialogHistoryTable extends ZTable {
     public static final String _FROM_ID = "_from_id";
     public static final String _PHOTO_100 = "_photo_100";
     public static final String _DATE = "_date";
+    public static final String _DATE_TEXT = "_date_text";
     public static final String _ROUTE = "_route";
     public static final String _READ_STATE = "_read_state";
     public static final String _BODY = "_body";
@@ -29,11 +30,12 @@ public final class DialogHistoryTable extends ZTable {
             add(_FROM_ID);
             add(_ROUTE);
             add(_READ_STATE);
+            add(_DATE);
         }});
         sDBMap.put(TYPE_TEXT, new ArrayList<String>() {{
             add(_PHOTO_100);
-            add(_DATE);
             add(_BODY);
+            add(_DATE_TEXT);
         }});
     }
 
@@ -52,6 +54,7 @@ public final class DialogHistoryTable extends ZTable {
             _FROM_ID,
             _PHOTO_100,
             _DATE,
+            _DATE_TEXT,
             _ROUTE,
             _BODY
     };

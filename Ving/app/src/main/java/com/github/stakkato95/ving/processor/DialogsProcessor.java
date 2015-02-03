@@ -17,9 +17,7 @@ import com.github.stakkato95.ving.utils.ProcessingUtils;
 
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +39,7 @@ public class DialogsProcessor extends DatabaseProcessor {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             Dialog dialog = new Dialog(jsonObject);
-            String stringDate = ProcessingUtils.getDate(dialog.getDate());
+            String stringDate = ProcessingUtils.getDate(dialog.getDate() * 1000);
             String dialogBody = dialog.getBody();
             if (dialog.getBody().contains("\n")) {
                 dialogBody = dialogBody.replaceAll("\n"," ");
@@ -86,7 +84,7 @@ public class DialogsProcessor extends DatabaseProcessor {
                     value.put(DialogTable._PHOTO_100, user.getPhoto());
                     value.put(DialogTable._ONLINE, user.getOnlineMode());
 
-                    if (value.getAsInteger(DialogTable._ROUTE) == Api.ROUTE_OUT) {
+                    if (value.getAsInteger(DialogTable._ROUTE) == Api.MESSAGE_ROUTE_OUT) {
                         value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto());
                     }
                 } else {

@@ -23,6 +23,7 @@ import com.github.stakkato95.ving.processor.DatabaseProcessor;
 import com.github.stakkato95.ving.processor.DialogHistoryProcessor;
 import com.github.stakkato95.ving.processor.MessageSendProcessor;
 import com.github.stakkato95.ving.provider.ZContentProvider;
+import com.github.stakkato95.ving.utils.ProcessingUtils;
 
 import java.util.Date;
 
@@ -33,7 +34,6 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
 
     private String mRequestField;
     private EditText mEditText;
-    private ProgressBar mShippingProgress;
     
     private static final String emptyString = "";
 
@@ -67,8 +67,6 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
     @Override
     public void whileOnCreateView(View view) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
-        mShippingProgress = (ProgressBar)mFooder.findViewById(android.R.id.progress);
-        
         mListView.addHeaderView(mFooder);
         mListView.setHeaderDividersEnabled(true);
 
@@ -95,7 +93,6 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
             public void onClick(View v) {
                 String messageText = mEditText.getText().toString();
                 mEditText.setText(emptyString);
-                mShippingProgress.setVisibility(View.VISIBLE);
 
                 Shipper shipper = new ShipperBuilder()
                         .setRequestField(mRequestField)
@@ -107,10 +104,12 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
                 shipper.send();
 
                 long date = new Date().getTime();
+                String stringDate = ProcessingUtils.getDate(date);
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(DialogHistoryTable._BODY, messageText);
                 contentValues.put(DialogHistoryTable._DATE, date);
-                contentValues.put(DialogHistoryTable._ROUTE, Api.ROUTE_OUT);
+                contentValues.put(DialogHistoryTable._ROUTE, Api.MESSAGE_ROUTE_OUT);
+                contentValues.put(DialogHistoryTable._DATE_TEXT, stringDate);
                 mContentResolver.bulkInsert(mUri, new ContentValues[] { contentValues });
             }
         });
@@ -179,9 +178,8 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
         mListView.setSelectionFromTop(itemIndex, androidMagic);
     }
 
-    //Shipper.Callback
     @Override
-    public void onShippingPerformed(Integer messageId) {
-        mShippingProgress.setVisibility(View.GONE);
+    public void onShippingPerformed(Integer integer) {
+        mListView.setSelection(mListView.getCount());
     }
 }

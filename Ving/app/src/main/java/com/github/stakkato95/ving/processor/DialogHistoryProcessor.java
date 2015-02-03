@@ -13,6 +13,7 @@ import com.github.stakkato95.ving.database.DialogHistoryTable;
 import com.github.stakkato95.ving.loader.DataLoader;
 import com.github.stakkato95.ving.provider.ZContentProvider;
 import com.github.stakkato95.ving.source.VkDataSource;
+import com.github.stakkato95.ving.utils.ProcessingUtils;
 
 import org.json.JSONObject;
 
@@ -40,6 +41,7 @@ public class DialogHistoryProcessor extends DatabaseProcessor {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             DialogHistory history = new DialogHistory(jsonObject);
+            String stringDate = ProcessingUtils.getDate(history.getDate() * 1000);
 
             ContentValues value = new ContentValues();
             value.put(DialogHistoryTable._ID, history.getId());
@@ -48,6 +50,7 @@ public class DialogHistoryProcessor extends DatabaseProcessor {
             value.put(DialogHistoryTable._BODY, history.getBody());
             value.put(DialogHistoryTable._PHOTO_100, history.getPhoto());
             value.put(DialogHistoryTable._DATE, history.getDate());
+            value.put(DialogHistoryTable._DATE_TEXT, stringDate);
             valuesMap.put(history.getFromId(), value);
         }
 

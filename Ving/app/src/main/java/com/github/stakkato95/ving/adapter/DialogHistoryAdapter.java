@@ -5,22 +5,30 @@ import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.api.Api;
+import com.github.stakkato95.ving.api.Shipper;
+import com.github.stakkato95.ving.database.DialogHistoryTable;
 import com.github.stakkato95.ving.database.DialogTable;
 
 /**
  * Created by Artyom on 25.01.2015.
  */
-public class DialogHistoryAdapter extends ZCursorAdapter {
+public class DialogHistoryAdapter extends ZCursorAdapter implements Shipper.Callback<Integer> {
 
     private class ViewHolder {
         public ImageView interlocutorPhoto;
         public TextView interlocutorMessage;
         public ImageView userPhoto;
         public TextView userMessage;
+        public TextView userDate;
+        public TextView interlocutorDate;
+        public LinearLayout userContainer;
+        public LinearLayout interlocutorContainer;
     }
 
     public DialogHistoryAdapter(Context context, Cursor cursor, int flags) {
@@ -35,6 +43,10 @@ public class DialogHistoryAdapter extends ZCursorAdapter {
         vh.interlocutorMessage = (TextView) view.findViewById(R.id.interlocutor_message);
         vh.userPhoto = (ImageView) view.findViewById(R.id.user_image);
         vh.userMessage = (TextView) view.findViewById(R.id.user_message);
+        vh.userDate = (TextView) view.findViewById(R.id.user_date);
+        vh.interlocutorDate = (TextView) view.findViewById(R.id.interlocutor_date);
+        vh.interlocutorContainer = (LinearLayout) view.findViewById(R.id.interlocutor_container);
+        vh.userContainer = (LinearLayout) view.findViewById(R.id.user_container);
         view.setTag(vh);
         return view;
     }
@@ -43,27 +55,30 @@ public class DialogHistoryAdapter extends ZCursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder vh = (ViewHolder) view.getTag();
 
-        String messageText = cursor.getString(cursor.getColumnIndex(DialogTable._BODY));
-        String photoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
-        long route = cursor.getLong(cursor.getColumnIndex(DialogTable._ROUTE));
-        if (route == Api.ROUTE_OUT) {
-            vh.interlocutorMessage.setVisibility(View.GONE);
+        String messageText = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._BODY));
+        String photoUrl = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._PHOTO_100));
+        String date = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._DATE_TEXT));
+        long route = cursor.getLong(cursor.getColumnIndex(DialogHistoryTable._ROUTE));
+
+        if (route == Api.MESSAGE_ROUTE_OUT) {
+            vh.interlocutorContainer.setVisibility(View.GONE);
             vh.interlocutorPhoto.setVisibility(View.GONE);
-            vh.userMessage.setVisibility(View.VISIBLE);
+            vh.userContainer.setVisibility(View.VISIBLE);
             vh.userPhoto.setVisibility(View.VISIBLE);
 
             vh.userMessage.setText(messageText);
-
+            vh.userDate.setText(date);
             if (photoUrl != null) {
                 getImageLoader().obtainImage(vh.userPhoto, photoUrl);
             }
         } else {
-            vh.interlocutorMessage.setVisibility(View.VISIBLE);
+            vh.interlocutorContainer.setVisibility(View.VISIBLE);
             vh.interlocutorPhoto.setVisibility(View.VISIBLE);
-            vh.userMessage.setVisibility(View.GONE);
+            vh.userContainer.setVisibility(View.GONE);
             vh.userPhoto.setVisibility(View.GONE);
 
             vh.interlocutorMessage.setText(messageText);
+            vh.interlocutorDate.setText(date);
             getImageLoader().obtainImage(vh.interlocutorPhoto, photoUrl);
         }
     }
@@ -71,6 +86,11 @@ public class DialogHistoryAdapter extends ZCursorAdapter {
     @Override
     public boolean isEnabled(int position) {
         return false;
+    }
+
+    @Override
+    public void onShippingPerformed(Integer integer) {
+        //todo after training
     }
 
 }

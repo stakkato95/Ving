@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.DialogTable;
-import com.github.stakkato95.ving.database.FriendsTable;
 
 /**
  * Created by Artyom on 20.01.2015.
@@ -61,12 +60,13 @@ public class DialogsAdapter extends ZCursorAdapter {
         String photoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
         String dateText = cursor.getString(cursor.getColumnIndex(DialogTable._DATE));
 
-
         vh.lastMessage.setText(lastMessageText);
         vh.date.setText(dateText);
         getImageLoader().obtainImage(vh.photo, photoUrl);
 
-        if (cursor.getInt(cursor.getColumnIndex(DialogTable._READ_STATE)) == Api.UNREAD) {
+        int readState = cursor.getInt(cursor.getColumnIndex(DialogTable._READ_STATE));
+        int route = cursor.getInt(cursor.getColumnIndex(DialogTable._ROUTE));
+        if (readState == Api.MESSAGE_STATE_UNREAD && route == Api.MESSAGE_ROUTE_IN) {
             Spannable titleSpannable = new SpannableString(titleText);
             titleSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, titleText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             vh.title.setText(titleSpannable);
@@ -74,9 +74,8 @@ public class DialogsAdapter extends ZCursorAdapter {
             vh.title.setText(titleText);
         }
 
-        String lastSenderPhotoUrl;
-        if (cursor.getString(cursor.getColumnIndex(DialogTable._LAST_SENDER_PHOTO_100)) != null) {
-            lastSenderPhotoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._LAST_SENDER_PHOTO_100));
+        String lastSenderPhotoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._LAST_SENDER_PHOTO_100));
+        if (lastSenderPhotoUrl != null) {
             getImageLoader().obtainImage(vh.lastSenderPhoto, lastSenderPhotoUrl);
 
             vh.lastSenderPhoto.setVisibility(View.VISIBLE);
