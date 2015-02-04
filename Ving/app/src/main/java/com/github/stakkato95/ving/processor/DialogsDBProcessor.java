@@ -25,9 +25,9 @@ import java.util.Set;
 /**
  * Created by Artyom on 19.01.2015.
  */
-public class DialogsProcessor extends DatabaseProcessor {
+public class DialogsDBProcessor extends DBProcessor {
 
-    public DialogsProcessor(Context context) {
+    public DialogsDBProcessor(Context context) {
         super(context);
     }
 
@@ -39,7 +39,7 @@ public class DialogsProcessor extends DatabaseProcessor {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             Dialog dialog = new Dialog(jsonObject);
-            String stringDate = ProcessingUtils.getDate(dialog.getDate() * 1000);
+            String stringDate = ProcessingUtils.getDate(dialog.getDate());
             String dialogBody = dialog.getBody();
             if (dialog.getBody().contains("\n")) {
                 dialogBody = dialogBody.replaceAll("\n"," ");
@@ -71,7 +71,7 @@ public class DialogsProcessor extends DatabaseProcessor {
             id = pair.getKey();
             idBatch.append(id).append(',');
         }
-        User[] users = DataLoader.getDataDirectly(Api.getUsers() + idBatch, new VkDataSource(), new UserProcessor());
+        User[] users = DataLoader.getDataDirectly(Api.getUser() + idBatch + "&" + Api.FIELD_USER_FIELDS + Api._PHOTO_100 + "," + Api._ONLINE, new VkDataSource(), new UserProcessor());
 
         List<ContentValues> values = new ArrayList<>();
         for (User user : users) {

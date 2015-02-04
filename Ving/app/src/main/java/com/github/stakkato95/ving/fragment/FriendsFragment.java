@@ -1,20 +1,31 @@
 package com.github.stakkato95.ving.fragment;
 
 import android.net.Uri;
+import android.view.View;
+import android.widget.ListView;
 
 import com.github.stakkato95.ving.adapter.FriendsAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.FriendsTable;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;
-import com.github.stakkato95.ving.processor.DatabaseProcessor;
-import com.github.stakkato95.ving.processor.FriendsProcessor;
+import com.github.stakkato95.ving.processor.DBProcessor;
+import com.github.stakkato95.ving.processor.FriendsDBProcessor;
 import com.github.stakkato95.ving.provider.ZContentProvider;
 
 /**
  * Created by Artyom on 19.01.2015.
  */
-public class FriendsFragment extends ZListFragment {
+public class FriendsFragment extends ZQueueFragment {
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        String friendId = Long.toString(id);
+        ClickCallback callback = getCallback();
+        if (callback != null) {
+            callback.showDetails(getFragmentId(), friendId);
+        }
+    }
 
     @Override
     public ZCursorAdapter getAdapter() {
@@ -22,8 +33,8 @@ public class FriendsFragment extends ZListFragment {
     }
 
     @Override
-    public DatabaseProcessor getProcessor() {
-        return new FriendsProcessor(getActivity());
+    public DBProcessor getProcessor() {
+        return new FriendsDBProcessor(getActivity());
     }
 
     @Override

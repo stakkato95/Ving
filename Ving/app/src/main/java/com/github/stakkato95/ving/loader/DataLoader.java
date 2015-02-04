@@ -1,10 +1,7 @@
 package com.github.stakkato95.ving.loader;
 
-import android.os.Handler;
-import android.os.Looper;
-
-import com.github.stakkato95.ving.os.ZExecutor;
-import com.github.stakkato95.ving.processor.DatabaseProcessor;
+import com.github.stakkato95.ving.os.ZAsynchTask;
+import com.github.stakkato95.ving.processor.DBProcessor;
 import com.github.stakkato95.ving.processor.Processor;
 import com.github.stakkato95.ving.source.DataSource;
 
@@ -28,84 +25,62 @@ public class DataLoader {
         void onLoadingFinished();
     }
 
-    private static final ZExecutor sExecutor;
-    private final Handler mHandler;
-
-    public DataLoader() {
-        mHandler = new Handler();
-    }
-
-    static {
-        sExecutor = new ZExecutor();
-    }
-
     public void getDataToDatabase(final DatabaseCallback callback,
                                                           final String input,
                                                           final DataSource<String, InputStream> source,
-                                                          final DatabaseProcessor processor) {
-        sExecutor.execute(new Runnable() {
+                                                          final DBProcessor processor) {
+        new ZAsynchTask<String, Void>() {
+
             @Override
-            public void run() {
-                try {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onLoadingStarted();
-                        }
-                    });
-                    InputStream sourceOutput = source.getResult(input);
-                    processor.process(sourceOutput);
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onLoadingFinished();
-                        }
-                    });
-                } catch (final Exception e) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onLoadingError(e);
-                        }
-                    });
-                }
+            public void onPreExecute() {
+                callback.onLoadingStarted();
             }
-        });
+
+            @Override
+            public Void doInBackground(String s) throws Exception {
+                InputStream sourceOutput = source.getResult(input);
+                processor.process(sourceOutput);
+                return null;
+            }
+
+            @Override
+            public void onPostExecute(Void aVoid) {
+                callback.onLoadingFinished();
+            }
+
+            @Override
+            public void onException(Exception e) {
+                callback.onLoadingError(e);
+            }
+        }.execute(input);
     }
 
     public <Input,SourceOutput,Output> void getDataAsynch(final Callback callback,
                                                        final Input input,
                                                        final DataSource<Input,SourceOutput> source,
                                                        final Processor<SourceOutput,Output> processor) {
-        sExecutor.execute(new Runnable() {
+        new ZAsynchTask<Input,Output>() {
             @Override
-            public void run() {
-                try {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onLoadingStarted();
-                        }
-                    });
-                    SourceOutput sourceOutput = source.getResult(input);
-                    final Output output = processor.process(sourceOutput);
-
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onLoadingFinished(output);
-                        }
-                    });
-                } catch (final Exception e){
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onLoadingError(e);
-                        }
-                    });
-                }
+            public void onPreExecute() {
+                callback.onLoadingStarted();
             }
-        });
+
+            @Override
+            public Output doInBackground(Input input) throws Exception {
+                SourceOutput sourceOutput = source.getResult(input);
+                return processor.process(sourceOutput);
+            }
+
+            @Override
+            public void onPostExecute(Output output) {
+                callback.onLoadingFinished(output);
+            }
+
+            @Override
+            public void onException(Exception e) {
+                callback.onLoadingError(e);
+            }
+        }.execute(input);
     }
 
     public static  <Input,SourceOutput,Output> Output getDataDirectly(Input input,

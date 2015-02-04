@@ -18,18 +18,16 @@ import com.github.stakkato95.ving.utils.ProcessingUtils;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Created by Artyom on 25.01.2015.
  */
-public class DialogHistoryProcessor extends DatabaseProcessor {
+public class DialogHistoryDBProcessor extends DBProcessor {
 
-    public DialogHistoryProcessor(Context context) {
+    public DialogHistoryDBProcessor(Context context) {
         super(context);
     }
 
@@ -41,7 +39,7 @@ public class DialogHistoryProcessor extends DatabaseProcessor {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             DialogHistory history = new DialogHistory(jsonObject);
-            String stringDate = ProcessingUtils.getDate(history.getDate() * 1000);
+            String stringDate = ProcessingUtils.getDate(history.getDate());
 
             ContentValues value = new ContentValues();
             value.put(DialogHistoryTable._ID, history.getId());
@@ -61,7 +59,7 @@ public class DialogHistoryProcessor extends DatabaseProcessor {
             id = pair.getKey();
             idBatch.append(id).append(',');
         }
-        User[] users = DataLoader.getDataDirectly(Api.getUsers() + idBatch, new VkDataSource(), new UserProcessor());
+        User[] users = DataLoader.getDataDirectly(Api.getUser() + idBatch + "&" + Api.FIELD_USER_FIELDS + Api._PHOTO_100, new VkDataSource(), new UserProcessor());
 
         List<ContentValues> values = new ArrayList<>();
         for (User user : users) {

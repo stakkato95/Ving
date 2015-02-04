@@ -21,6 +21,7 @@ public class ZDataBase extends SQLiteOpenHelper {
         sTables.add(FriendsTable.class);
         sTables.add(DialogTable.class);
         sTables.add(DialogHistoryTable.class);
+        sTables.add(UserTable.class);
     }
 
     public ZDataBase(Context context) {

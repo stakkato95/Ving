@@ -18,6 +18,13 @@ public class User extends JSONObjectWrapper {
     private static final String FULL_NAME = "full_name";
     private static final String ONLINE = "online";
     private static final String ONLINE_MOBILE = "online_mobile";
+    private static final String SEX = "sex";
+    private static final String BIRTHDAY = "bdate";
+    private static final String PHONE = "home_phone";
+    private static final String PHONE_MOBILE = "mobile_phone";
+    private static final String SKYPE = "skype";
+    private static final String SITE = "site";
+    private static final String STATUS = "status";
 
     public User(String jsonObject) {
         super(jsonObject);
@@ -63,7 +70,6 @@ public class User extends JSONObjectWrapper {
     }
 
     public int getOnlineMode() {
-        //online_mobile = 2, online = 1, offline = 0
         long isOnlineMobile = getLong(ONLINE_MOBILE);
         if (isOnlineMobile == 1) {
             return 2;
@@ -77,6 +83,34 @@ public class User extends JSONObjectWrapper {
 
     public Long getId() {
         return getLong(ID);
+    }
+
+    public Long getSex() {
+        return getLong(SEX);
+    }
+
+    public String getBirthday() {
+        return getString(BIRTHDAY);
+    }
+
+    public Long getPhone() {
+        return getLong(PHONE);
+    }
+
+    public Long getPhoneMobile() {
+        return getLong(PHONE_MOBILE);
+    }
+
+    public String getSkype() {
+        return getString(SKYPE);
+    }
+
+    public String getSite() {
+        return getString(SITE);
+    }
+
+    public String getStatus() {
+        return getString(STATUS);
     }
 
 }

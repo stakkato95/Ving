@@ -14,9 +14,9 @@ import org.json.JSONObject;
 /**
  * Created by Artyom on 21.11.2014.
  */
-public class FriendsProcessor extends DatabaseProcessor {
+public class FriendsDBProcessor extends DBProcessor {
 
-    public FriendsProcessor(Context context) {
+    public FriendsDBProcessor(Context context) {
         super(context);
     }
 

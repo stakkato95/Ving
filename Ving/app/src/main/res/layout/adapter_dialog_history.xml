@@ -91,6 +91,7 @@
 
     </LinearLayout>
 
+    <!--todo after training-->
     <!--<ProgressBar-->
         <!--android:id="@android:id/progress"-->
         <!--android:layout_width="16dp"-->

@@ -1,5 +1,6 @@
 package com.github.stakkato95.ving.processor;
 
+import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.bo.User;
 
 import org.json.JSONArray;
@@ -16,7 +17,7 @@ public class UserProcessor implements Processor<InputStream,User[]> {
     public User[] process(InputStream inputStream) throws Exception {
         String string = new StringProcessor().process(inputStream);
         JSONObject response = new JSONObject(string);
-        JSONArray jsonArray = response.getJSONArray("response");
+        JSONArray jsonArray = response.getJSONArray(Api.JSON_RESPONSE);
         User[] users = new User[jsonArray.length()];
 
         for (int i = 0; i < jsonArray.length(); i++) {

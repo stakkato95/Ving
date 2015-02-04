@@ -9,11 +9,11 @@ import java.io.InputStream;
 /**
  * Created by Artyom on 17.01.2015.
  */
-public abstract class DatabaseProcessor {
+public abstract class DBProcessor {
 
     private final Context mContext;
 
-    DatabaseProcessor(Context context) {
+    DBProcessor(Context context) {
         mContext = context;
     }
 

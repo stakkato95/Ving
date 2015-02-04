@@ -10,8 +10,12 @@ import android.view.MenuItem;
 
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.fragment.DialogHistoryFragment;
+import com.github.stakkato95.ving.fragment.UserFragment;
 
-public class DialogHistoryActivity extends ActionBarActivity {
+/**
+ * Created by Artyom on 04.02.2015.
+ */
+public class UserActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,17 +26,16 @@ public class DialogHistoryActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String requestField = getIntent().getStringExtra(MainActivity.KEY_REQUEST_FIELD);
+        String userId = getIntent().getStringExtra(MainActivity.KEY_REQUEST_FIELD);
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
-            DialogHistoryFragment fragment = DialogHistoryFragment.newInstance(requestField);
+            UserFragment fragment = UserFragment.newInstance(userId);
             fragmentManager.beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,4 +58,5 @@ public class DialogHistoryActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }

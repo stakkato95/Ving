@@ -9,7 +9,7 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.ListView;
 
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.activity.MainActivity;
@@ -19,8 +19,8 @@ import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.api.Shipper;
 import com.github.stakkato95.ving.api.ShipperBuilder;
 import com.github.stakkato95.ving.database.DialogHistoryTable;
-import com.github.stakkato95.ving.processor.DatabaseProcessor;
-import com.github.stakkato95.ving.processor.DialogHistoryProcessor;
+import com.github.stakkato95.ving.processor.DBProcessor;
+import com.github.stakkato95.ving.processor.DialogHistoryDBProcessor;
 import com.github.stakkato95.ving.processor.MessageSendProcessor;
 import com.github.stakkato95.ving.provider.ZContentProvider;
 import com.github.stakkato95.ving.utils.ProcessingUtils;
@@ -30,11 +30,11 @@ import java.util.Date;
 /**
  * Created by Artyom on 02.02.2015.
  */
-public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.Callback<Integer> {
+public class DialogHistoryFragment extends ZListFragment implements Shipper.Callback<Integer> {
 
     private String mRequestField;
     private EditText mEditText;
-    
+
     private static final String emptyString = "";
 
     public static DialogHistoryFragment newInstance(String requestField) {
@@ -46,16 +46,16 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
     }
 
     private void setHeaderVisibility() {
-        if ((getRealAdapterCount(mZAdapter) % Api.GET_COUNT) == 0 && isNetworkAvailable()) {
-            if (mListView.getHeaderViewsCount() == 0) {
-                mListView.addHeaderView(mFooder);
+        if ((getRealAdapterCount(getListAdapter()) % Api.GET_COUNT) == 0 && isNetworkAvailable()) {
+            if (getListView().getHeaderViewsCount() == 0) {
+                getListView().addHeaderView(mFooder);
             }
             if (mFooder.getVisibility() == View.GONE) {
                 mFooder.setVisibility(View.VISIBLE);
-                mListView.setFooterDividersEnabled(true);
+                getListView().setFooterDividersEnabled(true);
             }
         } else {
-            mListView.removeHeaderView(mFooder);
+            getListView().removeHeaderView(mFooder);
         }
     }
 
@@ -67,10 +67,11 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
     @Override
     public void whileOnCreateView(View view) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
-        mListView.addHeaderView(mFooder);
-        mListView.setHeaderDividersEnabled(true);
+        ListView listView = (ListView)view.findViewById(android.R.id.list);
+        listView.addHeaderView(mFooder);
+        listView.setHeaderDividersEnabled(true);
 
-        mEditText = (EditText)view.findViewById(R.id.dialog_history_message);
+        mEditText = (EditText) view.findViewById(R.id.dialog_history_message);
         ImageView mSend = (ImageView) view.findViewById(R.id.dialog_history_send);
 //        mSend.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
@@ -110,7 +111,7 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
                 contentValues.put(DialogHistoryTable._DATE, date);
                 contentValues.put(DialogHistoryTable._ROUTE, Api.MESSAGE_ROUTE_OUT);
                 contentValues.put(DialogHistoryTable._DATE_TEXT, stringDate);
-                mContentResolver.bulkInsert(mUri, new ContentValues[] { contentValues });
+                mContentResolver.bulkInsert(mUri, new ContentValues[]{contentValues});
             }
         });
 
@@ -120,7 +121,7 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mListView.removeHeaderView(mFooder);
+        getListView().removeHeaderView(mFooder);
     }
 
     @Override
@@ -129,8 +130,8 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
     }
 
     @Override
-    public DatabaseProcessor getProcessor() {
-        return new DialogHistoryProcessor(getActivity());
+    public DBProcessor getProcessor() {
+        return new DialogHistoryDBProcessor(getActivity());
     }
 
     @Override
@@ -167,19 +168,19 @@ public class DialogHistoryFragment extends ZBaseListFragment implements Shipper.
         super.onLoadFinished(loader, data);
         setHeaderVisibility();
         int itemIndex;
-        if (mZAdapter.getCount() % Api.GET_COUNT == 0) {
-            itemIndex = Api.GET_COUNT + mListView.getHeaderViewsCount();
+        if (getListAdapter().getCount() % Api.GET_COUNT == 0) {
+            itemIndex = Api.GET_COUNT + getListView().getHeaderViewsCount();
         } else {
-            itemIndex = mZAdapter.getCount() % Api.GET_COUNT;
+            itemIndex = getListAdapter().getCount() % Api.GET_COUNT;
         }
 
         //magic number that is obtained by trial and error
         int androidMagic = mFooder.getHeight() + 2;
-        mListView.setSelectionFromTop(itemIndex, androidMagic);
+        getListView().setSelectionFromTop(itemIndex, androidMagic);
     }
 
     @Override
     public void onShippingPerformed(Integer integer) {
-        mListView.setSelection(mListView.getCount());
+        setSelection(getListView().getCount());
     }
 }

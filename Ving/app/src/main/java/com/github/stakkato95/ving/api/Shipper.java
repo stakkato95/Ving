@@ -32,6 +32,11 @@ public class Shipper<Output> {
         new ZAsynchTask<String, Output>() {
 
             @Override
+            public void onPreExecute() {
+
+            }
+
+            @Override
             public Output doInBackground(String input) throws Exception {
                 InputStream stream = mDataSource.getResult(input);
                 return mProcessor.process(stream);
@@ -40,6 +45,11 @@ public class Shipper<Output> {
             @Override
             public void onPostExecute(Output output) {
                 mCallback.onShippingPerformed(output);
+            }
+
+            @Override
+            public void onException(Exception e) {
+
             }
 
         }.execute(mQuery);

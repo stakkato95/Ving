@@ -13,13 +13,13 @@ public abstract class ZAsynchTask<Input,Output> {
         sExecutor = new ZExecutor();
     }
 
-    public void onPreExecute() {}
+    public abstract void onPreExecute();
 
     public abstract Output doInBackground(Input input) throws Exception;
 
     public abstract void onPostExecute(Output output);
 
-    public void onException(Exception e) {}
+    public abstract void onException(Exception e);
 
     public void execute(final Input input) {
         final Handler handler = new Handler();

@@ -15,15 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.github.stakkato95.ving.R;
-import com.github.stakkato95.ving.fragment.ZListFragment;
+import com.github.stakkato95.ving.fragment.ZQueueFragment;
 import com.github.stakkato95.ving.fragment.assist.DrawerMenuItem;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-public class MainActivity extends ActionBarActivity implements ZListFragment.ClickCallback {
+public class MainActivity extends ActionBarActivity implements ZQueueFragment.ClickCallback {
 
     //Drawer content
     private DrawerLayout mDrawerLayout;
@@ -94,7 +91,7 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
         if (savedInstanceState == null) {
             mDrawerList.setItemChecked(0, true);
 
-            ZListFragment fragment = DrawerMenuItem.values()[0].createFragment();
+            ZQueueFragment fragment = DrawerMenuItem.values()[0].createFragment();
             mFragmentManager.beginTransaction()
                     .add(R.id.container, fragment)
                     .commit();
@@ -163,7 +160,7 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
 
         switch (fragmentId) {
             case FRIEND:
-                //intent = new Intent(this, UserActivity.class);
+                intent = new Intent(this, UserActivity.class);
                 break;
             case DIALOG:
                 intent = new Intent(this, DialogHistoryActivity.class);
@@ -172,10 +169,8 @@ public class MainActivity extends ActionBarActivity implements ZListFragment.Cli
                 break;
         }
 
-        if (intent != null) {
-            intent.putExtra(KEY_REQUEST_FIELD, requestField);
-            startActivity(intent);
-        }
+        intent.putExtra(KEY_REQUEST_FIELD, requestField);
+        startActivity(intent);
     }
 
 

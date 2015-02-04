@@ -13,28 +13,43 @@ public class Api {
     public static final String JSON_ITEMS = "items";
 
     public static final String ONE_INTERLOCUTOR_DIALOG = " ... ";
+    public static final String SORT_ORDER_HINTS = "hints";
     public static final int GET_COUNT = 30;
     public static final int MESSAGE_ROUTE_IN = 0;
     public static final int MESSAGE_ROUTE_OUT = 1;
     public static final int MESSAGE_STATE_READ = 1;
     public static final int MESSAGE_STATE_UNREAD = 0;
     public static final int MESSAGE_PREVIEW_LENGTH = 35;
+    public static final int USER_OFFLINE = 0;
+    public static final int USER_ONLINE = 1;
+    public static final int USER_ONLINE_MOBILE = 2;
+    public static final int SEX_MAN = 2;
+    public static final int SEX_WOMAN = 1;
 
-    public static final String FIELD_PHOTO_100 = "photo_100";
-    public static final String FIELD_ONLINE = "online";
+    public static final String FIELD_USER_FIELDS = "fields=";
     public static final String FIELD_USER_IDS = "user_ids=";
+    public static final String FIELD_FRIENDS_SORT_ORDER = "order=";
     public static final String FIELD_MESSAGE_CHAT_ID = "chat_id=";
     public static final String FIELD_MESSAGE_USER_ID = "user_id=";
+    public static final String FIELD_MESSAGE_PREVIEW = "preview_length=";
     public static final String FIELD_COUNT = "count=";
     public static final String FIELD_OFFSET = "offset=";
-    public static final String FIELD_MESSAGE_PREVIEW = "preview_length=";
     public static final String FIELD_MESSAGE = "message=";
 
-    private static final String FRIENDS_GET = BASE_PATH + "friends.get?fields=" + FIELD_PHOTO_100 + "," + FIELD_ONLINE;
+    public static final String _PHOTO_100 = "photo_100";
+    public static final String _ONLINE = "online";
+    public static final String _SEX = "sex";
+    public static final String _BIRTHDAY = "bdate";
+    public static final String _PHONE = "home_phone";
+    public static final String _PHONE_MOBILE = "mobile_phone";
+    public static final String _SKYPE = "skype";
+    public static final String _SITE = "site";
+    public static final String _STATUS = "status";
+
+    private static final String FRIENDS_GET = BASE_PATH + "friends.get?" + FIELD_FRIENDS_SORT_ORDER + SORT_ORDER_HINTS + "&" + FIELD_USER_FIELDS + _PHOTO_100 + "," + _ONLINE;
     private static final String MESSAGES_GET_DIALOGS = BASE_PATH + "messages.getDialogs?" + FIELD_MESSAGE_PREVIEW + MESSAGE_PREVIEW_LENGTH;
     private static final String MESSAGES_GET_HISTORY = BASE_PATH + "messages.getHistory?";
-    private static final String USERS_GET = BASE_PATH + "users.get?fields=" + FIELD_PHOTO_100 + "," + FIELD_ONLINE + "&" + FIELD_USER_IDS;
-
+    private static final String USERS_GET = BASE_PATH + "users.get?" + FIELD_USER_IDS;
     private static final String MESSAGES_SEND = BASE_PATH + "messages.send?";
 
     public static String getFriends() {
@@ -45,7 +60,7 @@ public class Api {
         return MESSAGES_GET_DIALOGS;
     }
 
-    public static String getUsers() {
+    public static String getUser() {
         return USERS_GET;
     }
 

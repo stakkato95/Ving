@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.stakkato95.ving.R;
+import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.FriendsTable;
 
 /**
@@ -50,9 +51,9 @@ public class FriendsAdapter extends ZCursorAdapter {
         vh.onlineImage.setImageBitmap(null);
         try {
             int online = cursor.getInt(cursor.getColumnIndexOrThrow(FriendsTable._ONLINE));
-            if (online == 2) {
+            if (online == Api.USER_ONLINE_MOBILE) {
                 vh.onlineImage.setImageResource(R.drawable.ic_friend_online_mobile);
-            } else if (online == 1) {
+            } else if (online == Api.USER_ONLINE) {
                 vh.onlineImage.setImageResource(R.drawable.ic_friend_online_computer);
             }
         } catch (Exception e) {
