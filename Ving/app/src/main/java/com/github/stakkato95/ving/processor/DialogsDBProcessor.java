@@ -81,14 +81,14 @@ public class DialogsDBProcessor extends DBProcessor {
                 if (!value.containsKey(DialogTable._DIALOG_NAME)) {
                     //means one interlocutor dialog
                     value.put(DialogTable._DIALOG_NAME, user.getFullName());
-                    value.put(DialogTable._PHOTO_100, user.getPhoto());
+                    value.put(DialogTable._PHOTO_100, user.getPhoto100());
                     value.put(DialogTable._ONLINE, user.getOnlineMode());
 
                     if (value.getAsInteger(DialogTable._ROUTE) == Api.MESSAGE_ROUTE_OUT) {
-                        value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto());
+                        value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto100());
                     }
                 } else {
-                    value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto());
+                    value.put(DialogTable._LAST_SENDER_PHOTO_100, user.getPhoto100());
                 }
                 values.add(value);
             }

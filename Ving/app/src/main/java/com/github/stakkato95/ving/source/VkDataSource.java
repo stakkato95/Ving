@@ -15,7 +15,7 @@ import java.io.InputStream;
  */
 public class VkDataSource extends HttpDataSource {
 
-    public static final String KEY = "VkDataSource";
+    public static final String KEY = VkDataSource.class.getSimpleName();
 
     public static VkDataSource get(Context context) {
         return CoreApplication.get(context, KEY);

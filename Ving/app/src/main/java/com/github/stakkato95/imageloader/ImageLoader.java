@@ -41,12 +41,9 @@ public class ImageLoader {
     //resources for loading images & images with errors
     private final int mLoadingImageResourceId;
     private final int mErrorImageResourceId;
-    private boolean isCircled = false;
 
     public static final String KEY = ImageLoader.class.getSimpleName();
     public static ImageLoader get(Context context) { return CoreApplication.get(context, KEY); }
-
-    public static final String TAG = ImageLoader.class.getSimpleName();
 
     static {
         sExecutor = new ZExecutor();
@@ -68,13 +65,16 @@ public class ImageLoader {
         mErrorImageResourceId = errorImageResourceId;
     }
 
-    public void obtainImage(@NonNull ImageView imageView, @NonNull String url) {
-        imageView.setImageResource(mLoadingImageResourceId);
+
+    private volatile ImageView mLastImage;
+
+    public void byUrl(/*@NonNull ImageView imageView, */@NonNull String url) {
+        mLastImage.setImageResource(mLoadingImageResourceId);
         if (mMemoryCache.containsKey(url)) {
             Bitmap targetBmp = mMemoryCache.get(url);
 
             //if request isn't added the image won't be displayed
-            mRequestsMap.put(imageView, url);
+            mRequestsMap.put(mLastImage, url);
             setBmpToView(targetBmp, url);
         } else {
 
@@ -92,14 +92,19 @@ public class ImageLoader {
                     }
                 }
             }
-            mRequestsMap.put(imageView, url);
+            mRequestsMap.put(mLastImage, url);
         }
 
 
     }
 
-    public ImageLoader setCircled() {
-        isCircled = true;
+    public ImageLoader toView(@NonNull ImageView imageView) {
+        mLastImage = imageView;
+        return this;
+    }
+
+    public ImageLoader setCircled(boolean circled) {
+        mLastImage.setTag(circled);
         return this;
     }
 
@@ -113,7 +118,7 @@ public class ImageLoader {
                 ImageView targetView = pair.getKey();
 
                 if (targetView != null) {
-                    if (isCircled) {
+                    if ((Boolean)targetView.getTag()) {
                         bmp = ImageHelper.getRounded(bmp);
                     }
                     targetView.setImageBitmap(bmp);
@@ -137,7 +142,7 @@ public class ImageLoader {
 
                 if (targetView != null) {
                     Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), mErrorImageResourceId);
-                    if (isCircled) {
+                    if ((boolean)targetView.getTag()) {
                         bmp = ImageHelper.getRounded(bmp);
                     }
                     targetView.setImageBitmap(bmp);

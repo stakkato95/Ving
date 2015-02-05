@@ -21,8 +21,7 @@ public class UserProcessor implements Processor<InputStream,User[]> {
         User[] users = new User[jsonArray.length()];
 
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            users[i] = new User(jsonObject);
+            users[i] = new User(jsonArray.getJSONObject(i));
             users[i].createFullName();
         }
         return users;

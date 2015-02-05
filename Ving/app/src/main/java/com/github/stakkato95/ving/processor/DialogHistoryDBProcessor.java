@@ -66,7 +66,7 @@ public class DialogHistoryDBProcessor extends DBProcessor {
             List<ContentValues> configuredValues = valuesMap.get(user.getId());
             for (ContentValues value : configuredValues) {
                 value.put(DialogHistoryTable._FROM_ID, user.getFullName());
-                value.put(DialogHistoryTable._PHOTO_100, user.getPhoto());
+                value.put(DialogHistoryTable._PHOTO_100, user.getPhoto100());
                 values.add(value);
             }
         }

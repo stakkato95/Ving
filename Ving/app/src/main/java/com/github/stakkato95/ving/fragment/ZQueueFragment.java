@@ -33,7 +33,7 @@ public abstract class ZQueueFragment extends ZListFragment {
     @Override
     public void whileOnCreateView(View view) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
-        ListView listView = (ListView)view.findViewById(android.R.id.list);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setFooterDividersEnabled(false);
         listView.addFooterView(mFooder);
 

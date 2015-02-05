@@ -5,8 +5,203 @@
     android:layout_height="match_parent"
     tools:context="com.github.stakkato95.ving.fragment.UserFragment">
 
-    <ImageView
+    <include
+        layout="@layout/view_on_error_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:id="@+id/background_image"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="216dp"
+        android:scaleType="centerCrop"/>
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="200dp">
+
+            <ImageView
+                android:id="@+id/user_image"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"/>
+
+            <ImageView
+                android:id="@+id/online_image"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_toRightOf="@+id/user_state"
+                android:layout_toEndOf="@+id/user_state"
+                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_alignBottom="@+id/user_state"
+                android:layout_marginBottom="3dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginTop="26dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_toRightOf="@+id/user_image"
+                android:layout_toEndOf="@+id/user_image"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/user_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_below="@+id/user_name"
+                android:layout_alignLeft="@id/user_name"
+                android:layout_alignStart="@id/user_name"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/user_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_below="@+id/user_state"
+                android:layout_alignLeft="@+id/user_state"
+                android:layout_alignStart="@+id/user_state"
+                android:layout_marginTop="4dp"/>
+
+            <HorizontalScrollView
+                android:id="@+id/counters_scroll_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_status"
+                android:layout_marginTop="4dp">
+
+                <LinearLayout
+                    android:id="@+id/counters_linear_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/linear_divider"
+                    android:showDividers="middle">
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+            <HorizontalScrollView
+                android:id="@+id/photos_scroll_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/counters_scroll_container"
+                android:layout_marginTop="8dp">
+
+                <LinearLayout
+                    android:id="@+id/photos_linear_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="96dp"
+                    android:orientation="horizontal"
+                    android:divider="@drawable/linear_divider">
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/photos_scroll_container"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/info_contacts"
+                    android:text="@string/info_contacts"
+                    android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/info_contacts_town"
+                    android:text="@string/info_contacts_town"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/info_contacts_hometown"
+                    android:text="@string/info_contacts_hometown"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/info_contacts_country"
+                    android:text="@string/info_contacts_country"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/info_contacts_mobile_phone"
+                    android:text="@string/info_contacts_mobile_phone"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/info_contacts_home_phone"
+                    android:text="@string/info_contacts_home_phone"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/info_contacts_skype"
+                    android:text="@string/info_contacts_skype"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/info_contacts_site"
+                    android:text="@string/info_contacts_site"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="visible"/>
+
+                </LinearLayout>
+
+        </RelativeLayout>
+
+        </ScrollView>
 
 </RelativeLayout>

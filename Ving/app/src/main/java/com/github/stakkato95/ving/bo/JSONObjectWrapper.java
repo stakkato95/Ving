@@ -3,6 +3,7 @@ package com.github.stakkato95.ving.bo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,6 +40,14 @@ public class JSONObjectWrapper implements Parcelable {
 
     protected Long getLong(String id) {
         return mJSONObject.optLong(id);
+    }
+
+    protected JSONObject getJSONObject(String objectName) {
+        return mJSONObject.optJSONObject(objectName);
+    }
+
+    protected JSONArray getJSONArray(String arraytName) {
+        return mJSONObject.optJSONArray(arraytName);
     }
 
     protected void setField(String key, String value) {

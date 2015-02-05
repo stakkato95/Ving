@@ -18,7 +18,7 @@ public abstract class ZCursorAdapter extends CursorAdapter {
     public ZCursorAdapter(Context context, Cursor cursor, int flags) {
         super(context, cursor, flags);
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mImageLoader = ImageLoader.get(context).setCircled();
+        mImageLoader = ImageLoader.get(context);
     }
 
     protected LayoutInflater getLayoutInflater() {

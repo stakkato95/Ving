@@ -35,8 +35,6 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
     private String mRequestField;
     private EditText mEditText;
 
-    private static final String emptyString = "";
-
     public static DialogHistoryFragment newInstance(String requestField) {
         DialogHistoryFragment fragment = new DialogHistoryFragment();
         Bundle args = new Bundle();
@@ -93,7 +91,7 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
             @Override
             public void onClick(View v) {
                 String messageText = mEditText.getText().toString();
-                mEditText.setText(emptyString);
+                mEditText.setText(Api.EMPTY_STRING);
 
                 Shipper shipper = new ShipperBuilder()
                         .setRequestField(mRequestField)

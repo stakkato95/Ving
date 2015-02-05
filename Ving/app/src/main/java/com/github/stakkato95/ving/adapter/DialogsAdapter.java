@@ -23,8 +23,8 @@ import com.github.stakkato95.ving.database.DialogTable;
 public class DialogsAdapter extends ZCursorAdapter {
 
     private class ViewHolder {
-        public ImageView photo;
-        public ImageView lastSenderPhoto;
+        public ImageView image;
+        public ImageView lastSenderImage;
         public TextView title;
         public TextView lastMessage;
         public TextView date;
@@ -41,8 +41,8 @@ public class DialogsAdapter extends ZCursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = getLayoutInflater().inflate(R.layout.adapter_dialog, parent, false);
         ViewHolder vh = new ViewHolder();
-        vh.photo = (ImageView) view.findViewById(R.id.dialog_image);
-        vh.lastSenderPhoto = (ImageView) view.findViewById(R.id.last_sender_image);
+        vh.image = (ImageView) view.findViewById(R.id.dialog_image);
+        vh.lastSenderImage = (ImageView) view.findViewById(R.id.last_sender_image);
         vh.title = (TextView) view.findViewById(R.id.dialog_name);
         vh.lastMessage = (TextView)view.findViewById(R.id.dialog_body);
         vh.date = (TextView)view.findViewById(R.id.dialog_date);
@@ -57,28 +57,28 @@ public class DialogsAdapter extends ZCursorAdapter {
 
         String titleText = cursor.getString(cursor.getColumnIndex(DialogTable._DIALOG_NAME));
         String lastMessageText = cursor.getString(cursor.getColumnIndex(DialogTable._BODY));
-        String photoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
+        String imageUrl = cursor.getString(cursor.getColumnIndex(DialogTable._PHOTO_100));
         String dateText = cursor.getString(cursor.getColumnIndex(DialogTable._DATE));
 
         vh.lastMessage.setText(lastMessageText);
         vh.date.setText(dateText);
-        getImageLoader().obtainImage(vh.photo, photoUrl);
+        getImageLoader().toView(vh.image).setCircled(true).byUrl(imageUrl);
 
         int readState = cursor.getInt(cursor.getColumnIndex(DialogTable._READ_STATE));
         int route = cursor.getInt(cursor.getColumnIndex(DialogTable._ROUTE));
         if (readState == Api.MESSAGE_STATE_UNREAD && route == Api.MESSAGE_ROUTE_IN) {
             Spannable titleSpannable = new SpannableString(titleText);
-            titleSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, titleText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            titleSpannable.setSpan(new StyleSpan(Typeface.BOLD), 0, titleSpannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             vh.title.setText(titleSpannable);
         } else {
             vh.title.setText(titleText);
         }
 
-        String lastSenderPhotoUrl = cursor.getString(cursor.getColumnIndex(DialogTable._LAST_SENDER_PHOTO_100));
-        if (lastSenderPhotoUrl != null) {
-            getImageLoader().obtainImage(vh.lastSenderPhoto, lastSenderPhotoUrl);
+        String lastSenderImageUrl = cursor.getString(cursor.getColumnIndex(DialogTable._LAST_SENDER_PHOTO_100));
+        if (lastSenderImageUrl != null) {
+            getImageLoader().toView(vh.lastSenderImage).setCircled(true).byUrl(lastSenderImageUrl);
 
-            vh.lastSenderPhoto.setVisibility(View.VISIBLE);
+            vh.lastSenderImage.setVisibility(View.VISIBLE);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)vh.lastMessage.getLayoutParams();
             params.addRule(RelativeLayout.RIGHT_OF, R.id.last_sender_image);
             params.addRule(RelativeLayout.END_OF, R.id.last_sender_image);
@@ -89,7 +89,7 @@ public class DialogsAdapter extends ZCursorAdapter {
             params.removeRule(RelativeLayout.ALIGN_START);
             vh.lastMessage.setLayoutParams(params);
         } else {
-            vh.lastSenderPhoto.setVisibility(View.GONE);
+            vh.lastSenderImage.setVisibility(View.GONE);
 
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) vh.lastMessage.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_LEFT, R.id.dialog_name);

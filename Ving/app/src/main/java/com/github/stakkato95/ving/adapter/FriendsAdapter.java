@@ -17,7 +17,7 @@ import com.github.stakkato95.ving.database.FriendsTable;
 public class FriendsAdapter extends ZCursorAdapter {
 
     private class ViewHolder {
-        public ImageView photo;
+        public ImageView image;
         public ImageView onlineImage;
         public TextView fullNameText;
     }
@@ -30,7 +30,7 @@ public class FriendsAdapter extends ZCursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = getLayoutInflater().inflate(R.layout.adapter_friend, parent, false);
         ViewHolder vh = new ViewHolder();
-        vh.photo = (ImageView) view.findViewById(R.id.user_image);
+        vh.image = (ImageView) view.findViewById(R.id.user_image);
         vh.onlineImage = (ImageView) view.findViewById(R.id.online_image);
         vh.fullNameText = (TextView) view.findViewById(R.id.user_name);
         view.setTag(vh);
@@ -45,8 +45,8 @@ public class FriendsAdapter extends ZCursorAdapter {
         String fullName = cursor.getString(cursor.getColumnIndex(FriendsTable._FULL_NAME));
         vh.fullNameText.setText(fullName);
 
-        String photoUrl = cursor.getString(cursor.getColumnIndex(FriendsTable._PHOTO_100));
-        getImageLoader().obtainImage(vh.photo, photoUrl);
+        String imageUrl = cursor.getString(cursor.getColumnIndex(FriendsTable._PHOTO_100));
+        getImageLoader().toView(vh.image).setCircled(true).byUrl(imageUrl);
 
         vh.onlineImage.setImageBitmap(null);
         try {

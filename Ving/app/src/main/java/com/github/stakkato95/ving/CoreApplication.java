@@ -16,7 +16,6 @@ public class CoreApplication extends Application {
     private HttpDataSource mHttpDataSource;
     private VkDataSource mVkDataSource;
     private ImageLoader mImageLoader;
-    private ZDataBase mDBHelper;
 
     @Override
     public void onCreate() {
