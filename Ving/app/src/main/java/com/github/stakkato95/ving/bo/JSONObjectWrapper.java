@@ -34,12 +34,12 @@ public class JSONObjectWrapper implements Parcelable {
         return mJSONObject.optString(key);
     }
 
-    protected Boolean getBoolean(String key) {
-        return mJSONObject.optBoolean(key);
-    }
-
     protected Long getLong(String id) {
         return mJSONObject.optLong(id);
+    }
+
+    protected int getInt(String id) {
+        return mJSONObject.optInt(id);
     }
 
     protected JSONObject getJSONObject(String objectName) {
@@ -52,6 +52,20 @@ public class JSONObjectWrapper implements Parcelable {
 
     protected void setField(String key, String value) {
         try {
+            if(mJSONObject.opt(key) != null) {
+                mJSONObject.remove(key);
+            }
+            mJSONObject.put(key, value);
+        } catch (JSONException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    protected void setField(String key, int value) {
+        try {
+            if(mJSONObject.opt(key) != null) {
+                mJSONObject.remove(key);
+            }
             mJSONObject.put(key, value);
         } catch (JSONException e) {
             throw new IllegalArgumentException(e);

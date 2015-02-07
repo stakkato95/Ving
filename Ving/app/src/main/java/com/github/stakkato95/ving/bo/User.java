@@ -3,11 +3,16 @@ package com.github.stakkato95.ving.bo;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.github.stakkato95.util.MultiValueMap;
 import com.github.stakkato95.ving.R;
+import com.github.stakkato95.ving.api.Api;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,9 +30,7 @@ public class User extends JSONObjectWrapper {
     private static final String LAST_SEEN_TIME = "time";
     private static final String ID = "id";
     private static final String SEX = "sex";
-    private static final String BIRTHDAY = "bdate";
-
-
+    private static final String PERSONAL = "personal";
 
     private static final String FULL_NAME = "full_name";
     private static final String STATUS = "status";
@@ -44,13 +47,46 @@ public class User extends JSONObjectWrapper {
     private static final String COUNTER_FOLLOWERS = "followers";
     private static final String COUNTER_GIFTS = "gifts";
 
+    private static final String BIRTHDAY = "bdate";
     private static final String HOME_TOWN = "home_town";
-    private static final String TOWN = "town";
-    private static final String COUNTRY = "country";
-    private static final String PHONE_MOBILE = "mobile_phone";
-    private static final String PHONE = "home_phone";
+    private static final String RELATION = "relation";
+    private static final String LANGS = "langs";
     private static final String SKYPE = "skype";
     private static final String SITE = "site";
+    private static final String CITY = "city";
+    private static final String COUNTRY = "country";
+    private static final String TITLE = "title";
+    private static final String PHONE_MOBILE = "mobile_phone";
+    private static final String PHONE = "home_phone";
+    private static final String RELATIVES = "relatives";
+
+    private static final String EDUCATION_INSTITUTION_NAME = "name";
+
+    private static final String SCHOOLS = "schools";
+    private static final String SCHOOL_TYPE = "school_type_str";
+    private static final String SCHOOL_YEAR_GRADUATED = "year_graduated";
+    private static final String SCHOOL_YEAR_FROM = "year_from";
+    private static final String SCHOOL_YEAR_TO = "year_to";
+    private static final String SCHOOL_CLASS = "class";
+    private static final String SCHOOL_SPECIALITY = "speciality";
+    private static final String SCHOOL_STRING = "Школа";
+    private static final String SCHOOL_SPECIALITY_STRING = "Специальность: ";
+
+    private static final String UNIVERSITIES = "universities";
+    private static final String UNIVERSITY_GRADUATION = "graduation";
+    private static final String UNIVERSITY_FACULTY = "faculty_name";
+    private static final String UNIVERSITY_CHAIR = "chair_name";
+    private static final String UNIVERSITY_EDUCATION_FORM = "education_form";
+    private static final String UNIVERSITY_EDUCATION_STATUS = "education_status";
+    private static final String UNIVERSITY_FACULTY_STRING = "Факультет: ";
+    private static final String UNIVERSITY_CHAIR_STRING = "Кафедра: ";
+    private static final String UNIVERSITY_EDUCATION_FORM_STRING = "Форма обучения: ";
+    private static final String UNIVERSITY_EDUCATION_STATUS_STRING = "Статус: ";
+
+    private User[] mRelatives;
+    private int mRelativeType;
+    private List<String> mSchools;
+    private List<String> mUniversities;
 
     public User(String jsonObject) {
         super(jsonObject);
@@ -95,10 +131,6 @@ public class User extends JSONObjectWrapper {
         return getString(PHOTO_MAX);
     }
 
-    public void createFullName() {
-        setField(FULL_NAME, getFirstName() + " " + getLastName());
-    }
-
     public String getFullName() {
         return getString(FULL_NAME);
     }
@@ -123,15 +155,6 @@ public class User extends JSONObjectWrapper {
         return getLong(SEX);
     }
 
-    public String getBirthday() {
-        return getString(BIRTHDAY);
-    }
-
-
-
-
-
-
 
     public String getStatus() {
         return getString(STATUS);
@@ -152,29 +175,68 @@ public class User extends JSONObjectWrapper {
         countersMap.put(R.string.counter_audios, object.optString(COUNTER_AUDIOS));
         countersMap.put(R.string.counter_videos, object.optString(COUNTER_VIDEOS));
         countersMap.put(R.string.counter_gifts, object.optString(COUNTER_GIFTS));
-        return (LinkedHashMap<Integer, String>)countersMap;
+        return (LinkedHashMap<Integer, String>) countersMap;
     }
 
 
     //PROFILE
+    public String getBirthday() {
+        return getString(BIRTHDAY);
+    }
+
     public String getHomeTown() {
         return getString(HOME_TOWN);
     }
 
-    public String getTown() {
-        return getString(TOWN);
+    public int getRelation() {
+        return getInt(RELATION);
+    }
+
+    public User[] getRelatives() {
+        return mRelatives;
+    }
+
+    public String getLangs() {
+        StringBuilder builder = new StringBuilder();
+        try {
+            JSONArray langsArray = getJSONObject(PERSONAL).getJSONArray(LANGS);
+            for (int i = 0; i < langsArray.length(); i++) {
+                if (i < langsArray.length() - 1) {
+                    builder.append(langsArray.optString(i)).append(",");
+                } else {
+                    builder.append(langsArray.optString(i));
+                }
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getCity() {
+        JSONObject cityObject = getJSONObject(CITY);
+        if (cityObject != null) {
+            return cityObject.optString(TITLE);
+        } else {
+            return null;
+        }
     }
 
     public String getCountry() {
-        return getString(COUNTRY);
+        JSONObject countryObject = getJSONObject(COUNTRY);
+        if (countryObject != null) {
+            return countryObject.optString(TITLE);
+        } else {
+            return null;
+        }
     }
 
-    public Long getPhoneMobile() {
-        return getLong(PHONE_MOBILE);
+    public String getPhoneMobile() {
+        return getString(PHONE_MOBILE);
     }
 
-    public Long getPhone() {
-        return getLong(PHONE);
+    public String getPhone() {
+        return getString(PHONE);
     }
 
     public String getSkype() {
@@ -183,6 +245,200 @@ public class User extends JSONObjectWrapper {
 
     public String getSite() {
         return getString(SITE);
+    }
+
+    public List<String> getSchools() {
+        return mSchools;
+    }
+
+    public List<String> getUniversities() {
+        return mUniversities;
+    }
+
+
+    public void setRelativeType(int relativeType) {
+        mRelativeType = relativeType;
+    }
+
+    public void setRelatives(User[] relatives) {
+        mRelatives = new User[relatives.length];
+        System.arraycopy(relatives, 0, mRelatives, 0, relatives.length);
+    }
+
+
+
+    public JSONArray getRelativesJSONArray() {
+        return getJSONArray(RELATIVES);
+    }
+
+    public JSONArray getSchoolsJSONArray() {
+        return getJSONArray(SCHOOLS);
+    }
+
+    public JSONArray getUniversitiesJSONArray() {
+        return getJSONArray(UNIVERSITIES);
+    }
+
+
+    public void createFullName() {
+        setField(FULL_NAME, getFirstName() + " " + getLastName());
+    }
+
+    public void createRelation() {
+        int relationId = (int) (long) getLong(RELATION);
+        int relationResource;
+        switch (relationId) {
+            case Api.USER_RELATION_ACTIVELY_SEARCHING:
+                relationResource = Api.USER_RELATION_ACTIVELY_SEARCHING_STRING;
+                break;
+            case Api.USER_RELATION_BETROTHED:
+                if (getSex() == Api.USER_SEX_MAN) {
+                    relationResource = Api.USER_RELATION_BETROTHED_MAN;
+                } else {
+                    relationResource = Api.USER_RELATION_BETROTHED_WOMAN;
+                }
+                break;
+            case Api.USER_RELATION_COMPLICACY:
+                relationResource = Api.USER_RELATION_COMPLICACY_STRING;
+                break;
+            case Api.USER_RELATION_ENAMORED:
+                if (getSex() == Api.USER_SEX_MAN) {
+                    relationResource = Api.USER_RELATION_ENAMORED_MAN;
+                } else {
+                    relationResource = Api.USER_RELATION_ENAMORED_WOMAN;
+                }
+                break;
+            case Api.USER_RELATION_HAS_FRIEND:
+                if (getSex() == Api.USER_SEX_MAN) {
+                    relationResource = Api.USER_RELATION_HAS_FRIEND_MAN;
+                } else {
+                    relationResource = Api.USER_RELATION_HAS_FRIEND_WOMAN;
+                }
+                break;
+            case Api.USER_RELATION_MARRIED:
+                if (getSex() == Api.USER_SEX_MAN) {
+                    relationResource = Api.USER_RELATION_MARRIED_MAN;
+                } else {
+                    relationResource = Api.USER_RELATION_MARRIED_WOMAN;
+                }
+                break;
+            case Api.USER_RELATION_NOT_MARRIED:
+                if (getSex() == Api.USER_SEX_MAN) {
+                    relationResource = Api.USER_RELATION_NOT_MARRIED_MAN;
+                } else {
+                    relationResource = Api.USER_RELATION_NOT_MARRIED_WOMAN;
+                }
+                break;
+            default:
+                relationResource = Api.USER_RELATION_UNDEFINED;
+        }
+        setField(RELATION, relationResource);
+    }
+
+    public void createSchools(MultiValueMap<Integer,Integer> indexesMap, City[] cities) {
+        mSchools = new ArrayList<>();
+        JSONArray schools = getJSONArray(SCHOOLS);
+        StringBuilder schoolBuilder = new StringBuilder();
+        for (City city : cities) {
+            List<Integer> indexes = indexesMap.get(city.getId());
+            for (Integer index : indexes) {
+                JSONObject school = schools.optJSONObject(index);
+                if (school.optString(SCHOOL_TYPE) != null && !(school.optString(SCHOOL_TYPE)).equals(Api.EMPTY_STRING)) {
+                    schoolBuilder.append(school.optString(SCHOOL_TYPE));
+                } else {
+                    schoolBuilder.append(SCHOOL_STRING);
+                }
+                schoolBuilder.append(' ')
+                        .append(school.optString(EDUCATION_INSTITUTION_NAME))
+                        .append(' ');
+
+                String graduated;
+                if (!(graduated = school.optString(SCHOOL_YEAR_GRADUATED)).equals(Api.EMPTY_STRING)) {
+                    schoolBuilder.append('\'')
+                            .append(graduated.substring(2, 4));
+                }
+
+                schoolBuilder.append('\n')
+                        .append(city.getName());
+
+                String yearFrom;
+                String yearTo;
+                if (!(yearFrom = school.optString(SCHOOL_YEAR_FROM)).equals(Api.EMPTY_STRING) &&
+                        !(yearTo = school.optString(SCHOOL_YEAR_TO)).equals(Api.EMPTY_STRING)) {
+                    schoolBuilder.append(',')
+                            .append(' ')
+                            .append(yearFrom)
+                            .append('-')
+                            .append(yearTo);
+                }
+
+                String clazz;
+                if (!(clazz = school.optString(SCHOOL_CLASS)).equals(Api.EMPTY_STRING)) {
+                    schoolBuilder.append(' ')
+                            .append('(')
+                            .append(clazz)
+                            .append(')');
+                }
+
+                String speciality;
+                if ((speciality = school.optString(SCHOOL_SPECIALITY)) != null) {
+                    schoolBuilder.append('\n')
+                            .append(SCHOOL_SPECIALITY_STRING)
+                            .append(speciality);
+                }
+                mSchools.add(schoolBuilder.toString());
+            }
+        }
+    }
+
+    public void createUniversities(MultiValueMap<Integer,Integer> indexesMap, City[] cities) {
+        mUniversities = new ArrayList<>();
+        JSONArray universities = getJSONArray(UNIVERSITIES);
+        StringBuilder universityBuilder = new StringBuilder();
+        for (City city : cities) {
+            List<Integer> indexes = indexesMap.get(city.getId());
+            for (Integer index : indexes) {
+                JSONObject university = universities.optJSONObject(index);
+
+                universityBuilder.append(university.optString(EDUCATION_INSTITUTION_NAME));
+
+                String graduated;
+                if (!(graduated = university.optString(UNIVERSITY_GRADUATION)).equals(Api.EMPTY_STRING)) {
+                    universityBuilder.append('\'')
+                            .append(graduated.substring(2, 4));
+                }
+
+                universityBuilder.append('\n');
+
+                String faculty;
+                if (!(faculty = university.optString(UNIVERSITY_FACULTY)).equals(Api.EMPTY_STRING)) {
+                    universityBuilder.append(UNIVERSITY_FACULTY_STRING)
+                            .append(faculty);
+                }
+
+                String chair;
+                if (!(chair = university.optString(UNIVERSITY_CHAIR)).equals(Api.EMPTY_STRING)) {
+                    universityBuilder.append('\n')
+                            .append(UNIVERSITY_CHAIR_STRING)
+                            .append(chair);
+                }
+
+                String educationForm;
+                if (!(educationForm = university.optString(UNIVERSITY_EDUCATION_FORM)).equals(Api.EMPTY_STRING)) {
+                    universityBuilder.append('\n')
+                            .append(UNIVERSITY_EDUCATION_FORM_STRING)
+                            .append(educationForm);
+                }
+
+                String educationStatus;
+                if (!(educationStatus = university.optString(UNIVERSITY_EDUCATION_STATUS)).equals(Api.EMPTY_STRING)) {
+                    universityBuilder.append('\n')
+                            .append(UNIVERSITY_EDUCATION_STATUS_STRING)
+                            .append(educationStatus);
+                }
+                mUniversities.add(universityBuilder.toString());
+            }
+        }
     }
 
 }

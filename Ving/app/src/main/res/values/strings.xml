@@ -16,13 +16,14 @@
     <string name="friends">Друзья</string>
     <string name="dialogs">Сообщения</string>
     <string name="key_id">adapter_key_id</string>
-    <string name="user_online">Онлайн</string>
-    <string name="user_state">заходил</string>
 
     <string name="title_activity_dialog_history">DialogHistoryActivity</string>
     <string name="title_activity_user">UserActivity</string>
     <string name="edit_text_hint">Сообщение</string>
     <string name="header_text">Ещё</string>
+
+    <string name="user_online">Онлайн</string>
+    <string name="user_state">заходил</string>
 
     <string name="counter_friends">Друзья</string>
     <string name="counter_mutual_friends">Общие</string>
@@ -33,13 +34,42 @@
     <string name="counter_videos">Видео</string>
     <string name="counter_gifts">Подарки</string>
 
+    <string name="info_general">Информация</string>
+    <string name="info_general_birthday">День рождения:</string>
+    <string name="info_general_hometown">Родной город:</string>
+    <string name="info_general_relation">Семейное положение:</string>
+    <string name="info_general_langs">Языки:</string>
+
+    <string name="relation_not_married_man">не женат</string>
+    <string name="relation_not_married_woman">не замужем</string>
+    <string name="relation_has_friend_man">есть подруга</string>
+    <string name="relation_has_friend_woman">есть друг</string>
+    <string name="relation_betrothed_man">помолвлен</string>
+    <string name="relation_betrothed_woman">помолвлена</string>
+    <string name="relation_married_man">женат</string>
+    <string name="relation_married_woman">замужем</string>
+    <string name="relation_complicacy">всё сложно</string>
+    <string name="relation_actively_searching">в активном поиске</string>
+    <string name="relation_enamored_man">влюблён</string>
+    <string name="relation_enamored_woman">влюблена</string>
+
     <string name="info_contacts">Контактная информация</string>
-    <string name="info_contacts_town">Город: </string>
-    <string name="info_contacts_hometown">Родной город: </string>
-    <string name="info_contacts_country">Страна: </string>
-    <string name="info_contacts_mobile_phone">Мобильный: </string>
-    <string name="info_contacts_home_phone">Домашний: </string>
-    <string name="info_contacts_skype">Skype: </string>
-    <string name="info_contacts_site">Веб-сайт: </string>
+    <string name="info_contacts_city">Город:</string>
+    <string name="info_contacts_country">Страна:</string>
+    <string name="info_contacts_mobile_phone">Мобильный:</string>
+    <string name="info_contacts_home_phone">Домашний:</string>
+    <string name="info_contacts_skype">Skype:</string>
+    <string name="info_contacts_site">Веб-сайт:</string>
+
+    <string name="info_schools">Школы</string>
+    <string name="info_universities">Университеты</string>
+
+    <string name="info_beliefs">Убеждения</string>
+
+    <string name="info_relatives">Родственники</string>
+    <string name="info_relative_brother">Брат</string>
+    <string name="info_relative_sister">Сестра</string>
+    <string name="info_relative_father">Отец</string>
+    <string name="info_relative_mother">Мать</string>
 
 </resources>

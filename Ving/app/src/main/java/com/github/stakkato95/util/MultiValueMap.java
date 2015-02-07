@@ -43,4 +43,8 @@ public class MultiValueMap<K, V> {
         return mMap.entrySet();
     }
 
+    public void clear() {
+        mMap.clear();
+    }
+
 }

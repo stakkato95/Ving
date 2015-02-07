@@ -23,11 +23,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="200dp"/>
+
         <RelativeLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="200dp">
+            android:background="@color/background_material_light">
 
             <ImageView
                 android:id="@+id/user_image"
@@ -85,14 +94,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/user_status"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="4dp"
+                android:scrollbars="none">
 
                 <LinearLayout
                     android:id="@+id/counters_linear_container"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:orientation="horizontal"
-                    android:divider="@drawable/linear_divider"
+                    android:divider="@drawable/linear_vertical_divider"
                     android:showDividers="middle">
 
                     </LinearLayout>
@@ -104,55 +114,137 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/counters_scroll_container"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:scrollbars="none">
 
                 <LinearLayout
                     android:id="@+id/photos_linear_container"
                     android:layout_width="wrap_content"
                     android:layout_height="96dp"
                     android:orientation="horizontal"
-                    android:divider="@drawable/linear_divider">
+                    android:divider="@drawable/linear_vertical_divider">
 
                 </LinearLayout>
 
             </HorizontalScrollView>
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_below="@id/photos_scroll_container"
                 android:layout_marginTop="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp"
                 android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/info_general"
+                    android:text="@string/info_general"
+                    android:textSize="16sp"
+                    android:textColor="#cc0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/info_general_decor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="#cc0000"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_general_birthday"
+                    android:text="@string/info_general_birthday"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_general_hometown"
+                    android:text="@string/info_general_hometown"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_general_relation"
+                    android:text="@string/info_general_relation"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_general_langs"
+                    android:text="@string/info_general_langs"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+
+                <TextView
+                    android:id="@+id/info_relatives"
+                    android:text="@string/info_relatives"
+                    android:textSize="16sp"
+                    android:textColor="#cc0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/info_relatives_decor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="#cc0000"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:id="@+id/relatives_linear_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:showDividers="middle"
+                    android:divider="@drawable/linear_horizontal_divider"
+                    android:orientation="vertical"
+                    android:visibility="gone"/>
+
 
                 <TextView
                     android:id="@+id/info_contacts"
                     android:text="@string/info_contacts"
                     android:textSize="16sp"
+                    android:textColor="#cc0000"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/info_contacts_decor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="#cc0000"
+                    android:visibility="gone"/>
 
                 <TextView
-                    android:id="@+id/info_contacts_town"
-                    android:text="@string/info_contacts_town"
+                    android:id="@+id/info_contacts_city"
+                    android:text="@string/info_contacts_city"
                     android:textSize="14sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:visibility="visible"/>
-
-                <TextView
-                    android:id="@+id/info_contacts_hometown"
-                    android:text="@string/info_contacts_hometown"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/info_contacts_country"
@@ -161,7 +253,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/info_contacts_mobile_phone"
@@ -169,7 +261,8 @@
                     android:textSize="14sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"/>
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/info_contacts_home_phone"
@@ -178,7 +271,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/info_contacts_skype"
@@ -187,7 +280,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/info_contacts_site"
@@ -196,11 +289,85 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
+
+
+                <TextView
+                    android:id="@+id/info_schools"
+                    android:text="@string/info_schools"
+                    android:textSize="16sp"
+                    android:textColor="#cc0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/info_schools_decor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="#cc0000"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:id="@+id/schools_linear_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:divider="@drawable/linear_horizontal_divider">
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/info_universities"
+                    android:text="@string/info_universities"
+                    android:textSize="16sp"
+                    android:textColor="#cc0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/info_universities_decor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="#cc0000"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:id="@+id/universities_linear_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:divider="@drawable/linear_horizontal_divider">
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/info_beliefs"
+                    android:text="@string/info_beliefs"
+                    android:textSize="16sp"
+                    android:textColor="#cc0000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/info_beliefs_decor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="#cc0000"
+                    android:visibility="gone"/>
 
                 </LinearLayout>
 
         </RelativeLayout>
+
+        </LinearLayout>
 
         </ScrollView>
 
