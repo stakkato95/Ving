@@ -33,7 +33,7 @@
             android:choiceMode="singleChoice"
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"
-            android:background="#cccc"/>
+            android:background="@color/icons"/>
     </android.support.v4.widget.DrawerLayout>
 
 </RelativeLayout>

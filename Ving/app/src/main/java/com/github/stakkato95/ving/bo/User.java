@@ -92,8 +92,17 @@ public class User extends JSONObjectWrapper {
     private static final String ALCOHOL = "alcohol";
     private static final String INSPIRED_BY = "inspired_by";
 
+    private static final String ACTIVITIES = "activities";
+    private static final String INTERESTS = "interests";
+    private static final String MUSIC = "music";
+    private static final String MOVIES = "movies";
+    private static final String TV = "tv";
+    private static final String BOOKS = "books";
+    private static final String GAMES = "games";
+    private static final String ABOUT = "about";
+    private static final String QUOTES = "quotes";
+
     private User[] mRelatives;
-    private int mRelativeType;
     private List<String> mSchools;
     private List<String> mUniversities;
 
@@ -187,7 +196,6 @@ public class User extends JSONObjectWrapper {
         return (LinkedHashMap<Integer, String>) countersMap;
     }
 
-
     //PROFILE
     public String getBirthday() {
         return getString(BIRTHDAY);
@@ -203,6 +211,10 @@ public class User extends JSONObjectWrapper {
 
     public User[] getRelatives() {
         return mRelatives;
+    }
+
+    public int getRelativeType() {
+        return getInt(RELATIVE_TYPE);
     }
 
     public String getLangs() {
@@ -302,16 +314,41 @@ public class User extends JSONObjectWrapper {
         }
     }
 
-
-    public void setRelativeType(int relativeType) {
-        setField(RELATIVE_TYPE, relativeType);
+    public String getActivities() {
+        return getString(ACTIVITIES);
     }
 
-    public void setRelatives(User[] relatives) {
-        mRelatives = new User[relatives.length];
-        System.arraycopy(relatives, 0, mRelatives, 0, relatives.length);
+    public String getInterests() {
+        return getString(INTERESTS);
     }
 
+    public String getMusic() {
+        return getString(MUSIC);
+    }
+
+    public String getMovies() {
+        return getString(MOVIES);
+    }
+
+    public String getTv() {
+        return getString(TV);
+    }
+
+    public String getBooks() {
+        return getString(BOOKS);
+    }
+
+    public String getGames() {
+        return getString(GAMES);
+    }
+
+    public String getQuotes() {
+        return getString(QUOTES);
+    }
+
+    public String getAbout() {
+        return getString(ABOUT);
+    }
 
 
     public JSONArray getRelativesJSONArray() {
@@ -382,7 +419,7 @@ public class User extends JSONObjectWrapper {
         setField(RELATION, relationResource);
     }
 
-    public void createSchools(MultiValueMap<Integer,Integer> indexesMap, City[] cities) {
+    public void createSchools(MultiValueMap<Integer, Integer> indexesMap, City[] cities) {
         mSchools = new ArrayList<>();
         JSONArray schools = getJSONArray(SCHOOLS);
         StringBuilder schoolBuilder = new StringBuilder();
@@ -438,7 +475,7 @@ public class User extends JSONObjectWrapper {
         }
     }
 
-    public void createUniversities(MultiValueMap<Integer,Integer> indexesMap, City[] cities) {
+    public void createUniversities(MultiValueMap<Integer, Integer> indexesMap, City[] cities) {
         mUniversities = new ArrayList<>();
         JSONArray universities = getJSONArray(UNIVERSITIES);
         StringBuilder universityBuilder = new StringBuilder();
@@ -490,12 +527,11 @@ public class User extends JSONObjectWrapper {
 
     public void createPolitical() throws Exception {
         int politicalId;
-        int politicalResource;
+        int politicalResource = Api.STRING_RESOURCE_UNDEFINED;
 
-        JSONObject personalInfo = getJSONObject(PERSONAL);
-        if (personalInfo != null) {
+        try {
+            JSONObject personalInfo = getJSONObject(PERSONAL);
             politicalId = personalInfo.getInt(POLITICAL);
-
             switch (politicalId) {
                 case Api.USER_POLITICAL_COMMUNIST:
                     politicalResource = Api.USER_POLITICAL_COMMUNIST_STRING;
@@ -524,18 +560,18 @@ public class User extends JSONObjectWrapper {
                 default:
                     politicalResource = Api.USER_POLITICAL_LIBERTARIAN_STRING;
             }
-        } else {
-            politicalResource = 0;
+        } catch (Exception e) {
+            //ignored exception
         }
         setField(POLITICAL, politicalResource);
     }
 
     public void createPeopleMain() throws Exception {
         int peopleMainId;
-        int peopleMainResource;
+        int peopleMainResource = Api.STRING_RESOURCE_UNDEFINED;
 
-        JSONObject personalInfo = getJSONObject(PERSONAL);
-        if (personalInfo != null) {
+        try {
+            JSONObject personalInfo = getJSONObject(PERSONAL);
             peopleMainId = personalInfo.getInt(PEOPLE_MAIN);
 
             switch (peopleMainId) {
@@ -557,18 +593,18 @@ public class User extends JSONObjectWrapper {
                 default:
                     peopleMainResource = Api.USER_PEOPLE_MAIN_HUMOR_STRING;
             }
-        } else {
-            peopleMainResource = 0;
+        } catch (Exception e) {
+            //ignored exception
         }
         setField(PEOPLE_MAIN, peopleMainResource);
     }
 
     public void createLifeMain() throws Exception {
         int lifeMainId;
-        int lifeMainResource;
+        int lifeMainResource = Api.STRING_RESOURCE_UNDEFINED;
 
-        JSONObject personalInfo = getJSONObject(PERSONAL);
-        if (personalInfo != null) {
+        try {
+            JSONObject personalInfo = getJSONObject(PERSONAL);
             lifeMainId = personalInfo.getInt(LIFE_MAIN);
 
             switch (lifeMainId) {
@@ -596,35 +632,33 @@ public class User extends JSONObjectWrapper {
                 default:
                     lifeMainResource = Api.USER_LIFE_MAIN_GLORY_STRING;
             }
-        } else {
-            lifeMainResource = 0;
+        } catch (Exception e) {
+            //ignored exception
         }
         setField(LIFE_MAIN, lifeMainResource);
     }
 
     public void createAttitudeToSmoking() throws Exception {
-        int smokingAttentionResource;
-
-        JSONObject personalInfo = getJSONObject(PERSONAL);
-        if (personalInfo != null) {
+        int smokingAttentionResource = Api.STRING_RESOURCE_UNDEFINED;
+        try {
+            JSONObject personalInfo = getJSONObject(PERSONAL);
             int smokingAttentionId = personalInfo.getInt(SMOKING);
             smokingAttentionResource = createAttitudeToHarmfulHabit(smokingAttentionId);
-        } else {
-            smokingAttentionResource = 0;
+        } catch (Exception e) {
+        //ignored exception
         }
         setField(SMOKING, smokingAttentionResource);
     }
 
     public void createAttitudeToAlcohol() throws Exception {
-        int alcoholAttentionResource;
-
-        JSONObject personalInfo = getJSONObject(PERSONAL);
-        if (personalInfo != null) {
-            int alcoholAttentionId = personalInfo.getInt(ALCOHOL);
-            alcoholAttentionResource = createAttitudeToHarmfulHabit(alcoholAttentionId);
-        } else {
-            alcoholAttentionResource = 0;
-        }
+        int alcoholAttentionResource = Api.STRING_RESOURCE_UNDEFINED;;
+            try {
+                JSONObject personalInfo = getJSONObject(PERSONAL);
+                int alcoholAttentionId = personalInfo.getInt(ALCOHOL);
+                alcoholAttentionResource = createAttitudeToHarmfulHabit(alcoholAttentionId);
+            } catch (Exception e) {
+            //ignored exception
+            }
         setField(ALCOHOL, alcoholAttentionResource);
     }
 
@@ -648,6 +682,16 @@ public class User extends JSONObjectWrapper {
                 harmfulHabitAttentionResource = Api.USER_HARMFUL_HABIT_ATTITUDE_POSITIVE_STRING;
         }
         return harmfulHabitAttentionResource;
+    }
+
+
+    public void setRelativeType(int relativeType) {
+        setField(RELATIVE_TYPE, relativeType);
+    }
+
+    public void setRelatives(User[] relatives) {
+        mRelatives = new User[relatives.length];
+        System.arraycopy(relatives, 0, mRelatives, 0, relatives.length);
     }
 
 }

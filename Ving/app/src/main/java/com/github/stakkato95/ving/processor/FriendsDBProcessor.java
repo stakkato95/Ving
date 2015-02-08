@@ -35,6 +35,7 @@ public class FriendsDBProcessor extends DBProcessor {
             value.put(FriendsTable._FULL_NAME, friend.getFullName());
             value.put(FriendsTable._PHOTO_100, friend.getPhoto());
             value.put(FriendsTable._ONLINE, friend.getOnlineMode());
+            value.put(FriendsTable._STATUS, friend.getStatus());
             values[i] = value;
         }
 

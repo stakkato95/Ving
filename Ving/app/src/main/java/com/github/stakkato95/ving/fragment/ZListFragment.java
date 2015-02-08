@@ -34,7 +34,6 @@ import java.net.UnknownHostException;
  */
 public abstract class ZListFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
-    //protected ListView mListView;
     protected TextView mErrorText;
     protected ProgressBar mProgressBar;
     protected View mFooder;
@@ -64,7 +63,6 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
         View view = inflater.inflate(getLayout(),container,false);
         mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
         mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
-        //mListView = (ListView)view.findViewById(android.R.id.list);
 
         whileOnCreateView(view);
 

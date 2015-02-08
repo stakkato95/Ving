@@ -8,7 +8,6 @@
     <string name="auth_text">Настройте свой аккаунт</string>
     <string name="auth_description">Вам необходим выполнить вход через ваш аккаунт Вконтакте</string>
     <string name="title_activity_main">Ving</string>
-    <string name="title_activity_friend_details">FriendDetailsActivity</string>
     <string name="retry_loading">Повтор</string>
     <string name="loading_error">Проверьте подключение и\nповторите попытку</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -17,7 +16,7 @@
     <string name="dialogs">Сообщения</string>
     <string name="key_id">adapter_key_id</string>
 
-    <string name="title_activity_dialog_history">DialogHistoryActivity</string>
+    <string name="title_activity_dialog_history">Переписка</string>
     <string name="title_activity_user">Профиль</string>
     <string name="edit_text_hint">Сообщение</string>
     <string name="header_text">Ещё</string>
@@ -78,6 +77,18 @@
     <string name="info_beliefs_smoking">Отн. к курению:</string>
     <string name="info_beliefs_alcohol">Отн. к алкоголю:</string>
     <string name="info_beliefs_inspiration">Вдохновляют:</string>
+
+    <string name="info_personal">Личная информация</string>
+    <string name="info_personal_activity">Деятельность:</string>
+    <string name="info_personal_interests">Интересы:</string>
+    <string name="info_personal_music">Любимая музыка:</string>
+    <string name="info_personal_movies">Любимые фильмы:</string>
+    <string name="info_personal_tv">Любимые телешоу:</string>
+    <string name="info_personal_books">Любимые книги:</string>
+    <string name="info_personal_games">Любимые игры:</string>
+    <string name="info_personal_quotes">Любимые цитаты:</string>
+
+    <string name="info_about">О себе:</string>
 
     <string name="political_communist">коммунистические</string>
     <string name="political_socialist">социалистические</string>

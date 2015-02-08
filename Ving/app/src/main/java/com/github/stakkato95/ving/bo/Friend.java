@@ -17,6 +17,7 @@ public class Friend extends JSONObjectWrapper {
     private static final String FULL_NAME = "full_name";
     private static final String ONLINE = "online";
     private static final String ONLINE_MOBILE = "online_mobile";
+    private static final String STATUS = "status";
 
 
     public Friend(String jsonObject) {
@@ -77,6 +78,10 @@ public class Friend extends JSONObjectWrapper {
 
     public Long getId() {
         return getLong(ID);
+    }
+
+    public String getStatus() {
+        return getString(STATUS);
     }
 
 }

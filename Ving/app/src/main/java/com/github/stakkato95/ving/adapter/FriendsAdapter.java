@@ -20,6 +20,7 @@ public class FriendsAdapter extends ZCursorAdapter {
         public ImageView image;
         public ImageView onlineImage;
         public TextView fullNameText;
+        public TextView statusText;
     }
 
     public FriendsAdapter(Context context, Cursor cursor, int flags) {
@@ -33,6 +34,7 @@ public class FriendsAdapter extends ZCursorAdapter {
         vh.image = (ImageView) view.findViewById(R.id.user_image);
         vh.onlineImage = (ImageView) view.findViewById(R.id.online_image);
         vh.fullNameText = (TextView) view.findViewById(R.id.user_name);
+        vh.statusText = (TextView) view.findViewById(R.id.user_status);
         view.setTag(vh);
         return view;
     }
@@ -41,9 +43,13 @@ public class FriendsAdapter extends ZCursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder vh = (ViewHolder) view.getTag();
 
-
         String fullName = cursor.getString(cursor.getColumnIndex(FriendsTable._FULL_NAME));
         vh.fullNameText.setText(fullName);
+
+        String status = cursor.getString(cursor.getColumnIndex(FriendsTable._STATUS));
+        if (!status.equals(Api.EMPTY_STRING)) {
+            vh.statusText.setText(status);
+        }
 
         String imageUrl = cursor.getString(cursor.getColumnIndex(FriendsTable._PHOTO_100));
         getImageLoader().toView(vh.image).setCircled(true).byUrl(imageUrl);

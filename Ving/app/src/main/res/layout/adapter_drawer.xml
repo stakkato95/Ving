@@ -8,4 +8,4 @@
     android:paddingLeft="16dp"
     android:minHeight="@dimen/abc_action_button_min_height_material"
     android:textAppearance="?android:attr/textAppearanceMedium"
-    android:textColor="#fff" />
+    android:textColor="@color/secondary_text" />

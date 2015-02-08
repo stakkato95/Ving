@@ -45,6 +45,7 @@
             android:id="@+id/interlocutor_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/icons"
             android:textSize="14sp" />
 
         <View
@@ -55,7 +56,8 @@
             android:id="@+id/interlocutor_date"
             android:textSize="12sp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textColor="@color/divider"/>
 
     </LinearLayout>
 
@@ -77,6 +79,7 @@
             android:id="@+id/user_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/icons"
             android:textSize="14sp"/>
 
         <View
@@ -87,7 +90,8 @@
             android:id="@+id/user_date"
             android:textSize="12sp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textColor="@color/divider"/>
 
     </LinearLayout>
 

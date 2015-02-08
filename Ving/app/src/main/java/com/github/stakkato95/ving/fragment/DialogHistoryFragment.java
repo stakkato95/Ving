@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -66,27 +67,12 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
     public void whileOnCreateView(View view) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
         ListView listView = (ListView)view.findViewById(android.R.id.list);
+        listView.setDividerHeight(0);
         listView.addHeaderView(mFooder);
         listView.setHeaderDividersEnabled(true);
 
         mEditText = (EditText) view.findViewById(R.id.dialog_history_message);
         ImageView mSend = (ImageView) view.findViewById(R.id.dialog_history_send);
-//        mSend.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                int maskedAction = event.getActionMasked();
-//                switch (maskedAction) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        v.setBackgroundColor(getResources().getColor(R.color.button_material_light));
-//                        return true;
-//                    case MotionEvent.ACTION_UP:
-//                        v.setBackgroundColor(getResources().getColor(R.color.WindowBackground));
-//                        return true;
-//                    default:
-//                        return true;
-//                }
-//            }
-//        });
         mSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,9 +158,7 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
             itemIndex = getListAdapter().getCount() % Api.GET_COUNT;
         }
 
-        //magic number that is obtained by trial and error
-        int androidMagic = mFooder.getHeight() + 2;
-        getListView().setSelectionFromTop(itemIndex, androidMagic);
+        getListView().setSelectionFromTop(itemIndex, mFooder.getHeight());
     }
 
     @Override

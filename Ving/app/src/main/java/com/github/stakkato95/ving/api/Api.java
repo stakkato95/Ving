@@ -17,6 +17,7 @@ public class Api {
     public static final String ONE_INTERLOCUTOR_DIALOG = " ... ";
     public static final String SORT_ORDER_HINTS = "hints";
     public static final String EMPTY_STRING = "";
+    public static final int STRING_RESOURCE_UNDEFINED = 0;
 
     public static final int GET_COUNT = 30;
     public static final int MESSAGE_ROUTE_IN = 0;
@@ -189,7 +190,7 @@ public class Api {
     public static final String _ALBUM_PROFILE = "profile";
     public static final String _ALBUM_SAVED = "saved";
 
-    private static final String FRIENDS_GET = BASE_PATH + "friends.get?" + FIELD_FRIENDS_SORT_ORDER + SORT_ORDER_HINTS + "&" + FIELD_USER_FIELDS + _PHOTO_100 + "," + _ONLINE;
+    private static final String FRIENDS_GET = BASE_PATH + "friends.get?" + FIELD_FRIENDS_SORT_ORDER + SORT_ORDER_HINTS + "&" + FIELD_USER_FIELDS + _PHOTO_100 + "," + _ONLINE + "," + _STATUS;
     private static final String MESSAGES_GET_DIALOGS = BASE_PATH + "messages.getDialogs?" + FIELD_MESSAGE_PREVIEW + MESSAGE_PREVIEW_LENGTH;
     private static final String MESSAGES_GET_HISTORY = BASE_PATH + "messages.getHistory?";
     private static final String USERS_GET = BASE_PATH + "users.get?" + FIELD_USER_IDS;

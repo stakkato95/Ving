@@ -49,7 +49,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/dialog_name"/>
-        <!--android:layout_alignLeft="@id/dialog_name"/>-->
 
     <TextView
         android:id="@+id/dialog_date"

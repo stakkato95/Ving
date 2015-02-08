@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/decor_view"
+        style="@style/Widget.AppCompat.ListView.VingListView"
         android:stackFromBottom="true"/>
 
     <include
@@ -22,7 +23,7 @@
         android:id="@+id/decor_view"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
-        android:background="@color/ListDivider"
+        android:background="@color/divider"
         android:layout_above="@+id/container"/>
 
     <LinearLayout

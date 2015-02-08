@@ -12,6 +12,7 @@ public final class FriendsTable extends ZTable {
     public static final String NAME = "friends";
 
     public static final String _FULL_NAME = "_full_name";
+    public static final String _STATUS = "_status";
     public static final String _PHOTO_100 = "_photo_100";
     public static final String _ONLINE= "_online";
 
@@ -26,6 +27,7 @@ public final class FriendsTable extends ZTable {
         sDBMap.put(TYPE_TEXT,new ArrayList<String>() {{
             add(_FULL_NAME);
             add(_PHOTO_100);
+            add(_STATUS);
         }});
     }
 
@@ -43,6 +45,7 @@ public final class FriendsTable extends ZTable {
             _ID,
             _FULL_NAME,
             _PHOTO_100,
+            _STATUS,
             _ONLINE,
     };
 
@@ -50,6 +53,7 @@ public final class FriendsTable extends ZTable {
             _ID,
             _FULL_NAME,
             _PHOTO_100,
+            _STATUS
     };
 
 }

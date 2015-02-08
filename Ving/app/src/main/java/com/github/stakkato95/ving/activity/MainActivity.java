@@ -53,7 +53,7 @@ public class MainActivity extends ActionBarActivity implements ZQueueFragment.Cl
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
 
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mDrawerTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.adapter_drawer, mDrawerTitles));
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

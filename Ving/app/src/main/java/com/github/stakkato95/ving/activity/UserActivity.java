@@ -38,12 +38,6 @@ public class UserActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_dialog_history, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -51,8 +45,6 @@ public class UserActivity extends ActionBarActivity {
                 //FLAG_ACTIVITY_CLEAR_TOP - clear activities above this one
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                return true;
-            case R.id.action_settings:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

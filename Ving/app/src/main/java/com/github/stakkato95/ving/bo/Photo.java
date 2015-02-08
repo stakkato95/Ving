@@ -18,6 +18,8 @@ public class Photo extends JSONObjectWrapper {
     private static final String DATE = "date";
     private static final String SIZES = "sizes";
     private static final String SRC = "src";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
     private static final String ID = "id";
 
 
@@ -57,6 +59,22 @@ public class Photo extends JSONObjectWrapper {
             return getJSONArray(SIZES).optJSONObject(7).optString(SRC);
         } catch (Exception e) {
             return getJSONArray(SIZES).optJSONObject(2).optString(SRC);
+        }
+    }
+
+    public int getPhoto200Width() {
+        try {
+            return getJSONArray(SIZES).optJSONObject(7).optInt(WIDTH);
+        } catch (Exception e) {
+            return getJSONArray(SIZES).optJSONObject(2).optInt(WIDTH);
+        }
+    }
+
+    public int getPhoto200Height() {
+        try {
+            return getJSONArray(SIZES).optJSONObject(7).optInt(HEIGHT);
+        } catch (Exception e) {
+            return getJSONArray(SIZES).optJSONObject(2).optInt(HEIGHT);
         }
     }
 

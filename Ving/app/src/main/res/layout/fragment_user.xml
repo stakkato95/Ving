@@ -18,10 +18,16 @@
         android:layout_height="216dp"
         android:scaleType="centerCrop"/>
 
-    <ScrollView
-        android:id="@+id/scroll"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,8 +48,9 @@
                 android:id="@+id/user_image"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"/>
+                android:paddingTop="16dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"/>
 
             <ImageView
                 android:id="@+id/online_image"
@@ -102,7 +109,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:orientation="horizontal"
-                    android:divider="@drawable/linear_vertical_divider"
+                    android:divider="@drawable/vertical_divider"
                     android:showDividers="middle">
 
                     </LinearLayout>
@@ -112,7 +119,7 @@
             <HorizontalScrollView
                 android:id="@+id/photos_scroll_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="96dp"
                 android:layout_below="@+id/counters_scroll_container"
                 android:layout_marginTop="8dp"
                 android:scrollbars="none">
@@ -122,7 +129,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="96dp"
                     android:orientation="horizontal"
-                    android:divider="@drawable/linear_vertical_divider">
+                    android:divider="@drawable/vertical_divider"
+                    android:visibility="gone">
 
                 </LinearLayout>
 
@@ -143,18 +151,7 @@
                 <TextView
                     android:id="@+id/info_general"
                     android:text="@string/info_general"
-                    android:textSize="16sp"
-                    android:textColor="#cc0000"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"/>
-
-                <View
-                    android:id="@+id/info_general_decor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="1dp"
-                    android:background="#cc0000"
-                    android:visibility="gone"/>
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
 
                 <TextView
                     android:id="@+id/info_general_birthday"
@@ -196,26 +193,14 @@
                 <TextView
                     android:id="@+id/info_relatives"
                     android:text="@string/info_relatives"
-                    android:textSize="16sp"
-                    android:textColor="#cc0000"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:visibility="gone"/>
-
-                <View
-                    android:id="@+id/info_relatives_decor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="1dp"
-                    android:background="#cc0000"
-                    android:visibility="gone"/>
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
 
                 <LinearLayout
                     android:id="@+id/relatives_linear_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:showDividers="middle"
-                    android:divider="@drawable/linear_horizontal_divider"
+                    android:divider="@drawable/horizontal_divider"
                     android:orientation="vertical"
                     android:visibility="gone"/>
 
@@ -223,19 +208,7 @@
                 <TextView
                     android:id="@+id/info_contacts"
                     android:text="@string/info_contacts"
-                    android:textSize="16sp"
-                    android:textColor="#cc0000"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:visibility="gone"/>
-
-                <View
-                    android:id="@+id/info_contacts_decor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="1dp"
-                    android:background="#cc0000"
-                    android:visibility="gone"/>
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
 
                 <TextView
                     android:id="@+id/info_contacts_city"
@@ -295,26 +268,14 @@
                 <TextView
                     android:id="@+id/info_schools"
                     android:text="@string/info_schools"
-                    android:textSize="16sp"
-                    android:textColor="#cc0000"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:visibility="gone"/>
-
-                <View
-                    android:id="@+id/info_schools_decor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="1dp"
-                    android:background="#cc0000"
-                    android:visibility="gone"/>
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
 
                 <LinearLayout
                     android:id="@+id/schools_linear_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:divider="@drawable/linear_horizontal_divider">
+                    android:divider="@drawable/horizontal_divider">
 
                 </LinearLayout>
 
@@ -322,26 +283,14 @@
                 <TextView
                     android:id="@+id/info_universities"
                     android:text="@string/info_universities"
-                    android:textSize="16sp"
-                    android:textColor="#cc0000"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:visibility="gone"/>
-
-                <View
-                    android:id="@+id/info_universities_decor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="1dp"
-                    android:background="#cc0000"
-                    android:visibility="gone"/>
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
 
                 <LinearLayout
                     android:id="@+id/universities_linear_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:divider="@drawable/linear_horizontal_divider">
+                    android:divider="@drawable/horizontal_divider">
 
                 </LinearLayout>
 
@@ -349,19 +298,7 @@
                 <TextView
                     android:id="@+id/info_beliefs"
                     android:text="@string/info_beliefs"
-                    android:textSize="16sp"
-                    android:textColor="#cc0000"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:visibility="gone"/>
-
-                <View
-                    android:id="@+id/info_beliefs_decor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="1dp"
-                    android:background="#cc0000"
-                    android:visibility="gone"/>
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
 
                 <TextView
                     android:id="@+id/info_beliefs_political"
@@ -426,6 +363,94 @@
                     android:layout_marginTop="4dp"
                     android:visibility="gone"/>
 
+
+                <TextView
+                    android:id="@+id/info_personal"
+                    android:text="@string/info_personal"
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
+
+                <TextView
+                    android:id="@+id/info_personal_activity"
+                    android:text="@string/info_personal_activity"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_personal_interests"
+                    android:text="@string/info_personal_interests"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_personal_music"
+                    android:text="@string/info_personal_music"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_personal_movies"
+                    android:text="@string/info_personal_movies"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_personal_tv"
+                    android:text="@string/info_personal_tv"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_personal_books"
+                    android:text="@string/info_personal_books"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_personal_games"
+                    android:text="@string/info_personal_games"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_personal_quotes"
+                    android:text="@string/info_personal_quotes"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+
+                <TextView
+                    android:id="@+id/info_about"
+                    android:text="@string/info_about"
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileHeader"/>
+
+                <TextView
+                    android:id="@+id/info_about_field"
+                    style="@style/Widget.AppCompat.Light.AutoCompleteTextView.ProfileDescription"/>
+
                 </LinearLayout>
 
         </RelativeLayout>
@@ -433,5 +458,7 @@
         </LinearLayout>
 
         </ScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

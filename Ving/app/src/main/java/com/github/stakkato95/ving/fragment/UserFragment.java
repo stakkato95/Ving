@@ -18,8 +18,11 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.stakkato95.imageloader.ImageLoader;
 import com.github.stakkato95.ving.R;
@@ -35,6 +38,7 @@ import com.github.stakkato95.ving.source.VkDataSource;
 import com.github.stakkato95.ving.utils.MetricsUtils;
 import com.github.stakkato95.ving.utils.ProcessingUtils;
 
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +47,9 @@ import java.util.Map;
  */
 public class UserFragment extends Fragment implements DataLoader.Callback<User[]> {
 
+    private TextView mErrorText;
+    private ProgressBar mProgressBar;
+
     private ImageView mBackground;
     private ImageView mUserImage;
     private ImageView mOnlineImage;
@@ -50,7 +57,8 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     private TextView mUserState;
     private TextView mUserStatus;
 
-    private HorizontalScrollView mScrollContainer;
+    private ScrollView mScrollContainer;
+    private HorizontalScrollView mCountersScrollContainer;
     private LinearLayout mCountersLinearContainer;
     private LinearLayout mPhotosLinearContainer;
     private LinearLayout mRelativesLinearContainer;
@@ -63,13 +71,8 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     private TextView mHeadSchools;
     private TextView mHeadUniversities;
     private TextView mHeadBeliefs;
-
-    private View mGeneralDecor;
-    private View mRelativesDecor;
-    private View mContactsDecor;
-    private View mSchoolsDecor;
-    private View mUniversitiesDecor;
-    private View mBeliefsDecor;
+    private TextView mHeadPersonal;
+    private TextView mHeadAbout;
 
     private TextView mBirthday;
     private TextView mHomeTown;
@@ -88,6 +91,15 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     private TextView mSmoking;
     private TextView mAlcohol;
     private TextView mInspiration;
+    private TextView mActivity;
+    private TextView mInterests;
+    private TextView mMusic;
+    private TextView mMovies;
+    private TextView mTv;
+    private TextView mBooks;
+    private TextView mGames;
+    private TextView mQuotes;
+    private TextView mAbout;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -118,7 +130,9 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mRequestUrl = Api.getUser() + userId + "&" + Api.FIELD_USER_FIELDS + Api._BIRTHDAY + "," + Api._CONTACTS + "," +
                 Api._ONLINE + "," + Api._PHOTO_200 + "," + Api._PHOTO_MAX + "," + Api._SEX + "," + Api._SITE + "," + Api._SKYPE + "," +
                 Api._STATUS + "," + Api._LAST_SEEN + "," + Api._COUNTERS + "," + Api._CITY + "," + Api._HOME_TOWN + "," + Api._COUNTRY + "," +
-                Api._RELATIVES + "," + Api._PERSONAL + "," + Api._RELATION + "," + Api._SCHOOLS + "," + Api._UNIVERSITIES;
+                Api._RELATIVES + "," + Api._PERSONAL + "," + Api._RELATION + "," + Api._SCHOOLS + "," + Api._UNIVERSITIES + "," + Api._ACTIVITIES + "," +
+                Api._INTERESTS + "," + Api._MUSIC+ "," + Api._MOVIES + "," + Api._TV+ "," + Api._BOOKS+ "," + Api._GAMES+ "," +
+                Api._UNIVERSITIES + "," + Api._ABOUT;
 
         mPhotosRequestUrl = Api.getPhotos() + userId + "&" + Api.FIELD_ALBUM_ID + Api._ALBUM_PROFILE + "&" + Api.FIELD_PHOTOS_SORT_ORDER + Api.PHOTOS_SORT_ANTICHRONOLOGICAL + "&" + Api.FIELD_PHOTO_SIZES + Api.PHOTOS_SPECIAL_SIZES;
     }
@@ -126,6 +140,22 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
+
+        mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
+        mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mCountersLinearContainer.removeAllViews();
+                mPhotosLinearContainer.removeAllViews();
+                mRelativesLinearContainer.removeAllViews();
+                mSchoolsLinearContainer.removeAllViews();
+                mUniversitiesLinearContainer.removeAllViews();
+                loadData();
+            }
+        });
+
         mBackground = (ImageView) view.findViewById(R.id.background_image);
         mUserImage = (ImageView) view.findViewById(R.id.user_image);
         mOnlineImage = (ImageView) view.findViewById(R.id.online_image);
@@ -147,8 +177,18 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mSmoking = (TextView) view.findViewById(R.id.info_beliefs_smoking);
         mAlcohol = (TextView) view.findViewById(R.id.info_beliefs_alcohol);
         mInspiration = (TextView) view.findViewById(R.id.info_beliefs_inspiration);
+        mActivity = (TextView) view.findViewById(R.id.info_personal_activity);
+        mInterests = (TextView) view.findViewById(R.id.info_personal_interests);
+        mMusic = (TextView) view.findViewById(R.id.info_personal_music);
+        mMovies = (TextView) view.findViewById(R.id.info_personal_movies);
+        mTv = (TextView) view.findViewById(R.id.info_personal_tv);
+        mBooks = (TextView) view.findViewById(R.id.info_personal_books);
+        mGames = (TextView) view.findViewById(R.id.info_personal_games);
+        mQuotes = (TextView) view.findViewById(R.id.info_personal_quotes);
+        mAbout= (TextView) view.findViewById(R.id.info_about_field);
 
-        mScrollContainer = (HorizontalScrollView) view.findViewById(R.id.counters_scroll_container);
+        mScrollContainer = (ScrollView)view.findViewById(R.id.scroll_container);
+        mCountersScrollContainer = (HorizontalScrollView) view.findViewById(R.id.counters_scroll_container);
         mCountersLinearContainer = (LinearLayout) view.findViewById(R.id.counters_linear_container);
         mPhotosLinearContainer = (LinearLayout) view.findViewById(R.id.photos_linear_container);
         mRelativesLinearContainer = (LinearLayout) view.findViewById(R.id.relatives_linear_container);
@@ -162,13 +202,8 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mHeadSchools = (TextView) view.findViewById(R.id.info_schools);
         mHeadUniversities = (TextView) view.findViewById(R.id.info_universities);
         mHeadBeliefs = (TextView) view.findViewById(R.id.info_beliefs);
-
-        mGeneralDecor = view.findViewById(R.id.info_general_decor);
-        mRelativesDecor = view.findViewById(R.id.info_relatives_decor);
-        mContactsDecor = view.findViewById(R.id.info_contacts_decor);
-        mSchoolsDecor = view.findViewById(R.id.info_schools_decor);
-        mUniversitiesDecor = view.findViewById(R.id.info_universities_decor);
-        mBeliefsDecor = view.findViewById(R.id.info_beliefs_decor);
+        mHeadPersonal = (TextView) view.findViewById(R.id.info_personal);
+        mHeadAbout = (TextView) view.findViewById(R.id.info_about);
 
         mUserName = (TextView) view.findViewById(R.id.user_name);
         mUserState = (TextView) view.findViewById(R.id.user_state);
@@ -190,14 +225,26 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
             @Override
             public void onLoadingFinished(Photo[] photos) {
                 setPhotos(photos);
+                mPhotosLinearContainer.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onLoadingError(Exception e) {
-
+                onError(e);
             }
 
         }, mPhotosRequestUrl, mVkDataSource, new PhotosProcessor());
+    }
+
+    private void onError(Exception e) {
+        mProgressBar.setVisibility(View.GONE);
+
+        if (UnknownHostException.class.isInstance(e)) {
+            Toast.makeText(getActivity(), "Проверьте подключение и\n" + "      повторите попытку", Toast.LENGTH_SHORT).show();
+        } else {
+            mErrorText.setVisibility(View.VISIBLE);
+            mErrorText.setText(e.getMessage());
+        }
     }
 
     private void setOnlineMode(User user) {
@@ -234,10 +281,10 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
 
     private void setCounters(User user) {
         if (mUserStatus.getVisibility() == View.GONE) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mScrollContainer.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mCountersScrollContainer.getLayoutParams();
             params.removeRule(RelativeLayout.BELOW);
             params.addRule(RelativeLayout.BELOW, R.id.user_image);
-            mScrollContainer.setLayoutParams(params);
+            mCountersScrollContainer.setLayoutParams(params);
         }
 
         LinearLayout.LayoutParams counterParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -277,6 +324,8 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
 
             for (Photo photo : photos) {
                 ImageView imageView = new ImageView(getActivity());
+                LinearLayout.LayoutParams photoParams = new LinearLayout.LayoutParams(photo.getPhoto200Width(),ViewGroup.LayoutParams.MATCH_PARENT);
+                imageView.setLayoutParams(photoParams);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setLayoutParams(params);
                 mImageLoader.toView(imageView).setCircled(false).byUrl(photo.getPhoto200());
@@ -303,6 +352,15 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         int smoking;
         int alcohol;
         String inspiration;
+        String activity;
+        String interests;
+        String music;
+        String movies;
+        String tv;
+        String books;
+        String games;
+        String quotes;
+        String about;
 
         //setScrollViewListener
         //general
@@ -319,7 +377,7 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
             mRelation.setVisibility(View.VISIBLE);
             mRelation.append(" " + relation);
         }
-        if (user.getLangs() != null && !(langs = user.getLangs()).equals(Api.EMPTY_STRING)) {
+        if ((langs = user.getLangs()) != null && !langs.equals(Api.EMPTY_STRING)) {
             mLangs.setVisibility(View.VISIBLE);
             mLangs.append(" " + langs);
         }
@@ -328,10 +386,8 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
                 mRelation.getVisibility() == View.GONE &&
                 mLangs.getVisibility() == View.GONE) {
             mHeadGeneral.setVisibility(View.GONE);
-            mGeneralDecor.setVisibility(View.GONE);
         } else {
             mHeadGeneral.setVisibility(View.VISIBLE);
-            mGeneralDecor.setVisibility(View.VISIBLE);
         }
 
         //relatives
@@ -339,29 +395,31 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         if (relatives != null) {
             for (User relative : relatives) {
                 View layout = View.inflate(getActivity(), R.layout.adapter_friend, null);
-                ImageView relativeImage = (ImageView)layout.findViewById(R.id.user_image);
-                TextView relativeName = (TextView)layout.findViewById(R.id.user_name);
+                ImageView relativeImage = (ImageView) layout.findViewById(R.id.user_image);
+                TextView relativeName = (TextView) layout.findViewById(R.id.user_name);
+                TextView relativeType = (TextView) layout.findViewById(R.id.user_status);
 
                 relativeName.setText(relative.getFullName());
+                int relationTypeResource = relative.getRelativeType();
+                if (relationTypeResource != Api.STRING_RESOURCE_UNDEFINED) {
+                    relativeType.setText(getResources().getString(relationTypeResource));
+                }
                 mImageLoader.toView(relativeImage).setCircled(true).byUrl(relative.getPhoto100());
                 mRelativesLinearContainer.addView(layout);
             }
             mHeadRelatives.setVisibility(View.VISIBLE);
-            mRelativesDecor.setVisibility(View.VISIBLE);
             mRelativesLinearContainer.setVisibility(View.VISIBLE);
         } else {
             mRelativesLinearContainer.setVisibility(View.GONE);
-            mRelativesDecor.setVisibility(View.GONE);
         }
 
 
         //contact
-        if (user.getCity() != null && !(city = user.getCity()).equals(Api.EMPTY_STRING)) {
+        if ((city = user.getCity()) != null && !city.equals(Api.EMPTY_STRING)) {
             mCity.setVisibility(View.VISIBLE);
             mCity.append(" " + city);
         }
-
-        if (user.getCountry() != null && !(country = user.getCountry()).equals(Api.EMPTY_STRING)) {
+        if ((country = user.getCountry()) != null && !country.equals(Api.EMPTY_STRING)) {
             mCountry.setVisibility(View.VISIBLE);
             mCountry.append(" " + country);
         }
@@ -388,10 +446,8 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
                 mSkype.getVisibility() == View.GONE &&
                 mSite.getVisibility() == View.GONE) {
             mHeadContacts.setVisibility(View.GONE);
-            mContactsDecor.setVisibility(View.GONE);
         } else {
             mHeadContacts.setVisibility(View.VISIBLE);
-            mContactsDecor.setVisibility(View.VISIBLE);
         }
 
         //schools
@@ -405,11 +461,9 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
                 mSchoolsLinearContainer.addView(layout);
             }
             mHeadSchools.setVisibility(View.VISIBLE);
-            mSchoolsDecor.setVisibility(View.VISIBLE);
             mSchoolsLinearContainer.setVisibility(View.VISIBLE);
         } else {
             mSchoolsLinearContainer.setVisibility(View.GONE);
-            mSchoolsDecor.setVisibility(View.GONE);
         }
 
         //universities
@@ -423,39 +477,37 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
                 mUniversitiesLinearContainer.addView(layout);
             }
             mHeadUniversities.setVisibility(View.VISIBLE);
-            mUniversitiesDecor.setVisibility(View.VISIBLE);
             mUniversitiesLinearContainer.setVisibility(View.VISIBLE);
         } else {
             mUniversitiesLinearContainer.setVisibility(View.GONE);
-            mUniversitiesDecor.setVisibility(View.GONE);
         }
 
-        //personal
-        if ((political = user.getPolitical()) != 0) {
+        //beliefs
+        if ((political = user.getPolitical()) != Api.STRING_RESOURCE_UNDEFINED) {
             mPolitical.setVisibility(View.VISIBLE);
             mPolitical.append(" " + getResources().getString(political));
         }
-        if (user.getReligion() != null && !(religion = user.getReligion()).equals(Api.EMPTY_STRING)) {
+        if ((religion = user.getReligion()) != null && !religion.equals(Api.EMPTY_STRING)) {
             mReligion.setVisibility(View.VISIBLE);
             mReligion.append(" " + religion);
         }
-        if ((lifeMain = user.getLifeMain()) != 0) {
+        if ((lifeMain = user.getLifeMain()) != Api.STRING_RESOURCE_UNDEFINED) {
             mLifeMain.setVisibility(View.VISIBLE);
             mLifeMain.append(" " + getResources().getString(lifeMain));
         }
-        if ((peopleMain = user.getPeopleMain()) != 0) {
+        if ((peopleMain = user.getPeopleMain()) != Api.STRING_RESOURCE_UNDEFINED) {
             mPeopleMain.setVisibility(View.VISIBLE);
             mPeopleMain.append(" " + getResources().getString(peopleMain));
         }
-        if ((smoking = user.getAttentionToSmoking()) != 0) {
+        if ((smoking = user.getAttentionToSmoking()) != Api.STRING_RESOURCE_UNDEFINED) {
             mSmoking.setVisibility(View.VISIBLE);
             mSmoking.append(" " + getResources().getString(smoking));
         }
-        if ((alcohol = user.getAttentionToAlcohol()) != 0) {
+        if ((alcohol = user.getAttentionToAlcohol()) != Api.STRING_RESOURCE_UNDEFINED) {
             mAlcohol.setVisibility(View.VISIBLE);
             mAlcohol.append(" " + getResources().getString(alcohol));
         }
-        if (user.getInspiration() != null && !(inspiration = user.getInspiration()).equals(Api.EMPTY_STRING)) {
+        if ((inspiration = user.getInspiration()) != null && !inspiration.equals(Api.EMPTY_STRING)) {
             mInspiration.setVisibility(View.VISIBLE);
             mInspiration.append(" " + inspiration);
         }
@@ -467,22 +519,84 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
                 mAlcohol.getVisibility() == View.GONE &&
                 mInspiration.getVisibility() == View.GONE) {
             mHeadBeliefs.setVisibility(View.GONE);
-            mBeliefsDecor.setVisibility(View.GONE);
         } else {
             mHeadBeliefs.setVisibility(View.VISIBLE);
-            mBeliefsDecor.setVisibility(View.VISIBLE);
+        }
+
+        //personal
+        if ((activity = user.getActivities()) != null && !activity.equals(Api.EMPTY_STRING)) {
+            mActivity.setVisibility(View.VISIBLE);
+            mActivity.append(" " + activity);
+        }
+        if ((interests = user.getInterests()) != null && !interests.equals(Api.EMPTY_STRING)) {
+            mInterests.setVisibility(View.VISIBLE);
+            mInterests.append(" " + interests);
+        }
+        if ((music = user.getMusic()) != null && !music.equals(Api.EMPTY_STRING)) {
+            mMusic.setVisibility(View.VISIBLE);
+            mMusic.append(" " + music);
+        }
+        if ((movies = user.getMovies()) != null && !movies.equals(Api.EMPTY_STRING)) {
+            mMovies.setVisibility(View.VISIBLE);
+            mMovies.append(" " + movies);
+        }
+        if ((tv = user.getTv()) != null && !tv.equals(Api.EMPTY_STRING)) {
+            mTv.setVisibility(View.VISIBLE);
+            mTv.append(" " + tv);
+        }
+        if ((books = user.getBooks()) != null && !books.equals(Api.EMPTY_STRING)) {
+            mBooks.setVisibility(View.VISIBLE);
+            mBooks.append(" " + books);
+        }
+        if ((games = user.getGames()) != null && !games.equals(Api.EMPTY_STRING)) {
+            mGames.setVisibility(View.VISIBLE);
+            mGames.append(" " + games);
+        }
+        if ((quotes = user.getQuotes()) != null && !quotes.equals(Api.EMPTY_STRING)) {
+            mQuotes.setVisibility(View.VISIBLE);
+            mQuotes.append(" " + quotes);
+        }
+        if (mActivity.getVisibility() == View.GONE &&
+                mInterests.getVisibility() == View.GONE &&
+                mMusic.getVisibility() == View.GONE &&
+                mMovies.getVisibility() == View.GONE &&
+                mBooks.getVisibility() == View.GONE &&
+                mGames.getVisibility() == View.GONE &&
+                mQuotes.getVisibility() == View.GONE) {
+            mHeadPersonal.setVisibility(View.GONE);
+        } else {
+            mHeadPersonal.setVisibility(View.VISIBLE);
+        }
+
+        //about
+        if ((about = user.getAbout()) != null && !about.equals(Api.EMPTY_STRING)) {
+            mAbout.setVisibility(View.VISIBLE);
+            mAbout.append(" " + about);
+        }
+        if (mAbout.getVisibility() == View.GONE) {
+            mHeadAbout.setVisibility(View.GONE);
+        } else {
+            mHeadAbout.setVisibility(View.VISIBLE);
         }
     }
 
     //DataLoader
     @Override
     public void onLoadingFinished(User[] users) {
+        if (mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+        mProgressBar.setVisibility(View.GONE);
+        if (mScrollContainer.getVisibility() == View.GONE) {
+            mScrollContainer.setVisibility(View.VISIBLE);
+        }
+
         User user = users[0];
 
         mImageLoader.toView(mUserImage).setCircled(true).byUrl(user.getPhoto200());
         mImageLoader.toView(mBackground).setCircled(false).byUrl(user.getPhotoMax());
-        mUserName.setText(user.getFullName());
 
+        mUserName.setText(user.getFullName());
 
         setOnlineMode(user);
         setStatus(user);
@@ -492,11 +606,14 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
 
     @Override
     public void onLoadingStarted() {
-
+        if (mSwipeRefreshLayout != null && !mSwipeRefreshLayout.isRefreshing()) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void onLoadingError(Exception e) {
-
+        mScrollContainer.setVisibility(View.GONE);
+        onError(e);
     }
 }

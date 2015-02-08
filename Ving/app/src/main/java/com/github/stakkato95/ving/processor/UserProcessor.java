@@ -60,12 +60,14 @@ public class UserProcessor implements Processor<InputStream, User[]> {
                     } else {
                         relative.setRelativeType(Api.USER_RELATIVE_SISTER);
                     }
-                } else {
+                } else if (relativeType.equals(Api.USER_RELATIVE_PARENT)) {
                     if (relative.getSex() == Api.USER_SEX_MAN) {
                         relative.setRelativeType(Api.USER_RELATIVE_FATHER);
                     } else {
                         relative.setRelativeType(Api.USER_RELATIVE_MOTHER);
                     }
+                } else {
+                    relative.setRelativeType(Api.STRING_RESOURCE_UNDEFINED);
                 }
             }
             users[0].setRelatives(relatives);
