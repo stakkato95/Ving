@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -64,12 +62,14 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     private TextView mHeadContacts;
     private TextView mHeadSchools;
     private TextView mHeadUniversities;
+    private TextView mHeadBeliefs;
 
     private View mGeneralDecor;
     private View mRelativesDecor;
     private View mContactsDecor;
     private View mSchoolsDecor;
     private View mUniversitiesDecor;
+    private View mBeliefsDecor;
 
     private TextView mBirthday;
     private TextView mHomeTown;
@@ -81,6 +81,13 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     private TextView mCountry;
     private TextView mMobilePhone;
     private TextView mHomePhone;
+    private TextView mPolitical;
+    private TextView mReligion;
+    private TextView mLifeMain;
+    private TextView mPeopleMain;
+    private TextView mSmoking;
+    private TextView mAlcohol;
+    private TextView mInspiration;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -129,11 +136,17 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mLangs = (TextView) view.findViewById(R.id.info_general_langs);
         mSkype = (TextView) view.findViewById(R.id.info_contacts_skype);
         mSite = (TextView) view.findViewById(R.id.info_contacts_site);
-
         mCity = (TextView) view.findViewById(R.id.info_contacts_city);
         mCountry = (TextView) view.findViewById(R.id.info_contacts_country);
         mMobilePhone = (TextView) view.findViewById(R.id.info_contacts_mobile_phone);
         mHomePhone = (TextView) view.findViewById(R.id.info_contacts_home_phone);
+        mPolitical = (TextView) view.findViewById(R.id.info_beliefs_political);
+        mReligion = (TextView) view.findViewById(R.id.info_beliefs_religion);
+        mLifeMain = (TextView) view.findViewById(R.id.info_beliefs_life_main);
+        mPeopleMain = (TextView) view.findViewById(R.id.info_beliefs_people_main);
+        mSmoking = (TextView) view.findViewById(R.id.info_beliefs_smoking);
+        mAlcohol = (TextView) view.findViewById(R.id.info_beliefs_alcohol);
+        mInspiration = (TextView) view.findViewById(R.id.info_beliefs_inspiration);
 
         mScrollContainer = (HorizontalScrollView) view.findViewById(R.id.counters_scroll_container);
         mCountersLinearContainer = (LinearLayout) view.findViewById(R.id.counters_linear_container);
@@ -148,12 +161,14 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mHeadSchools = (TextView) view.findViewById(R.id.info_schools);
         mHeadSchools = (TextView) view.findViewById(R.id.info_schools);
         mHeadUniversities = (TextView) view.findViewById(R.id.info_universities);
+        mHeadBeliefs = (TextView) view.findViewById(R.id.info_beliefs);
 
         mGeneralDecor = view.findViewById(R.id.info_general_decor);
         mRelativesDecor = view.findViewById(R.id.info_relatives_decor);
         mContactsDecor = view.findViewById(R.id.info_contacts_decor);
         mSchoolsDecor = view.findViewById(R.id.info_schools_decor);
         mUniversitiesDecor = view.findViewById(R.id.info_universities_decor);
+        mBeliefsDecor = view.findViewById(R.id.info_beliefs_decor);
 
         mUserName = (TextView) view.findViewById(R.id.user_name);
         mUserState = (TextView) view.findViewById(R.id.user_state);
@@ -277,11 +292,17 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         String langs;
         String skype;
         String site;
-
         String country;
         String mobilePhone;
         String homePhone;
         String city;
+        int political;
+        String religion;
+        int lifeMain;
+        int peopleMain;
+        int smoking;
+        int alcohol;
+        String inspiration;
 
         //setScrollViewListener
         //general
@@ -408,15 +429,55 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
             mUniversitiesLinearContainer.setVisibility(View.GONE);
             mUniversitiesDecor.setVisibility(View.GONE);
         }
+
+        //personal
+        if ((political = user.getPolitical()) != 0) {
+            mPolitical.setVisibility(View.VISIBLE);
+            mPolitical.append(" " + getResources().getString(political));
+        }
+        if (user.getReligion() != null && !(religion = user.getReligion()).equals(Api.EMPTY_STRING)) {
+            mReligion.setVisibility(View.VISIBLE);
+            mReligion.append(" " + religion);
+        }
+        if ((lifeMain = user.getLifeMain()) != 0) {
+            mLifeMain.setVisibility(View.VISIBLE);
+            mLifeMain.append(" " + getResources().getString(lifeMain));
+        }
+        if ((peopleMain = user.getPeopleMain()) != 0) {
+            mPeopleMain.setVisibility(View.VISIBLE);
+            mPeopleMain.append(" " + getResources().getString(peopleMain));
+        }
+        if ((smoking = user.getAttentionToSmoking()) != 0) {
+            mSmoking.setVisibility(View.VISIBLE);
+            mSmoking.append(" " + getResources().getString(smoking));
+        }
+        if ((alcohol = user.getAttentionToAlcohol()) != 0) {
+            mAlcohol.setVisibility(View.VISIBLE);
+            mAlcohol.append(" " + getResources().getString(alcohol));
+        }
+        if (user.getInspiration() != null && !(inspiration = user.getInspiration()).equals(Api.EMPTY_STRING)) {
+            mInspiration.setVisibility(View.VISIBLE);
+            mInspiration.append(" " + inspiration);
+        }
+        if (mPolitical.getVisibility() == View.GONE &&
+                mReligion.getVisibility() == View.GONE &&
+                mLifeMain.getVisibility() == View.GONE &&
+                mPeopleMain.getVisibility() == View.GONE &&
+                mSmoking.getVisibility() == View.GONE &&
+                mAlcohol.getVisibility() == View.GONE &&
+                mInspiration.getVisibility() == View.GONE) {
+            mHeadBeliefs.setVisibility(View.GONE);
+            mBeliefsDecor.setVisibility(View.GONE);
+        } else {
+            mHeadBeliefs.setVisibility(View.VISIBLE);
+            mBeliefsDecor.setVisibility(View.VISIBLE);
+        }
     }
 
     //DataLoader
     @Override
     public void onLoadingFinished(User[] users) {
         User user = users[0];
-
-        ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        actionBar.setTitle(user.getFullName());
 
         mImageLoader.toView(mUserImage).setCircled(true).byUrl(user.getPhoto200());
         mImageLoader.toView(mBackground).setCircled(false).byUrl(user.getPhotoMax());

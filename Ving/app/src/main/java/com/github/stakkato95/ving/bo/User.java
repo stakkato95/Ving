@@ -30,7 +30,6 @@ public class User extends JSONObjectWrapper {
     private static final String LAST_SEEN_TIME = "time";
     private static final String ID = "id";
     private static final String SEX = "sex";
-    private static final String PERSONAL = "personal";
 
     private static final String FULL_NAME = "full_name";
     private static final String STATUS = "status";
@@ -59,6 +58,7 @@ public class User extends JSONObjectWrapper {
     private static final String PHONE_MOBILE = "mobile_phone";
     private static final String PHONE = "home_phone";
     private static final String RELATIVES = "relatives";
+    private static final String RELATIVE_TYPE = "relative_type";
 
     private static final String EDUCATION_INSTITUTION_NAME = "name";
 
@@ -82,6 +82,15 @@ public class User extends JSONObjectWrapper {
     private static final String UNIVERSITY_CHAIR_STRING = "Кафедра: ";
     private static final String UNIVERSITY_EDUCATION_FORM_STRING = "Форма обучения: ";
     private static final String UNIVERSITY_EDUCATION_STATUS_STRING = "Статус: ";
+
+    private static final String PERSONAL = "personal";
+    private static final String POLITICAL = "political";
+    private static final String RELIGION = "religion";
+    private static final String PEOPLE_MAIN = "people_main";
+    private static final String LIFE_MAIN = "life_main";
+    private static final String SMOKING = "smoking";
+    private static final String ALCOHOL = "alcohol";
+    private static final String INSPIRED_BY = "inspired_by";
 
     private User[] mRelatives;
     private int mRelativeType;
@@ -255,9 +264,47 @@ public class User extends JSONObjectWrapper {
         return mUniversities;
     }
 
+    public int getPolitical() {
+        return getInt(POLITICAL);
+    }
+
+    public String getReligion() {
+        JSONObject countryObject = getJSONObject(PERSONAL);
+        if (countryObject != null) {
+            return countryObject.optString(RELIGION);
+        } else {
+            return null;
+        }
+    }
+
+    public int getLifeMain() {
+        return getInt(LIFE_MAIN);
+    }
+
+    public int getPeopleMain() {
+        return getInt(PEOPLE_MAIN);
+    }
+
+    public int getAttentionToSmoking() {
+        return getInt(SMOKING);
+    }
+
+    public int getAttentionToAlcohol() {
+        return getInt(ALCOHOL);
+    }
+
+    public String getInspiration() {
+        JSONObject personalInfo = getJSONObject(INSPIRED_BY);
+        if (personalInfo != null) {
+            return personalInfo.optString(INSPIRED_BY);
+        } else {
+            return null;
+        }
+    }
+
 
     public void setRelativeType(int relativeType) {
-        mRelativeType = relativeType;
+        setField(RELATIVE_TYPE, relativeType);
     }
 
     public void setRelatives(User[] relatives) {
@@ -285,7 +332,7 @@ public class User extends JSONObjectWrapper {
     }
 
     public void createRelation() {
-        int relationId = (int) (long) getLong(RELATION);
+        int relationId = getInt(RELATION);
         int relationResource;
         switch (relationId) {
             case Api.USER_RELATION_ACTIVELY_SEARCHING:
@@ -439,6 +486,168 @@ public class User extends JSONObjectWrapper {
                 mUniversities.add(universityBuilder.toString());
             }
         }
+    }
+
+    public void createPolitical() throws Exception {
+        int politicalId;
+        int politicalResource;
+
+        JSONObject personalInfo = getJSONObject(PERSONAL);
+        if (personalInfo != null) {
+            politicalId = personalInfo.getInt(POLITICAL);
+
+            switch (politicalId) {
+                case Api.USER_POLITICAL_COMMUNIST:
+                    politicalResource = Api.USER_POLITICAL_COMMUNIST_STRING;
+                    break;
+                case Api.USER_POLITICAL_SOCIALIST:
+                    politicalResource = Api.USER_POLITICAL_SOCIALIST_STRING;
+                    break;
+                case Api.USER_POLITICAL_MODERATE:
+                    politicalResource = Api.USER_POLITICAL_MODERATE_STRING;
+                    break;
+                case Api.USER_POLITICAL_LIBERAL:
+                    politicalResource = Api.USER_POLITICAL_LIBERAL_STRING;
+                    break;
+                case Api.USER_POLITICAL_CONSERVATIVE:
+                    politicalResource = Api.USER_POLITICAL_CONSERVATIVE_STRING;
+                    break;
+                case Api.USER_POLITICAL_MONARCHICAL:
+                    politicalResource = Api.USER_POLITICAL_MONARCHICAL_STRING;
+                    break;
+                case Api.USER_POLITICAL_ULTRACONSERVATIVE:
+                    politicalResource = Api.USER_POLITICAL_ULTRACONSERVATIVE_STRING;
+                    break;
+                case Api.USER_POLITICAL_INDIFFERENT:
+                    politicalResource = Api.USER_POLITICAL_INDIFFERENT_STRING;
+                    break;
+                default:
+                    politicalResource = Api.USER_POLITICAL_LIBERTARIAN_STRING;
+            }
+        } else {
+            politicalResource = 0;
+        }
+        setField(POLITICAL, politicalResource);
+    }
+
+    public void createPeopleMain() throws Exception {
+        int peopleMainId;
+        int peopleMainResource;
+
+        JSONObject personalInfo = getJSONObject(PERSONAL);
+        if (personalInfo != null) {
+            peopleMainId = personalInfo.getInt(PEOPLE_MAIN);
+
+            switch (peopleMainId) {
+                case Api.USER_PEOPLE_MAIN_MIND:
+                    peopleMainResource = Api.USER_PEOPLE_MAIN_MIND_STRING;
+                    break;
+                case Api.USER_PEOPLE_MAIN_KINDNESS:
+                    peopleMainResource = Api.USER_PEOPLE_MAIN_KINDNESS_STRING;
+                    break;
+                case Api.USER_PEOPLE_MAIN_BEAUTY:
+                    peopleMainResource = Api.USER_PEOPLE_MAIN_BEAUTY_STRING;
+                    break;
+                case Api.USER_PEOPLE_MAIN_POWER:
+                    peopleMainResource = Api.USER_PEOPLE_MAIN_POWER_STRING;
+                    break;
+                case Api.USER_PEOPLE_MAIN_COURAGE:
+                    peopleMainResource = Api.USER_PEOPLE_MAIN_COURAGE_STRING;
+                    break;
+                default:
+                    peopleMainResource = Api.USER_PEOPLE_MAIN_HUMOR_STRING;
+            }
+        } else {
+            peopleMainResource = 0;
+        }
+        setField(PEOPLE_MAIN, peopleMainResource);
+    }
+
+    public void createLifeMain() throws Exception {
+        int lifeMainId;
+        int lifeMainResource;
+
+        JSONObject personalInfo = getJSONObject(PERSONAL);
+        if (personalInfo != null) {
+            lifeMainId = personalInfo.getInt(LIFE_MAIN);
+
+            switch (lifeMainId) {
+                case Api.USER_LIFE_MAIN_FAMILY:
+                    lifeMainResource = Api.USER_LIFE_MAIN_FAMILY_STRING;
+                    break;
+                case Api.USER_LIFE_MAIN_CAREER:
+                    lifeMainResource = Api.USER_LIFE_MAIN_CAREER_STRING;
+                    break;
+                case Api.USER_LIFE_MAIN_ENTERTAINMENT:
+                    lifeMainResource = Api.USER_LIFE_MAIN_ENTERTAINMENT_STRING;
+                    break;
+                case Api.USER_LIFE_MAIN_SCIENCE:
+                    lifeMainResource = Api.USER_LIFE_MAIN_SCIENCE_STRING;
+                    break;
+                case Api.USER_LIFE_MAIN_WORLD_PERFECTION:
+                    lifeMainResource = Api.USER_LIFE_MAIN_WORLD_PERFECTION_STRING;
+                    break;
+                case Api.USER_LIFE_MAIN_SELF_DEVELOPMENT:
+                    lifeMainResource = Api.USER_LIFE_MAIN_SELF_DEVELOPMENT_STRING;
+                    break;
+                case Api.USER_LIFE_MAIN_BEAUTY:
+                    lifeMainResource = Api.USER_LIFE_MAIN_BEAUTY_STRING;
+                    break;
+                default:
+                    lifeMainResource = Api.USER_LIFE_MAIN_GLORY_STRING;
+            }
+        } else {
+            lifeMainResource = 0;
+        }
+        setField(LIFE_MAIN, lifeMainResource);
+    }
+
+    public void createAttitudeToSmoking() throws Exception {
+        int smokingAttentionResource;
+
+        JSONObject personalInfo = getJSONObject(PERSONAL);
+        if (personalInfo != null) {
+            int smokingAttentionId = personalInfo.getInt(SMOKING);
+            smokingAttentionResource = createAttitudeToHarmfulHabit(smokingAttentionId);
+        } else {
+            smokingAttentionResource = 0;
+        }
+        setField(SMOKING, smokingAttentionResource);
+    }
+
+    public void createAttitudeToAlcohol() throws Exception {
+        int alcoholAttentionResource;
+
+        JSONObject personalInfo = getJSONObject(PERSONAL);
+        if (personalInfo != null) {
+            int alcoholAttentionId = personalInfo.getInt(ALCOHOL);
+            alcoholAttentionResource = createAttitudeToHarmfulHabit(alcoholAttentionId);
+        } else {
+            alcoholAttentionResource = 0;
+        }
+        setField(ALCOHOL, alcoholAttentionResource);
+    }
+
+    private int createAttitudeToHarmfulHabit(int HarmfulHabitAttentionId) {
+        int harmfulHabitAttentionResource;
+
+        switch (HarmfulHabitAttentionId) {
+            case Api.USER_HARMFUL_HABIT_ATTITUDE_SHARPLY_NEGATIVE:
+                harmfulHabitAttentionResource = Api.USER_HARMFUL_HABIT_ATTITUDE_SHARPLY_NEGATIVE_STRING;
+                break;
+            case Api.USER_HARMFUL_HABIT_ATTITUDE_NEGATIVE:
+                harmfulHabitAttentionResource = Api.USER_HARMFUL_HABIT_ATTITUDE_NEGATIVE_STRING;
+                break;
+            case Api.USER_HARMFUL_HABIT_ATTITUDE_NEUTRAL:
+                harmfulHabitAttentionResource = Api.USER_HARMFUL_HABIT_ATTITUDE_NEUTRAL_STRING;
+                break;
+            case Api.USER_HARMFUL_HABIT_ATTITUDE_COMPROMISE:
+                harmfulHabitAttentionResource = Api.USER_HARMFUL_HABIT_ATTITUDE_COMPROMISE_STRING;
+                break;
+            default:
+                harmfulHabitAttentionResource = Api.USER_HARMFUL_HABIT_ATTITUDE_POSITIVE_STRING;
+        }
+        return harmfulHabitAttentionResource;
     }
 
 }

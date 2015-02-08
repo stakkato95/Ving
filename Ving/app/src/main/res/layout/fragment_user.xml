@@ -363,6 +363,69 @@
                     android:background="#cc0000"
                     android:visibility="gone"/>
 
+                <TextView
+                    android:id="@+id/info_beliefs_political"
+                    android:text="@string/info_beliefs_political"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_beliefs_religion"
+                    android:text="@string/info_beliefs_religion"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_beliefs_life_main"
+                    android:text="@string/info_beliefs_life_main"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_beliefs_people_main"
+                    android:text="@string/info_beliefs_people_main"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_beliefs_smoking"
+                    android:text="@string/info_beliefs_smoking"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_beliefs_alcohol"
+                    android:text="@string/info_beliefs_alcohol"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/info_beliefs_inspiration"
+                    android:text="@string/info_beliefs_inspiration"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"/>
+
                 </LinearLayout>
 
         </RelativeLayout>

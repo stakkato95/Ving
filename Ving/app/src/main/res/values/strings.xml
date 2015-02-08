@@ -18,7 +18,7 @@
     <string name="key_id">adapter_key_id</string>
 
     <string name="title_activity_dialog_history">DialogHistoryActivity</string>
-    <string name="title_activity_user">UserActivity</string>
+    <string name="title_activity_user">Профиль</string>
     <string name="edit_text_hint">Сообщение</string>
     <string name="header_text">Ещё</string>
 
@@ -53,6 +53,12 @@
     <string name="relation_enamored_man">влюблён</string>
     <string name="relation_enamored_woman">влюблена</string>
 
+    <string name="info_relatives">Родственники</string>
+    <string name="info_relative_brother">Брат</string>
+    <string name="info_relative_sister">Сестра</string>
+    <string name="info_relative_father">Отец</string>
+    <string name="info_relative_mother">Мать</string>
+
     <string name="info_contacts">Контактная информация</string>
     <string name="info_contacts_city">Город:</string>
     <string name="info_contacts_country">Страна:</string>
@@ -64,12 +70,45 @@
     <string name="info_schools">Школы</string>
     <string name="info_universities">Университеты</string>
 
-    <string name="info_beliefs">Убеждения</string>
+    <string name="info_beliefs">Жизненная позиция</string>
+    <string name="info_beliefs_political">Полит. предпочтения:</string>
+    <string name="info_beliefs_religion">Мировоззрение:</string>
+    <string name="info_beliefs_life_main">Главное в жизни:</string>
+    <string name="info_beliefs_people_main">Главное в людях:</string>
+    <string name="info_beliefs_smoking">Отн. к курению:</string>
+    <string name="info_beliefs_alcohol">Отн. к алкоголю:</string>
+    <string name="info_beliefs_inspiration">Вдохновляют:</string>
 
-    <string name="info_relatives">Родственники</string>
-    <string name="info_relative_brother">Брат</string>
-    <string name="info_relative_sister">Сестра</string>
-    <string name="info_relative_father">Отец</string>
-    <string name="info_relative_mother">Мать</string>
+    <string name="political_communist">коммунистические</string>
+    <string name="political_socialist">социалистические</string>
+    <string name="political_moderate">умеренные</string>
+    <string name="political_liberal">либеральные</string>
+    <string name="political_conservative">консервативные</string>
+    <string name="political_monarchical">монархические</string>
+    <string name="political_ultraconservative">ультраконсервативные</string>
+    <string name="political_indifferent">индифферентные</string>
+    <string name="political_libertarian">либертарианские</string>
+
+    <string name="people_main_mind">ум и креативность</string>
+    <string name="people_main_kindness">доброта и честность</string>
+    <string name="people_main_beauty">красота и здоровье</string>
+    <string name="people_main_power">власть и богатство</string>
+    <string name="people_main_courage">смелость и упорство</string>
+    <string name="people_main_humor">юмор и жизнелюбие</string>
+
+    <string name="life_main_family">семья и дети</string>
+    <string name="life_main_career">карьера и деньги</string>
+    <string name="life_main_entertainment">развлечения и отдых</string>
+    <string name="life_main_science">наука и исследования</string>
+    <string name="life_main_world_perfection">совершенствование мира</string>
+    <string name="life_main_self_development">саморазвитие</string>
+    <string name="life_main_beauty">красота и искусстсво</string>
+    <string name="life_main_glory">слава и влияние</string>
+
+    <string name="harmful_habit_attitude_sharply_negative">резко негативное</string>
+    <string name="harmful_habit_attitude_negative">негативное</string>
+    <string name="harmful_habit_attitude_neutral">нейтральное</string>
+    <string name="harmful_habit_attitude_compromise">компромиссное</string>
+    <string name="harmful_habit_attitude_positive">положительное</string>
 
 </resources>

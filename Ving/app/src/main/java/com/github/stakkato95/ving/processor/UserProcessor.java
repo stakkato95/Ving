@@ -74,22 +74,27 @@ public class UserProcessor implements Processor<InputStream, User[]> {
         City[] cities;
         JSONArray schoolsJSONArray = users[0].getSchoolsJSONArray();
         if (schoolsJSONArray != null && schoolsJSONArray.length() != 0) {
-            cities = getEducationInstitutionsInfo(schoolsJSONArray);
+            cities = getEducationInstitutionInfo(schoolsJSONArray);
             users[0].createSchools(mCitiesMap, cities);
         }
 
         mCitiesMap.clear();
         JSONArray universitiesJSONArray = users[0].getUniversitiesJSONArray();
         if (universitiesJSONArray != null && universitiesJSONArray.length() != 0) {
-            cities = getEducationInstitutionsInfo(universitiesJSONArray);
+            cities = getEducationInstitutionInfo(universitiesJSONArray);
             users[0].createUniversities(mCitiesMap, cities);
         }
 
         users[0].createRelation();
+        users[0].createPolitical();
+        users[0].createPeopleMain();
+        users[0].createLifeMain();
+        users[0].createAttitudeToSmoking();
+        users[0].createAttitudeToAlcohol();
         return users;
     }
 
-    private City[] getEducationInstitutionsInfo(@NonNull JSONArray institutionsArray) throws Exception {
+    private City[] getEducationInstitutionInfo(@NonNull JSONArray institutionsArray) throws Exception {
         mIdBatch.setLength(0);
         for (int i = 0; i < institutionsArray.length(); i++) {
             JSONObject university = institutionsArray.optJSONObject(i);
