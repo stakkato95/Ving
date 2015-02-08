@@ -147,11 +147,7 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mCountersLinearContainer.removeAllViews();
-                mPhotosLinearContainer.removeAllViews();
-                mRelativesLinearContainer.removeAllViews();
-                mSchoolsLinearContainer.removeAllViews();
-                mUniversitiesLinearContainer.removeAllViews();
+                resetFields();
                 loadData();
             }
         });
@@ -234,6 +230,41 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
             }
 
         }, mPhotosRequestUrl, mVkDataSource, new PhotosProcessor());
+    }
+
+    private void resetFields() {
+        mCountersLinearContainer.removeAllViews();
+        mPhotosLinearContainer.removeAllViews();
+        mRelativesLinearContainer.removeAllViews();
+        mSchoolsLinearContainer.removeAllViews();
+        mUniversitiesLinearContainer.removeAllViews();
+
+        mBirthday.setText(getResources().getString(R.string.info_general_birthday));
+        mHomeTown.setText(getResources().getString(R.string.info_general_hometown));
+        mRelation.setText(getResources().getString(R.string.info_general_relation));
+        mLangs.setText(getResources().getString(R.string.info_general_langs));
+        mSkype.setText(getResources().getString(R.string.info_contacts_skype));
+        mSite.setText(getResources().getString(R.string.info_contacts_site));
+        mCity.setText(getResources().getString(R.string.info_contacts_city));
+        mCountry.setText(getResources().getString(R.string.info_contacts_country));
+        mMobilePhone.setText(getResources().getString(R.string.info_contacts_mobile_phone));
+        mHomePhone.setText(getResources().getString(R.string.info_contacts_home_phone));
+        mPolitical.setText(getResources().getString(R.string.info_beliefs_political));
+        mReligion.setText(getResources().getString(R.string.info_beliefs_religion));
+        mLifeMain.setText(getResources().getString(R.string.info_beliefs_life_main));
+        mPeopleMain.setText(getResources().getString(R.string.info_beliefs_people_main));
+        mSmoking.setText(getResources().getString(R.string.info_beliefs_smoking));
+        mAlcohol.setText(getResources().getString(R.string.info_beliefs_alcohol));
+        mInspiration.setText(getResources().getString(R.string.info_beliefs_inspiration));
+        mActivity.setText(getResources().getString(R.string.info_personal_activity));
+        mInterests.setText(getResources().getString(R.string.info_personal_interests));
+        mMusic.setText(getResources().getString(R.string.info_personal_music));
+        mMovies.setText(getResources().getString(R.string.info_personal_movies));
+        mTv.setText(getResources().getString(R.string.info_personal_tv));
+        mBooks.setText(getResources().getString(R.string.info_personal_books));
+        mGames.setText(getResources().getString(R.string.info_personal_games));
+        mQuotes.setText(getResources().getString(R.string.info_personal_quotes));
+        mAbout.setText(getResources().getString(R.string.info_about));
     }
 
     private void onError(Exception e) {
@@ -412,7 +443,6 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         } else {
             mRelativesLinearContainer.setVisibility(View.GONE);
         }
-
 
         //contact
         if ((city = user.getCity()) != null && !city.equals(Api.EMPTY_STRING)) {
