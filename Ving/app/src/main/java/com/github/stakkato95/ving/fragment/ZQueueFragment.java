@@ -33,9 +33,9 @@ public abstract class ZQueueFragment extends ZListFragment {
     @Override
     public void whileOnCreateView(View view) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setFooterDividersEnabled(false);
-        listView.addFooterView(mFooder);
+        mListView = (ListView) view.findViewById(android.R.id.list);
+        getListView().setFooterDividersEnabled(false);
+        getListView().addFooterView(mFooder);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

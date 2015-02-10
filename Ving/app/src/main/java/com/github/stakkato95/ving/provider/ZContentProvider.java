@@ -14,9 +14,9 @@ import android.text.TextUtils;
 
 import com.github.stakkato95.ving.database.DialogHistoryTable;
 import com.github.stakkato95.ving.database.DialogTable;
+import com.github.stakkato95.ving.database.FriendsTable;
 import com.github.stakkato95.ving.database.ZBaseColumns;
 import com.github.stakkato95.ving.database.ZDataBase;
-import com.github.stakkato95.ving.database.FriendsTable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,8 +54,8 @@ public class ZContentProvider extends ContentProvider {
     public static final String DIALOGS_HISTORY_CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + "." + DialogHistoryTable.NAME;
 
     private static final UriMatcher sUriMatcher;
-    private static Map<Integer,String> sContentType;
-    private static Map<Integer,String[]> sProjections;
+    private static Map<Integer, String> sContentType;
+    private static Map<Integer, String[]> sProjections;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -67,9 +67,9 @@ public class ZContentProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, DialogHistoryTable.NAME + "/#", UriType.DIALOG_HISTORY_ID.ordinal());
 
         sContentType = new HashMap<>();
-        sContentType.put(UriType.FRIEND.ordinal(),FRIENDS_CONTENT_TYPE);
-        sContentType.put(UriType.FRIEND_ID.ordinal(),FRIEND_CONTENT_ITEM_TYPE);
-        sContentType.put(UriType.DIALOG.ordinal(),DIALOGS_CONTENT_TYPE);
+        sContentType.put(UriType.FRIEND.ordinal(), FRIENDS_CONTENT_TYPE);
+        sContentType.put(UriType.FRIEND_ID.ordinal(), FRIEND_CONTENT_ITEM_TYPE);
+        sContentType.put(UriType.DIALOG.ordinal(), DIALOGS_CONTENT_TYPE);
         sContentType.put(UriType.DIALOG_ID.ordinal(), DIALOGS_CONTENT_ITEM_TYPE);
         sContentType.put(UriType.DIALOG_HISTORY.ordinal(), DIALOGS_HISTORY_CONTENT_TYPE);
         sContentType.put(UriType.DIALOG_HISTORY_ID.ordinal(), DIALOGS_HISTORY_CONTENT_ITEM_TYPE);
@@ -131,30 +131,29 @@ public class ZContentProvider extends ContentProvider {
 
         String tableName = uri.getLastPathSegment();
         SQLiteDatabase database = mDBHelper.getWritableDatabase();
-        try {
-            database.beginTransaction();
-            long id = database.insert(tableName, null, values);
-            database.setTransactionSuccessful();
-            resultUri = ContentUris.withAppendedId(uri, id);
-        } finally {
-            database.endTransaction();
-        }
-
-
-        //getContext().getContentResolver().notifyChange(uri, null);
+        long id = database.insert(tableName, null, values);
+        resultUri = ContentUris.withAppendedId(uri, id);
         return resultUri;
     }
 
     @Override
     public int bulkInsert(Uri uri, @NonNull ContentValues[] values) {
         int numValues = values.length;
-        for (int i = 0; i < numValues; i++) {
-            if (i == numValues - 1) {
-                insert(uri, values[i]);
-                getContext().getContentResolver().notifyChange(uri, null);
-            } else {
-                insert(uri, values[i]);
+        SQLiteDatabase database = mDBHelper.getWritableDatabase();
+        try {
+            database.beginTransaction();
+            for (int i = 0; i < numValues; i++) {
+                if (i == numValues - 1) {
+                    insert(uri, values[i]);
+                    getContext().getContentResolver().notifyChange(uri, null);
+                } else {
+
+                    insert(uri, values[i]);
+                }
             }
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
         }
         return numValues;
     }

@@ -34,6 +34,9 @@ import java.net.UnknownHostException;
  */
 public abstract class ZListFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
+    protected ListView mListView;
+    protected ZCursorAdapter mZAdapter;
+
     protected TextView mErrorText;
     protected ProgressBar mProgressBar;
     protected View mFooder;
@@ -60,13 +63,13 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(getLayout(),container,false);
+        View view = inflater.inflate(getLayout(), container, false);
         mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
         mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
 
         whileOnCreateView(view);
-
-        setListAdapter(getAdapter());
+        mZAdapter = getAdapter();
+        getListView().setAdapter(mZAdapter);
         mFooder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,6 +105,16 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
         return view;
     }
 
+    @Override
+    public ListView getListView() {
+        return mListView;
+    }
+
+    @Override
+    public ListAdapter getListAdapter() {
+        return mZAdapter;
+    }
+
     protected void loadData() {
         cleanDatabaseOut();
         mRequestOffset = 0;
@@ -122,7 +135,7 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     }
 
     protected String getRequestUrl(int offset) {
-        return mRequestUrl + "&" + Api.FIELD_COUNT + Api.GET_COUNT + "&" +  Api.FIELD_OFFSET + offset;
+        return mRequestUrl + "&" + Api.FIELD_COUNT + Api.GET_COUNT + "&" + Api.FIELD_OFFSET + offset;
     }
 
     protected void onError(Exception e) {
@@ -172,11 +185,12 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     //LoaderManager
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        ((ZCursorAdapter)getListAdapter()).swapCursor(data);
+        ((ZCursorAdapter) getListAdapter()).swapCursor(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) { }
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
 
     public abstract int getLayout();
 
