@@ -110,6 +110,9 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     private String mRequestUrl;
     private String mPhotosRequestUrl;
 
+    private int mScrollPosition = 0;
+    private static final String SCROLL_POSITION = "scroll_position";
+
     public static UserFragment newInstance(String userId) {
         UserFragment fragment = new UserFragment();
         Bundle args = new Bundle();
@@ -131,7 +134,7 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
                 Api._ONLINE + "," + Api._PHOTO_200 + "," + Api._PHOTO_MAX + "," + Api._SEX + "," + Api._SITE + "," + Api._SKYPE + "," +
                 Api._STATUS + "," + Api._LAST_SEEN + "," + Api._COUNTERS + "," + Api._CITY + "," + Api._HOME_TOWN + "," + Api._COUNTRY + "," +
                 Api._RELATIVES + "," + Api._PERSONAL + "," + Api._RELATION + "," + Api._SCHOOLS + "," + Api._UNIVERSITIES + "," + Api._ACTIVITIES + "," +
-                Api._INTERESTS + "," + Api._MUSIC+ "," + Api._MOVIES + "," + Api._TV+ "," + Api._BOOKS+ "," + Api._GAMES+ "," +
+                Api._INTERESTS + "," + Api._MUSIC + "," + Api._MOVIES + "," + Api._TV + "," + Api._BOOKS + "," + Api._GAMES + "," +
                 Api._UNIVERSITIES + "," + Api._ABOUT;
 
         mPhotosRequestUrl = Api.getPhotos() + userId + "&" + Api.FIELD_ALBUM_ID + Api._ALBUM_PROFILE + "&" + Api.FIELD_PHOTOS_SORT_ORDER + Api.PHOTOS_SORT_ANTICHRONOLOGICAL + "&" + Api.FIELD_PHOTO_SIZES + Api.PHOTOS_SPECIAL_SIZES;
@@ -181,9 +184,9 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mBooks = (TextView) view.findViewById(R.id.info_personal_books);
         mGames = (TextView) view.findViewById(R.id.info_personal_games);
         mQuotes = (TextView) view.findViewById(R.id.info_personal_quotes);
-        mAbout= (TextView) view.findViewById(R.id.info_about_field);
+        mAbout = (TextView) view.findViewById(R.id.info_about_field);
 
-        mScrollContainer = (ScrollView)view.findViewById(R.id.scroll_container);
+        mScrollContainer = (ScrollView) view.findViewById(R.id.scroll_container);
         mCountersScrollContainer = (HorizontalScrollView) view.findViewById(R.id.counters_scroll_container);
         mCountersLinearContainer = (LinearLayout) view.findViewById(R.id.counters_linear_container);
         mPhotosLinearContainer = (LinearLayout) view.findViewById(R.id.photos_linear_container);
@@ -206,7 +209,24 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
         mUserStatus = (TextView) view.findViewById(R.id.user_status);
 
         loadData();
+
+        if (savedInstanceState != null) {
+            mScrollPosition = savedInstanceState.getInt(SCROLL_POSITION);
+        }
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        int scrollPosition = mScrollContainer.getScrollY();
+        outState.putInt(SCROLL_POSITION, scrollPosition);
     }
 
     private void loadData() {
@@ -355,7 +375,7 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
 
             for (Photo photo : photos) {
                 ImageView imageView = new ImageView(getActivity());
-                LinearLayout.LayoutParams photoParams = new LinearLayout.LayoutParams(photo.getPhoto200Width(),ViewGroup.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams photoParams = new LinearLayout.LayoutParams(photo.getPhoto200Width(), ViewGroup.LayoutParams.MATCH_PARENT);
                 imageView.setLayoutParams(photoParams);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setLayoutParams(params);
@@ -613,6 +633,15 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     //DataLoader
     @Override
     public void onLoadingFinished(User[] users) {
+        if (mScrollPosition != 0) {
+            mScrollContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    mScrollContainer.scrollTo(0, mScrollPosition);
+                }
+            });
+        }
+
         if (mSwipeRefreshLayout.isRefreshing()) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
