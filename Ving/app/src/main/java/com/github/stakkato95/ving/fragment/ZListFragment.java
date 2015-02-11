@@ -37,6 +37,13 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     protected ListView mListView;
     protected ZCursorAdapter mZAdapter;
 
+    protected int mFirstVisiblePosition;
+    protected int mPositionVisibleHeight;
+    protected boolean isRotated = false;
+
+    private static final String FIRST_VISIBLE_POSITION = "first_visible_position";
+    private static final String POSITION_VISIBLE_HEIGHT = "position_visible_height";
+
     protected TextView mErrorText;
     protected ProgressBar mProgressBar;
     protected View mFooder;
@@ -67,7 +74,7 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
         mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
         mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
 
-        whileOnCreateView(view);
+        whileOnCreateView(view,savedInstanceState);
         mZAdapter = getAdapter();
         getListView().setAdapter(mZAdapter);
         mFooder.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +109,22 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
         mProcessor = getProcessor();
 
         loadData();
+        if (savedInstanceState != null) {
+            isRotated = true;
+            mFirstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION, 0);
+            mPositionVisibleHeight = savedInstanceState.getInt(POSITION_VISIBLE_HEIGHT, 0);
+        }
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        int firstVisiblePosition = getListView().getFirstVisiblePosition();
+        View view = getListView().getChildAt(0);
+        int positionVisibleHeight = (view == null) ? 0 : view.getTop();
+        outState.putInt(FIRST_VISIBLE_POSITION, firstVisiblePosition);
+        outState.putInt(POSITION_VISIBLE_HEIGHT, positionVisibleHeight);
     }
 
     @Override
@@ -186,6 +208,9 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         ((ZCursorAdapter) getListAdapter()).swapCursor(data);
+        if (isRotated) {
+            mListView.setSelectionFromTop(mFirstVisiblePosition, mPositionVisibleHeight);
+        }
     }
 
     @Override
@@ -194,7 +219,7 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
 
     public abstract int getLayout();
 
-    public abstract void whileOnCreateView(View view);
+    public abstract void whileOnCreateView(View view, Bundle savedInstanceState);
 
     public abstract ZCursorAdapter getAdapter();
 

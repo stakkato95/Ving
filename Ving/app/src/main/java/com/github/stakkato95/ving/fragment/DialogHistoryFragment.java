@@ -64,12 +64,12 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
     }
 
     @Override
-    public void whileOnCreateView(View view) {
+    public void whileOnCreateView(View view, Bundle savedInstanceState) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
-        ListView listView = (ListView)view.findViewById(android.R.id.list);
-        listView.setDividerHeight(0);
-        listView.addHeaderView(mFooder);
-        listView.setHeaderDividersEnabled(true);
+        mListView = (ListView)view.findViewById(android.R.id.list);
+        getListView().setDividerHeight(0);
+        getListView().addHeaderView(mFooder);
+        getListView().setHeaderDividersEnabled(true);
 
         mEditText = (EditText) view.findViewById(R.id.dialog_history_message);
         ImageView mSend = (ImageView) view.findViewById(R.id.dialog_history_send);
@@ -150,15 +150,18 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         super.onLoadFinished(loader, data);
-        setHeaderVisibility();
-        int itemIndex;
-        if (getListAdapter().getCount() % Api.GET_COUNT == 0) {
-            itemIndex = Api.GET_COUNT + getListView().getHeaderViewsCount();
-        } else {
-            itemIndex = getListAdapter().getCount() % Api.GET_COUNT;
-        }
+        if (!isRotated) {
+            setHeaderVisibility();
+            int itemIndex;
+            if (getListAdapter().getCount() % Api.GET_COUNT == 0) {
+                itemIndex = Api.GET_COUNT + getListView().getHeaderViewsCount();
+            } else {
+                itemIndex = getListAdapter().getCount() % Api.GET_COUNT;
+            }
 
-        getListView().setSelectionFromTop(itemIndex, mFooder.getHeight());
+            getListView().setSelectionFromTop(itemIndex, mFooder.getHeight());
+        }
+        isRotated = false;
     }
 
     @Override

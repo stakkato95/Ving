@@ -31,7 +31,7 @@ public abstract class ZQueueFragment extends ZListFragment {
     }
 
     @Override
-    public void whileOnCreateView(View view) {
+    public void whileOnCreateView(View view, Bundle savedInstanceState) {
         mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
         mListView = (ListView) view.findViewById(android.R.id.list);
         getListView().setFooterDividersEnabled(false);
@@ -108,6 +108,7 @@ public abstract class ZQueueFragment extends ZListFragment {
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         super.onLoadFinished(loader, data);
+        isRotated = false;
         setFooterVisibility();
     }
 
