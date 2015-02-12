@@ -14,7 +14,7 @@ public class MemoryCache implements Cache<String, Bitmap> {
     private LruCache<String, Bitmap> mLruCache;
 
     public MemoryCache(Context context) {
-        int CACHE_SIZE = ImageLoaderAssistant.setCacheSize(context);
+        int CACHE_SIZE = (int)ImageLoaderAssistant.setCacheSize(context);
         mLruCache = new LruCache<String, Bitmap>(CACHE_SIZE) {
             @Override
             protected int sizeOf(String key, Bitmap value) {

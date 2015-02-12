@@ -55,18 +55,18 @@ public class ImageLoaderAssistant {
         return cacheSize;
     }
 
-    public static int setCacheSize(final Context context) {
+    public static long setCacheSize(final Context context) {
         //method for MemoryCache
 
         //20% of free space
-        return (int) context.getFilesDir().getFreeSpace() / 5;
+        return context.getFilesDir().getFreeSpace() / 5;
     }
 
     public static String generateFileName(String url) {
         return md5(url);
     }
 
-    public static final String md5(final String s) {
+    public static String md5(final String s) {
         final String MD5 = "MD5";
         try {
             // Create MD5 Hash
