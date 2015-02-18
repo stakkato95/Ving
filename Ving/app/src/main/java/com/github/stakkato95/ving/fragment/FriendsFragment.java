@@ -1,11 +1,15 @@
 package com.github.stakkato95.ving.fragment;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.view.View;
 import android.widget.ListView;
 
 import com.github.stakkato95.ving.adapter.FriendsAdapter;
+import com.github.stakkato95.ving.adapter.FriendsRecyclerAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
+import com.github.stakkato95.ving.adapter.ZRecyclerCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.FriendsTable;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;
@@ -19,17 +23,23 @@ import com.github.stakkato95.ving.provider.ZContentProvider;
 public class FriendsFragment extends ZQueueFragment {
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        String friendId = Long.toString(id);
-        ClickCallback callback = getCallback();
-        if (callback != null) {
-            callback.showDetails(getFragmentId(), friendId);
-        }
+    public ZRecyclerCursorAdapter.OnRecyclerClickListener getOnClickListener() {
+        return new ZRecyclerCursorAdapter.OnRecyclerClickListener() {
+            @Override
+            public void onRecyclerItemClicked(View view) {
+                long id = mRecyclerView.getChildItemId(view);
+                String friendId = Long.toString(id);
+                ClickCallback callback = getCallback();
+                if (callback != null) {
+                    callback.showDetails(getFragmentId(), friendId);
+                }
+            }
+        };
     }
 
     @Override
-    public ZCursorAdapter getAdapter() {
-        return new FriendsAdapter(getActivity(), null, 0);
+    public ZRecyclerCursorAdapter getAdapter(Context context, Cursor cursor) {
+        return new FriendsRecyclerAdapter(context, cursor);
     }
 
     @Override

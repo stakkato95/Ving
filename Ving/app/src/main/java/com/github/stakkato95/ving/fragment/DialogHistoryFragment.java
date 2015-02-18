@@ -1,12 +1,12 @@
 package com.github.stakkato95.ving.fragment;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,7 +15,9 @@ import android.widget.ListView;
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.activity.MainActivity;
 import com.github.stakkato95.ving.adapter.DialogHistoryAdapter;
+import com.github.stakkato95.ving.adapter.DialogHistoryRecyclerAdapter;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
+import com.github.stakkato95.ving.adapter.ZRecyclerCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.api.Shipper;
 import com.github.stakkato95.ving.api.ShipperBuilder;
@@ -45,17 +47,21 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
     }
 
     private void setHeaderVisibility() {
-        if ((getRealAdapterCount(getListAdapter()) % Api.GET_COUNT) == 0 && isNetworkAvailable()) {
-            if (getListView().getHeaderViewsCount() == 0) {
-                getListView().addHeaderView(mFooder);
+        if ((getRecyclerAdapter().getRealItemCount() % Api.GET_COUNT) == 0 && isNetworkAvailable()) {
+            if (getRecyclerAdapter().getHeaderViewsCount() == 0) {
+                getRecyclerAdapter().addHeaderView(mFooder);
             }
-            if (mFooder.getVisibility() == View.GONE) {
-                mFooder.setVisibility(View.VISIBLE);
-                getListView().setFooterDividersEnabled(true);
+            if (getRecyclerAdapter().getHeader().getVisibility() == View.GONE) {
+                getRecyclerAdapter().getHeader().setVisibility(View.VISIBLE);
             }
         } else {
-            getListView().removeHeaderView(mFooder);
+            getRecyclerAdapter().removeHeaderView(mFooder);
         }
+    }
+
+    @Override
+    public ZRecyclerCursorAdapter getAdapter(Context context, Cursor cursor) {
+        return new DialogHistoryRecyclerAdapter(context, cursor);
     }
 
     @Override
@@ -65,12 +71,6 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
 
     @Override
     public void whileOnCreateView(View view, Bundle savedInstanceState) {
-        mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
-        mListView = (ListView)view.findViewById(android.R.id.list);
-        getListView().setDividerHeight(0);
-        getListView().addHeaderView(mFooder);
-        getListView().setHeaderDividersEnabled(true);
-
         mEditText = (EditText) view.findViewById(R.id.dialog_history_message);
         ImageView mSend = (ImageView) view.findViewById(R.id.dialog_history_send);
         mSend.setOnClickListener(new View.OnClickListener() {
@@ -105,12 +105,7 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getListView().removeHeaderView(mFooder);
-    }
-
-    @Override
-    public ZCursorAdapter getAdapter() {
-        return new DialogHistoryAdapter(getActivity(), null, 0);
+        //getRecyclerAdapter().removeHeaderView(mFooder);
     }
 
     @Override
@@ -149,23 +144,17 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        super.onLoadFinished(loader, data);
-        if (!isRotated) {
-            setHeaderVisibility();
-            int itemIndex;
-            if (getListAdapter().getCount() % Api.GET_COUNT == 0) {
-                itemIndex = Api.GET_COUNT + getListView().getHeaderViewsCount();
-            } else {
-                itemIndex = getListAdapter().getCount() % Api.GET_COUNT;
-            }
-
-            getListView().setSelectionFromTop(itemIndex, mFooder.getHeight());
+        super.onLoadFinished(loader,data);
+        setHeaderVisibility();
+        if (data.getCount() == Api.GET_COUNT && isNetworkAvailable()) {
+            getRecyclerView().scrollToPosition(getRecyclerAdapter().getRealItemCount());
+        } else if (!isNetworkAvailable()) {
+            getRecyclerView().scrollToPosition(getRecyclerAdapter().getRealItemCount() - 1);
         }
-        isRotated = false;
     }
 
     @Override
     public void onShippingPerformed(Integer integer) {
-        setSelection(getListView().getCount());
+        //getRecyclerView().setSelection(getRecyclerView().getCount());
     }
 }

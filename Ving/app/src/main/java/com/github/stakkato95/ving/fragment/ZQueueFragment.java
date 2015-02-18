@@ -6,21 +6,16 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
-import android.widget.ListView;
 
 import com.github.stakkato95.ving.R;
+import com.github.stakkato95.ving.adapter.ZRecyclerCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;
-import com.github.stakkato95.ving.utils.FragmentUtils;
 
 /**
  * Created by Artyom on 18.01.2015.
  */
 public abstract class ZQueueFragment extends ZListFragment {
-
-    public static interface ClickCallback {
-        void showDetails(FragmentId fragmentId, String requestField);
-    }
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -32,44 +27,34 @@ public abstract class ZQueueFragment extends ZListFragment {
 
     @Override
     public void whileOnCreateView(View view, Bundle savedInstanceState) {
-        mFooder = View.inflate(getActivity(), R.layout.view_footer, null);
-        mListView = (ListView) view.findViewById(android.R.id.list);
-        getListView().setFooterDividersEnabled(false);
-        getListView().addFooterView(mFooder);
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mFooder.setVisibility(View.GONE);
-                getListView().setFooterDividersEnabled(false);
                 loadData();
             }
         });
+
         mProjection = getProjection();
         mProjectionOffline = getProjectionOffline();
     }
 
     private void setFooterVisibility() {
-        if ((getRealAdapterCount(getListAdapter()) % Api.GET_COUNT) == 0) {
+        if ((getRecyclerAdapter().getRealItemCount() % Api.GET_COUNT) == 0) {
             if (mRequestOffset == Api.GET_COUNT) {
                 if (!mSwipeRefreshLayout.isRefreshing()) {
-                    if (getListView().getFooterViewsCount() == 0) {
-                        getListView().addFooterView(mFooder, null, false);
+                    if (getRecyclerAdapter().getFooterViewsCount() == 0) {
+                        getRecyclerAdapter().addFooterView(mFooder);
                     }
-                    if (mFooder.getVisibility() == View.GONE) {
-                        mFooder.setVisibility(View.VISIBLE);
-                        getListView().setFooterDividersEnabled(true);
+                    if (getRecyclerAdapter().getFooter().getVisibility() == View.GONE) {
+                        getRecyclerAdapter().getFooter().setVisibility(View.VISIBLE);
                     }
                 }
             }
         } else {
-            getListView().removeFooterView(mFooder);
+            getRecyclerAdapter().removeFooterView(mFooder);
         }
-    }
-
-    protected ClickCallback getCallback() {
-        return FragmentUtils.findFirstResponderFor(this, ClickCallback.class);
     }
 
     //DataLoader
@@ -108,12 +93,10 @@ public abstract class ZQueueFragment extends ZListFragment {
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         super.onLoadFinished(loader, data);
-        isRotated = false;
         setFooterVisibility();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+        if (data.getCount() == getRecyclerAdapter().getStandardDose()) {
+            getRecyclerView().scrollToPosition(0);
+        }
     }
 
 
@@ -126,7 +109,5 @@ public abstract class ZQueueFragment extends ZListFragment {
     public abstract String[] getProjection();
 
     public abstract String[] getProjectionOffline();
-
-    public abstract FragmentId getFragmentId();
 
 }

@@ -1,14 +1,17 @@
 package com.github.stakkato95.ving.fragment;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,20 +25,29 @@ import android.widget.Toast;
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.R;
 import com.github.stakkato95.ving.adapter.ZCursorAdapter;
+import com.github.stakkato95.ving.adapter.ZRecyclerCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
+import com.github.stakkato95.ving.fragment.assist.FragmentId;
 import com.github.stakkato95.ving.loader.DataLoader;
 import com.github.stakkato95.ving.processor.DBProcessor;
 import com.github.stakkato95.ving.source.VkDataSource;
+import com.github.stakkato95.ving.utils.FragmentUtils;
 
 import java.net.UnknownHostException;
 
 /**
  * Created by Artyom on 02.02.2015.
  */
-public abstract class ZListFragment extends ListFragment implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class ZListFragment extends Fragment
+        implements DataLoader.DatabaseCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
-    protected ListView mListView;
-    protected ZCursorAdapter mZAdapter;
+    public static interface ClickCallback {
+        void showDetails(FragmentId fragmentId, String requestField);
+    }
+
+    protected RecyclerView mRecyclerView;
+    protected ZRecyclerCursorAdapter mZRecyclerAdapter;
+    protected ZRecyclerCursorAdapter.OnRecyclerClickListener mOnClickListener;
 
     protected int mFirstVisiblePosition;
     protected int mPositionVisibleHeight;
@@ -71,12 +83,15 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayout(), container, false);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mRecyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(layoutManager);
+
         mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
         mErrorText = (TextView) view.findViewById(R.id.loading_error_text_view);
 
-        whileOnCreateView(view,savedInstanceState);
-        mZAdapter = getAdapter();
-        getListView().setAdapter(mZAdapter);
+        mFooder = View.inflate(getActivity(), R.layout.view_fooder, null);
         mFooder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +119,9 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
                 mRequestOffset += Api.GET_COUNT;
             }
         });
+
+        whileOnCreateView(view, savedInstanceState);
+
         mUri = getUri();
         mRequestUrl = getRequestUrl();
         mProcessor = getProcessor();
@@ -120,21 +138,20 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        int firstVisiblePosition = getListView().getFirstVisiblePosition();
-        View view = getListView().getChildAt(0);
-        int positionVisibleHeight = (view == null) ? 0 : view.getTop();
-        outState.putInt(FIRST_VISIBLE_POSITION, firstVisiblePosition);
-        outState.putInt(POSITION_VISIBLE_HEIGHT, positionVisibleHeight);
+//        int firstVisiblePosition = getRecyclerView().getFirstVisiblePosition();
+//        View view = getRecyclerView().getChildAt(0);
+//        int positionVisibleHeight = (view == null) ? 0 : view.getTop();
+//        outState.putInt(FIRST_VISIBLE_POSITION, firstVisiblePosition);
+//        outState.putInt(POSITION_VISIBLE_HEIGHT, positionVisibleHeight);
     }
 
-    @Override
-    public ListView getListView() {
-        return mListView;
+
+    protected RecyclerView getRecyclerView() {
+        return mRecyclerView;
     }
 
-    @Override
-    public ListAdapter getListAdapter() {
-        return mZAdapter;
+    protected ZRecyclerCursorAdapter getRecyclerAdapter() {
+        return mZRecyclerAdapter;
     }
 
     protected void loadData() {
@@ -183,6 +200,10 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
         return count;
     }
 
+    protected ClickCallback getCallback() {
+        return FragmentUtils.findFirstResponderFor(this, ClickCallback.class);
+    }
+
     private void startAsynchLoad() {
         if (mLoaderManager.getLoader(CURSOR_LOADER) == null) {
             mLoaderManager.initLoader(CURSOR_LOADER, null, ZListFragment.this);
@@ -205,28 +226,39 @@ public abstract class ZListFragment extends ListFragment implements DataLoader.D
     }
 
     //LoaderManager
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        ((ZCursorAdapter) getListAdapter()).swapCursor(data);
-        if (isRotated) {
-            mListView.setSelectionFromTop(mFirstVisiblePosition, mPositionVisibleHeight);
+        if (mZRecyclerAdapter == null) {
+            mZRecyclerAdapter = getAdapter(getActivity(), null);
+            getRecyclerAdapter().setOnClickListener(getOnClickListener());
+            getRecyclerAdapter().setHasStableIds(true);
+            getRecyclerView().setAdapter(getRecyclerAdapter());
         }
+        getRecyclerAdapter().swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
 
+
     public abstract int getLayout();
 
     public abstract void whileOnCreateView(View view, Bundle savedInstanceState);
-
-    public abstract ZCursorAdapter getAdapter();
 
     public abstract DBProcessor getProcessor();
 
     public abstract String getRequestUrl();
 
     public abstract Uri getUri();
+
+    public abstract ZRecyclerCursorAdapter getAdapter(Context context, Cursor cursor);
+
+    public ZRecyclerCursorAdapter.OnRecyclerClickListener getOnClickListener() { return null; }
+
+    public FragmentId getFragmentId() {
+        return null;
+    }
 
 }

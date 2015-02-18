@@ -2,7 +2,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="32dp"
+    android:paddingLeft="500dp"
+    android:paddingRight="500dp"
     android:visibility="gone">
+    <!--there were no better way instead of 500dp-->
 
     <ProgressBar
         android:id="@android:id/progress"

@@ -10,19 +10,18 @@ import com.github.stakkato95.ving.fragment.ZQueueFragment;
  */
 public enum DrawerMenuItem implements FragmentCreator {
 
-    FRIENDS(R.string.friends, new FragmentCreator() {
-        @Override
-        public ZQueueFragment createFragment() {
-            return new FriendsFragment();
-        }
-    }),
     DIALOGS(R.string.dialogs, new FragmentCreator() {
         @Override
         public ZQueueFragment createFragment() {
             return new DialogsFragment();
         }
+    }),
+    FRIENDS(R.string.friends, new FragmentCreator() {
+        @Override
+        public ZQueueFragment createFragment() {
+            return new FriendsFragment();
+        }
     });
-
 
     private int mTitle;
     private FragmentCreator mFragmentCreator;

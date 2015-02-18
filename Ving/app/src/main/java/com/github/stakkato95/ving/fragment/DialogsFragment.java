@@ -1,11 +1,12 @@
 package com.github.stakkato95.ving.fragment;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.view.View;
-import android.widget.ListView;
 
-import com.github.stakkato95.ving.adapter.DialogsAdapter;
-import com.github.stakkato95.ving.adapter.ZCursorAdapter;
+import com.github.stakkato95.ving.adapter.DialogsRecyclerAdapter;
+import com.github.stakkato95.ving.adapter.ZRecyclerCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.database.DialogTable;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;
@@ -19,17 +20,24 @@ import com.github.stakkato95.ving.provider.ZContentProvider;
 public class DialogsFragment extends ZQueueFragment {
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        String requestField = (String) v.getTag(DialogsAdapter.ID_KEY) + id;
-        ClickCallback callback = getCallback();
-        if (callback != null) {
-            callback.showDetails(getFragmentId(), requestField);
-        }
+    public ZRecyclerCursorAdapter.OnRecyclerClickListener getOnClickListener() {
+        return new ZRecyclerCursorAdapter.OnRecyclerClickListener() {
+            @Override
+            public void onRecyclerItemClicked(View view) {
+                //todo way to determine whether it is a chat or user
+                DialogsRecyclerAdapter.DialogsViewHolder vh = (DialogsRecyclerAdapter.DialogsViewHolder)mRecyclerView.getChildViewHolder(view);
+                String requestField = vh.getRequestField();
+                ClickCallback callback = getCallback();
+                if (callback != null) {
+                    callback.showDetails(getFragmentId(), requestField);
+                }
+            }
+        };
     }
 
     @Override
-    public ZCursorAdapter getAdapter() {
-        return new DialogsAdapter(getActivity(), null, 0);
+    public ZRecyclerCursorAdapter getAdapter(Context context, Cursor cursor) {
+        return new DialogsRecyclerAdapter(context, cursor);
     }
 
     @Override
@@ -61,4 +69,5 @@ public class DialogsFragment extends ZQueueFragment {
     public FragmentId getFragmentId() {
         return FragmentId.DIALOG;
     }
+
 }
