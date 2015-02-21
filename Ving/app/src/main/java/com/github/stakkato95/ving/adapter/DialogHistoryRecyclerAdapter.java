@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.stakkato95.ving.R;
@@ -20,7 +19,7 @@ import com.github.stakkato95.ving.database.DialogHistoryTable;
  */
 public class DialogHistoryRecyclerAdapter extends ZRecyclerCursorAdapter {
 
-    public class HistoryViewHolder extends RecyclerView.ViewHolder {
+    public class DialogHistoryViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mInterlocutorImage;
         private TextView mInterlocutorMessage;
@@ -31,7 +30,7 @@ public class DialogHistoryRecyclerAdapter extends ZRecyclerCursorAdapter {
         private LinearLayout mUserContainer;
         private LinearLayout mInterlocutorContainer;
 
-        public HistoryViewHolder(View view) {
+        public DialogHistoryViewHolder(View view) {
             super(view);
             mInterlocutorImage = (ImageView) view.findViewById(R.id.interlocutor_image);
             mInterlocutorMessage = (TextView) view.findViewById(R.id.interlocutor_message);
@@ -45,55 +44,41 @@ public class DialogHistoryRecyclerAdapter extends ZRecyclerCursorAdapter {
 
     }
 
-    private class HeaderViewHolder extends ZRecyclerCursorAdapter.HeaderViewHolder {
-
-        private ProgressBar mProgressBar;
-        private TextView mText;
-
-        public HeaderViewHolder(View v) {
-            super(v);
-            mProgressBar = (ProgressBar) v.findViewById(android.R.id.progress);
-            mText = (TextView) v.findViewById(android.R.id.text1);
-        }
-
-    }
-
-    private HeaderViewHolder mHeaderViewHolder;
-
     public DialogHistoryRecyclerAdapter(Context context, Cursor cursor) {
         super(context, cursor);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor, int position) {
-        HistoryViewHolder vh = (HistoryViewHolder) viewHolder;
-        String messageText = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._BODY));
-        String imageUrl = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._PHOTO_100));
-        String date = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._DATE_TEXT));
-        long route = cursor.getLong(cursor.getColumnIndex(DialogHistoryTable._ROUTE));
+        if (viewHolder instanceof DialogHistoryViewHolder) {
+            DialogHistoryViewHolder vh = (DialogHistoryViewHolder) viewHolder;
+            String messageText = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._BODY));
+            String imageUrl = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._PHOTO_100));
+            String date = cursor.getString(cursor.getColumnIndex(DialogHistoryTable._DATE_TEXT));
+            long route = cursor.getLong(cursor.getColumnIndex(DialogHistoryTable._ROUTE));
 
-        if (route == Api.MESSAGE_ROUTE_OUT) {
-            vh.mInterlocutorContainer.setVisibility(View.GONE);
-            vh.mInterlocutorImage.setVisibility(View.GONE);
-            vh.mUserContainer.setVisibility(View.VISIBLE);
-            vh.mUserImage.setVisibility(View.VISIBLE);
+            if (route == Api.MESSAGE_ROUTE_OUT) {
+                vh.mInterlocutorContainer.setVisibility(View.GONE);
+                vh.mInterlocutorImage.setVisibility(View.GONE);
+                vh.mUserContainer.setVisibility(View.VISIBLE);
+                vh.mUserImage.setVisibility(View.VISIBLE);
 
-            vh.mUserMessage.setText(messageText);
-            vh.mUserDate.setText(date);
-            if (imageUrl != null) {
-                getImageLoader().toView(vh.mUserImage).setCircled(true).byUrl(imageUrl);
+                vh.mUserMessage.setText(messageText);
+                vh.mUserDate.setText(date);
+                if (imageUrl != null) {
+                    getImageLoader().toView(vh.mUserImage).setCircled(true).byUrl(imageUrl);
+                }
+            } else {
+                vh.mInterlocutorContainer.setVisibility(View.VISIBLE);
+                vh.mInterlocutorImage.setVisibility(View.VISIBLE);
+                vh.mUserContainer.setVisibility(View.GONE);
+                vh.mUserImage.setVisibility(View.GONE);
+
+                vh.mInterlocutorMessage.setText(messageText);
+                vh.mInterlocutorDate.setText(date);
+                getImageLoader().toView(vh.mInterlocutorImage).setCircled(true).byUrl(imageUrl);
             }
-        } else {
-            vh.mInterlocutorContainer.setVisibility(View.VISIBLE);
-            vh.mInterlocutorImage.setVisibility(View.VISIBLE);
-            vh.mUserContainer.setVisibility(View.GONE);
-            vh.mUserImage.setVisibility(View.GONE);
-
-            vh.mInterlocutorMessage.setText(messageText);
-            vh.mInterlocutorDate.setText(date);
-            getImageLoader().toView(vh.mInterlocutorImage).setCircled(true).byUrl(imageUrl);
         }
-
     }
 
     @Override
@@ -101,17 +86,10 @@ public class DialogHistoryRecyclerAdapter extends ZRecyclerCursorAdapter {
         if (viewType == ITEM_REGULAR) {
             View view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.adapter_dialog_history, viewGroup, false);
-            return new HistoryViewHolder(view);
+            return new DialogHistoryViewHolder(view);
         } else {
-            return getHeaderViewHolder(viewGroup);
+            return getHeaderViewHolder();
         }
     }
 
-    @Override
-    protected RecyclerView.ViewHolder getHeaderViewHolder(ViewGroup viewGroup) {
-        if (mHeaderViewHolder == null) {
-            mHeaderViewHolder = new HeaderViewHolder(mHeader);
-        }
-        return mHeaderViewHolder;
-    }
 }

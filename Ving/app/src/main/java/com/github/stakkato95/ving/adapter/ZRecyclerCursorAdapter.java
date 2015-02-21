@@ -6,7 +6,6 @@ import android.database.DataSetObserver;
 import android.provider.BaseColumns;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.github.stakkato95.imageloader.ImageLoader;
 
@@ -32,13 +31,14 @@ public abstract class ZRecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
             isDataValid = false;
             notifyDataSetChanged();
         }
+
     }
 
     public interface OnRecyclerClickListener {
         void onRecyclerItemClicked(View view);
     }
 
-    public abstract class FooterViewHolder extends RecyclerView.ViewHolder {
+    private class FooterViewHolder extends RecyclerView.ViewHolder {
 
         public FooterViewHolder(View view) {
             super(view);
@@ -46,7 +46,7 @@ public abstract class ZRecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
 
     }
 
-    public abstract class HeaderViewHolder extends RecyclerView.ViewHolder {
+    private class HeaderViewHolder extends RecyclerView.ViewHolder {
 
         public HeaderViewHolder(View view) {
             super(view);
@@ -61,8 +61,8 @@ public abstract class ZRecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
     private int mPreviousItemCount = 0;
     private int mStandardDose;
 
-    protected View mFooter;
-    protected View mHeader;
+    private View mFooter;
+    private View mHeader;
 
     private static final int HEADER_POSITION = 0;
     private int FOOTER_POSITION;
@@ -122,6 +122,11 @@ public abstract class ZRecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
         } else {
             return ITEM_REGULAR;
         }
+    }
+
+
+    public int getStandardDose() {
+        return mStandardDose;
     }
 
     public int getRealItemCount() {
@@ -230,17 +235,12 @@ public abstract class ZRecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
         return mHeader != null;
     }
 
-    public int getStandardDose() {
-        return mStandardDose;
+    protected FooterViewHolder getFooterViewHolder() {
+        return new FooterViewHolder(mFooter);
     }
 
-
-    protected RecyclerView.ViewHolder getFooterViewHolder(ViewGroup viewGroup) {
-        return null;
-    }
-
-    protected RecyclerView.ViewHolder getHeaderViewHolder(ViewGroup viewGroup) {
-        return null;
+    protected HeaderViewHolder getHeaderViewHolder() {
+        return new HeaderViewHolder(mHeader);
     }
 
 

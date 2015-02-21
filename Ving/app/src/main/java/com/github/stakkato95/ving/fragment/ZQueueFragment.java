@@ -8,9 +8,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
 import com.github.stakkato95.ving.R;
-import com.github.stakkato95.ving.adapter.ZRecyclerCursorAdapter;
+import com.github.stakkato95.ving.adapter.DividerDecoration;
 import com.github.stakkato95.ving.api.Api;
-import com.github.stakkato95.ving.fragment.assist.FragmentId;
 
 /**
  * Created by Artyom on 18.01.2015.
@@ -94,6 +93,8 @@ public abstract class ZQueueFragment extends ZListFragment {
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         super.onLoadFinished(loader, data);
         setFooterVisibility();
+        //todo something with constantly invoked code
+        getRecyclerView().addItemDecoration(new DividerDecoration(getActivity()));
         if (data.getCount() == getRecyclerAdapter().getStandardDose()) {
             getRecyclerView().scrollToPosition(0);
         }

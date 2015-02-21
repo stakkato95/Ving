@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -55,28 +54,13 @@ public class DialogsRecyclerAdapter extends ZRecyclerCursorAdapter {
 
     }
 
-    private class FooterViewHolder extends ZRecyclerCursorAdapter.FooterViewHolder {
-
-        private ProgressBar mProgressBar;
-        private TextView mText;
-
-        public FooterViewHolder(View v) {
-            super(v);
-            mProgressBar = (ProgressBar) v.findViewById(android.R.id.progress);
-            mText = (TextView) v.findViewById(android.R.id.text1);
-        }
-
-    }
-
-    private FooterViewHolder mFooterViewHolder;
-
     public DialogsRecyclerAdapter(Context context, Cursor cursor) {
         super(context, cursor);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor, int position) {
-        if (position != getRealItemCount()) {
+        if (viewHolder instanceof DialogsViewHolder) {
             DialogsViewHolder vh = (DialogsViewHolder) viewHolder;
             String titleText = cursor.getString(cursor.getColumnIndex(DialogTable._DIALOG_NAME));
             String lastMessageText = cursor.getString(cursor.getColumnIndex(DialogTable._BODY));
@@ -153,15 +137,7 @@ public class DialogsRecyclerAdapter extends ZRecyclerCursorAdapter {
             view.setOnClickListener(this);
             return new DialogsViewHolder(view);
         } else {
-            return getFooterViewHolder(viewGroup);
+            return getFooterViewHolder();
         }
-    }
-
-    @Override
-    protected RecyclerView.ViewHolder getFooterViewHolder(ViewGroup viewGroup) {
-        if (mFooterViewHolder == null) {
-            mFooterViewHolder = new FooterViewHolder(mFooter);
-        }
-        return mFooterViewHolder;
     }
 }

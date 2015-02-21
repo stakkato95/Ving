@@ -17,14 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.stakkato95.ving.CoreApplication;
 import com.github.stakkato95.ving.R;
-import com.github.stakkato95.ving.adapter.ZCursorAdapter;
+import com.github.stakkato95.ving.adapter.DividerDecoration;
 import com.github.stakkato95.ving.adapter.ZRecyclerCursorAdapter;
 import com.github.stakkato95.ving.api.Api;
 import com.github.stakkato95.ving.fragment.assist.FragmentId;

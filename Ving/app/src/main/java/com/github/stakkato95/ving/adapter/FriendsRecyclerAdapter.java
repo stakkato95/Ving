@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.stakkato95.ving.R;
@@ -36,29 +35,14 @@ public class FriendsRecyclerAdapter extends ZRecyclerCursorAdapter {
 
     }
 
-    private class FooterViewHolder extends ZRecyclerCursorAdapter.FooterViewHolder {
-
-        private ProgressBar mProgressBar;
-        private TextView mText;
-
-        public FooterViewHolder(View v) {
-            super(v);
-            mProgressBar = (ProgressBar) v.findViewById(android.R.id.progress);
-            mText = (TextView) v.findViewById(android.R.id.text1);
-        }
-
-    }
-
-    private FooterViewHolder mFooterViewHolder;
-
     public FriendsRecyclerAdapter(Context context, Cursor cursor) {
-        super(context,cursor);
+        super(context, cursor);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor, int position) {
-        if (position != getRealItemCount()) {
-            FriendsViewHolder vh = (FriendsViewHolder)viewHolder;
+        if (viewHolder instanceof FriendsViewHolder) {
+            FriendsViewHolder vh = (FriendsViewHolder) viewHolder;
             String fullName = cursor.getString(cursor.getColumnIndex(FriendsTable._FULL_NAME));
             vh.mFullNameText.setText(fullName);
 
@@ -92,17 +76,8 @@ public class FriendsRecyclerAdapter extends ZRecyclerCursorAdapter {
             view.setOnClickListener(this);
             return new FriendsViewHolder(view);
         } else {
-            return getFooterViewHolder(viewGroup);
+            return getFooterViewHolder();
         }
-
-    }
-
-    @Override
-    protected RecyclerView.ViewHolder getFooterViewHolder(ViewGroup viewGroup) {
-        if (mFooterViewHolder == null) {
-            mFooterViewHolder = new FooterViewHolder(mFooter);
-        }
-        return mFooterViewHolder;
     }
 
 }
