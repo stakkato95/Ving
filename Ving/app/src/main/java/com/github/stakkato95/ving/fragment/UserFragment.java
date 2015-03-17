@@ -230,8 +230,8 @@ public class UserFragment extends Fragment implements DataLoader.Callback<User[]
     }
 
     private void loadData() {
-        mDataLoader.getDataAsynch(UserFragment.this, mRequestUrl, mVkDataSource, mProcessor);
-        mDataLoader.getDataAsynch(new DataLoader.Callback<Photo[]>() {
+        mDataLoader.getDataAsync(UserFragment.this, mRequestUrl, mVkDataSource, mProcessor);
+        mDataLoader.getDataAsync(new DataLoader.Callback<Photo[]>() {
 
             @Override
             public void onLoadingStarted() {

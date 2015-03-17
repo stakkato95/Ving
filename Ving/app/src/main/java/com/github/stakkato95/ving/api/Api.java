@@ -1,6 +1,9 @@
 package com.github.stakkato95.ving.api;
 
 import com.github.stakkato95.ving.R;
+import com.github.stakkato95.ving.bo.JSONObjectWrapper;
+
+import org.json.JSONObject;
 
 /**
  * Created by Artyom on 20.11.2014.
@@ -13,6 +16,10 @@ public class Api {
 
     public static final String JSON_RESPONSE = "response";
     public static final String JSON_ITEMS = "items";
+
+    public static final String LONG_POLL_KEY = "key";
+    public static final String LONG_POLL_SERVER = "server";
+    public static final String LONG_POLL_TS = "ts";
 
     public static final String ONE_INTERLOCUTOR_DIALOG = " ... ";
     public static final String SORT_ORDER_HINTS = "hints";
@@ -198,6 +205,7 @@ public class Api {
     private static final String CITY_GET = BASE_PATH + "database.getCitiesById?" + FIELD_CITY_IDS;
 
     private static final String MESSAGES_SEND = BASE_PATH + "messages.send?";
+    private static final String LONG_POLL_GET = BASE_PATH + "messages.getLongPollServer?";
 
     public static String getFriends() {
         return FRIENDS_GET;
@@ -225,6 +233,14 @@ public class Api {
 
     public static String sendMessage() {
         return MESSAGES_SEND;
+    }
+
+    public static String getLongPoll(JSONObject rawObject) throws Exception {
+        JSONObject object = rawObject.getJSONObject(Api.JSON_RESPONSE);
+        return "http://" + object.getString(LONG_POLL_SERVER) +
+                "?act=a_check&key=" + object.getString(LONG_POLL_KEY) +
+                "&ts=" + object.getString(LONG_POLL_TS) +
+                "&wait=25&mode=2";
     }
 
 }

@@ -55,10 +55,10 @@ public class DataLoader {
         }.execute(input);
     }
 
-    public <Input,SourceOutput,Output> void getDataAsynch(final Callback callback,
-                                                       final Input input,
-                                                       final DataSource<Input,SourceOutput> source,
-                                                       final Processor<SourceOutput,Output> processor) {
+    public <Input,SourceOutput,Output> void getDataAsync(final Callback callback,
+                                                         final Input input,
+                                                         final DataSource<Input, SourceOutput> source,
+                                                         final Processor<SourceOutput, Output> processor) {
         new ZAsynchTask<Input,Output>() {
             @Override
             public void onPreExecute() {

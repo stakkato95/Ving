@@ -1,5 +1,4 @@
 package com.github.stakkato95.ving.processor;
-
 import android.support.annotation.NonNull;
 
 import com.github.stakkato95.util.MultiValueMap;

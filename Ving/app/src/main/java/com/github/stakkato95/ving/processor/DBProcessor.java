@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.github.stakkato95.ving.bo.JSONArrayWrapper;
 
+import org.json.JSONObject;
+
 import java.io.InputStream;
 
 /**
@@ -25,7 +27,9 @@ public abstract class DBProcessor {
         }
     }
 
-    protected abstract void insertDataFrom(JSONArrayWrapper jsonArray) throws Exception;
+    protected void insertDataFrom(JSONArrayWrapper jsonArray) throws Exception { }
+
+    protected void insertDataFrom(JSONObject jsonObject) throws Exception { }
 
     protected final Context getContext() {
         return mContext;
