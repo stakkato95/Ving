@@ -144,12 +144,21 @@ public class DialogHistoryFragment extends ZListFragment implements Shipper.Call
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        super.onLoadFinished(loader,data);
-        setHeaderVisibility();
-        if (data.getCount() == Api.GET_COUNT && isNetworkAvailable()) {
-            getRecyclerView().scrollToPosition(getRecyclerAdapter().getRealItemCount());
-        } else if (!isNetworkAvailable()) {
-            getRecyclerView().scrollToPosition(getRecyclerAdapter().getRealItemCount() - 1);
+
+        try{
+
+            super.onLoadFinished(loader,data);
+
+            setHeaderVisibility();
+
+            if (data.getCount() == Api.GET_COUNT && isNetworkAvailable()) {
+                getRecyclerView().scrollToPosition(getRecyclerAdapter().getRealItemCount());
+            } else if (!isNetworkAvailable()) {
+                getRecyclerView().scrollToPosition(getRecyclerAdapter().getRealItemCount() - 1);
+            }
+
+        }finally{
+
         }
     }
 

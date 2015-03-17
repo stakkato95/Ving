@@ -1,6 +1,7 @@
 package com.github.stakkato95.ving.source;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.github.stakkato95.ving.CoreApplication;
 
@@ -22,6 +23,7 @@ public class HttpDataSource implements DataSource<String, InputStream> {
 
     @Override
     public InputStream getResult(String p) throws Exception {
+        Log.d("TAG", p);
         URL url = new URL(p);
         return url.openStream();
     }
